@@ -24,12 +24,12 @@ body{font-family:'Noto Sans KR',sans-serif;background:#1a1a2e;color:#fff;display
 .canvas-wrap{flex:1;display:flex;align-items:center;justify-content:center;background:#2a2a3e;overflow:hidden;position:relative;}
 canvas{display:block;max-width:100%;max-height:100%;}
 
-.bottom-area{flex-shrink:0;background:#1a1a2e;padding-bottom:env(safe-area-inset-bottom,0px);overflow:visible;}
+.bottom-area{flex-shrink:0;background:#1a1a2e;padding-bottom:env(safe-area-inset-bottom,0px);}
 
 /* 입력바 — 50:50 */
-.input-bar{display:flex;gap:10px;padding:8px 16px 8px;border-top:0.5px solid rgba(255,255,255,0.1);min-height:68px;}
-.input-group{flex:1;display:flex;flex-direction:column;gap:4px;min-width:0;}
-.input-lbl{font-size:10px;font-weight:700;color:rgba(255,255,255,0.5);letter-spacing:0.05em;white-space:nowrap;}
+.input-bar{display:flex;gap:10px;padding:10px 16px 6px;border-top:0.5px solid rgba(255,255,255,0.1);}
+.input-group{flex:1;display:flex;flex-direction:column;gap:4px;}
+.input-lbl{font-size:10px;font-weight:700;color:rgba(255,255,255,0.5);letter-spacing:0.05em;}
 .input-field{
   height:44px;border-radius:10px;
   border:1.5px solid rgba(255,255,255,0.2);
@@ -38,7 +38,6 @@ canvas{display:block;max-width:100%;max-height:100%;}
   font-family:'Noto Sans KR',sans-serif;
   padding:0 12px;-webkit-user-select:text;user-select:text;
   outline:none;transition:border-color .15s;
-  width:100%;min-width:0;
 }
 .input-field:focus{border-color:#E05A2B;background:rgba(255,255,255,0.15);}
 .input-field::placeholder{color:rgba(255,255,255,0.3);font-weight:400;font-size:13px;}
@@ -158,12 +157,12 @@ input[type=range]{flex:1;accent-color:#E05A2B;}
     <button class="pcls" onclick="closePanel()">✕</button>
     <div class="sz-row">
       <span class="sz-lbl">날짜 크기</span>
-      <input type="range" id="dateSzR" min="20" max="300" value="60" step="2"/>
+      <input type="range" id="dateSzR" min="20" max="160" value="60" step="2"/>
       <span class="sz-val" id="dateSzV">60</span>
     </div>
     <div class="sz-row">
       <span class="sz-lbl">번호 크기</span>
-      <input type="range" id="seqSzR" min="40" max="500" value="160" step="4"/>
+      <input type="range" id="seqSzR" min="40" max="300" value="160" step="4"/>
       <span class="sz-val" id="seqSzV">160</span>
     </div>
     <div class="font-scroll" id="fontScroll">
@@ -263,7 +262,7 @@ let seqText  = '1번';
 
 /* ── 드래그 상태 ── */
 let tx = _s.tx !== undefined ? _s.tx : W/2;
-let ty = _s.ty !== undefined ? _s.ty : Math.round(H * 0.38);
+let ty = _s.ty !== undefined ? _s.ty : H/2;
 let dragging = false, dragOffX = 0, dragOffY = 0;
 let pinching = false, pinchStartDist = 0, pinchStartSz = 0, pinchStartDateSz = 0;
 let boxW = 0, boxH = 0;
@@ -443,9 +442,9 @@ cv.addEventListener('touchmove', e=>{
     const dist = pinchDist(e.touches);
     const ratio = dist / pinchStartDist;
     /* 번호+날짜 크기를 비율로 스케일 */
-    const newSeqSz = Math.round(Math.max(40, Math.min(500, pinchStartSz * ratio)));
+    const newSeqSz = Math.round(Math.max(40, Math.min(300, pinchStartSz * ratio)));
     seqSz  = newSeqSz;
-    dateSz = Math.round(Math.max(20, Math.min(300, pinchStartDateSz * ratio)));
+    dateSz = Math.round(Math.max(20, Math.min(160, pinchStartDateSz * ratio)));
     /* 핀치 중심점으로 텍스트 위치도 이동 */
     const mid = pinchMid(e.touches);
     tx = tx * 0.85 + mid.x * 0.15;
@@ -568,6 +567,21 @@ document.getElementById('txtCustom').addEventListener('input', function(){
   txtColor=this.value; draw(); saveS();
 });
 
+/* ── 저장 완료 토스트 ── */
+const toast = document.createElement('div');
+toast.style.cssText='display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:999;background:rgba(20,20,30,0.92);backdrop-filter:blur(8px);border-radius:16px;padding:28px 36px;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,0.4);';
+toast.innerHTML=`
+  <div style="font-size:42px;margin-bottom:10px;">✅</div>
+  <div style="color:#fff;font-size:17px;font-weight:700;font-family:'Noto Sans KR',sans-serif;">저장했습니다</div>
+  <div id="toastFilename" style="color:rgba(255,255,255,0.5);font-size:12px;margin-top:6px;font-family:'Noto Sans KR',sans-serif;"></div>`;
+document.body.appendChild(toast);
+
+function showToast(filename){
+  document.getElementById('toastFilename').textContent = filename;
+  toast.style.display='block';
+  setTimeout(()=>{ toast.style.display='none'; }, 1800);
+}
+
 /* ── 저장 ── */
 document.getElementById('saveBtn').addEventListener('click', ()=>{
   document.getElementById('dateInput').blur();
@@ -579,13 +593,15 @@ document.getElementById('saveBtn').addEventListener('click', ()=>{
       draw();
       setTimeout(()=>{
         dragging=_d; pinching=_p;
+        const filename = dateText.replace(/\s/g,'')+'_'+seqText.replace(/\s/g,'')+'.jpg';
         const a=document.createElement('a');
         a.href=cv.toDataURL('image/jpeg',0.96);
-        a.download=dateText.replace(/\s/g,'')+'_'+seqText.replace(/\s/g,'')+'.jpg';
+        a.download=filename;
         a.click();
         const btn=document.getElementById('saveBtn');
         btn.textContent='완료 ✓';
         setTimeout(()=>{ btn.textContent='💾 저장'; draw(); }, 1600);
+        showToast(filename);
       }, 80);
     }, 80);
   });
