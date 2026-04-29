@@ -269,28 +269,24 @@ function draw(){
     ctx.fillStyle=bgColor; ctx.fillRect(0,0,W,H);
   }
 
-  /* 텍스트 정렬 기준 */
-  const lineGap=Math.round(seqSz*0.18);
-  const totalH=dateSz+lineGap+seqSz;
-
-  /* tx,ty 초기화 (처음 또는 저장값 복원) */
+  /* 50:50 레이아웃 — 상단 절반: 날짜, 하단 절반: 번호 */
   if(tx===undefined) tx = _s.tx!==undefined ? _s.tx : W/2;
-  if(ty===undefined) ty = _s.ty!==undefined ? _s.ty : H/2;
+  if(ty===undefined) ty = W/2;
 
-  /* 정렬에 따른 x 기준 */
-  let ax=tx;
   ctx.textAlign=align==='left'?'left':align==='right'?'right':'center';
   ctx.textBaseline='middle';
   ctx.fillStyle=txtColor;
 
-  /* 날짜 */
+  let ax=tx;
+
+  /* 날짜 — 상단 절반 중앙 */
   ctx.font=curWeight+' '+dateSz+'px '+curFont;
-  const dateY=ty-totalH/2+dateSz/2;
+  const dateY = H/4;
   ctx.fillText(dateText, ax, dateY);
 
-  /* 순번 */
+  /* 번호 — 하단 절반 중앙 */
   ctx.font=curWeight+' '+seqSz+'px '+curFont;
-  const seqY=ty+totalH/2-seqSz/2;
+  const seqY = H*3/4;
   ctx.fillText(seqText, ax, seqY);
 
   /* 박스 크기 계산 (히트테스트용) */
@@ -299,7 +295,7 @@ function draw(){
   ctx.font=curWeight+' '+seqSz+'px '+curFont;
   const sw=ctx.measureText(seqText).width;
   boxW=Math.max(dw,sw)+40;
-  boxH=totalH+40;
+  boxH=H+40;
 }
 
 document.fonts.ready.then(()=>{
