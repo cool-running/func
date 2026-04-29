@@ -177,6 +177,13 @@ kakao.maps.load(function(){
   map.addControl(new kakao.maps.ZoomControl(), kakao.maps.ControlPosition.RIGHT);
 
   // 지도 클릭 → 선택 위치
+  // 모바일 터치 탭 이벤트
+  kakao.maps.event.addListener(map, 'tap', function(mouseEvent){
+    const latlng = mouseEvent.latLng;
+    setSelMarker(latlng.getLat(), latlng.getLng());
+    switchTab('sel');
+  });
+  // PC 클릭 이벤트
   kakao.maps.event.addListener(map, 'click', function(mouseEvent){
     const latlng = mouseEvent.latLng;
     setSelMarker(latlng.getLat(), latlng.getLng());
