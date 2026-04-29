@@ -33,6 +33,17 @@ body{font-family:-apple-system,'Noto Sans KR',sans-serif;color:var(--text);font-
   z-index:1;
 }
 
+.maptype-btn{
+  position:fixed;left:14px;
+  bottom:calc(var(--panel-h) + var(--nav-h) + env(safe-area-inset-bottom,0px) + 14px);
+  height:36px;padding:0 14px;border-radius:18px;
+  background:#fff;border:0.5px solid var(--border);
+  box-shadow:0 2px 8px rgba(0,0,0,0.2);
+  font-size:12px;font-weight:700;cursor:pointer;
+  display:flex;align-items:center;gap:5px;z-index:50;
+  font-family:-apple-system,'Noto Sans KR',sans-serif;
+}
+.maptype-btn:active{opacity:.7;}
 .myloc-btn{
   position:fixed;right:14px;
   bottom:calc(var(--panel-h) + var(--nav-h) + env(safe-area-inset-bottom,0px) + 14px);
@@ -80,6 +91,7 @@ body{font-family:-apple-system,'Noto Sans KR',sans-serif;color:var(--text);font-
 </div>
 
 <div id="map"></div>
+<button class="maptype-btn" id="maptypeBtn" onclick="toggleMapType()">🛰 위성</button>
 <button class="myloc-btn" onclick="moveToMyLoc()">📍</button>
 
 <div class="panel">
@@ -231,6 +243,21 @@ function saveCard(){
   a.href=canvas.toDataURL('image/jpeg',0.95);
   a.download=fname; a.click();
   showToast('💾 위치 카드 저장됐어요');
+}
+
+/* ── 지도 타입 토글 ── */
+let isHybrid = false;
+function toggleMapType(){
+  if(!map) return;
+  isHybrid = !isHybrid;
+  const btn = document.getElementById('maptypeBtn');
+  if(isHybrid){
+    map.setMapTypeId(kakao.maps.MapTypeId.HYBRID);
+    btn.textContent = '🗺 일반';
+  } else {
+    map.setMapTypeId(kakao.maps.MapTypeId.ROADMAP);
+    btn.textContent = '🛰 위성';
+  }
 }
 
 function showToast(msg){

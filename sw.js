@@ -1,4 +1,4 @@
-const CACHE = 'sonhae-202604290652';
+const CACHE = 'sonhae-202604290707';
 const ASSETS = [
   './',
   './index.html',
