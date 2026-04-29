@@ -192,13 +192,13 @@ input[type=range]{flex:1;accent-color:var(--blue)}
     <div class="acc-body collapsed">
       <div class="slider-row">
         <div class="s-lbl">날짜</div>
-        <input type="range" id="dateSz" min="60" max="220" value="130" step="5"/>
-        <div class="s-val" id="dateSzVal">130</div>
+        <input type="range" id="dateSz" min="30" max="200" value="80" step="5"/>
+        <div class="s-val" id="dateSzVal">80</div>
       </div>
       <div class="slider-row">
         <div class="s-lbl">순번</div>
-        <input type="range" id="seqSz" min="80" max="260" value="160" step="5"/>
-        <div class="s-val" id="seqSzVal">160</div>
+        <input type="range" id="seqSz" min="100" max="700" value="500" step="5"/>
+        <div class="s-val" id="seqSzVal">500</div>
       </div>
     </div>
   </div>
@@ -231,18 +231,84 @@ const dateSzVal=document.getElementById('dateSzVal');
 const seqSzVal=document.getElementById('seqSzVal');
 const W=900,H=900;
 cv.width=W;cv.height=H;
-let bgColor='#1a6b2e',txtColor='#ffffff',dateSz=130,seqSz=160;
+let bgColor='#1a6b2e',txtColor='#ffffff',dateSz=80,seqSz=500;
 let curFont="'Noto Sans KR',sans-serif",curWeight='900';
 function todayLabel(){const d=new Date();return(d.getMonth()+1)+'월 '+d.getDate()+'일';}
 dateInp.value=todayLabel();seqInp.value='1';
+/* 날짜 위치 (캔버스 좌표 기준) */
+let dateX = W - Math.round(W*0.06);
+let dateY = Math.round(H*0.1);
+let dragging = false;
+
 function draw(){
   ctx.fillStyle=bgColor;ctx.fillRect(0,0,W,H);
-  const dT=dateInp.value||'날짜',sT=(seqInp.value||'?')+'번';
-  const gap=Math.round(H*0.055),totalH=dateSz+gap+seqSz,startY=(H-totalH)/2+dateSz;
-  ctx.fillStyle=txtColor;ctx.textAlign='center';ctx.textBaseline='alphabetic';
-  ctx.font=curWeight+' '+dateSz+'px '+curFont;ctx.fillText(dT,W/2,startY);
-  ctx.font=curWeight+' '+seqSz+'px '+curFont;ctx.fillText(sT,W/2,startY+gap+seqSz);
+  ctx.fillStyle=txtColor;
+
+  /* 날짜 */
+  ctx.font=curWeight+' '+dateSz+'px '+curFont;
+  ctx.textAlign='right';
+  ctx.textBaseline='alphabetic';
+  ctx.fillText(dateInp.value||'날짜', dateX, dateY);
+
+  /* 드래그 중 핸들 표시 */
+  if(dragging){
+    ctx.strokeStyle='rgba(255,255,255,0.6)';
+    ctx.lineWidth=2;
+    ctx.setLineDash([6,4]);
+    const m = ctx.measureText(dateInp.value||'날짜');
+    const tw = m.width;
+    ctx.strokeRect(dateX-tw-6, dateY-dateSz-4, tw+12, dateSz+12);
+    ctx.setLineDash([]);
+  }
+
+  /* 순번 — 정중앙 */
+  const sT=seqInp.value||'?';
+  ctx.font=curWeight+' '+seqSz+'px '+curFont;
+  ctx.textAlign='center';
+  ctx.textBaseline='middle';
+  ctx.fillText(sT, W/2, H/2);
 }
+
+/* 캔버스 → 내부 좌표 변환 */
+function toCanvasXY(clientX, clientY){
+  const rect = cv.getBoundingClientRect();
+  const scaleX = W / rect.width;
+  const scaleY = H / rect.height;
+  return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY };
+}
+
+/* 날짜 텍스트 히트 테스트 */
+function hitDate(x, y){
+  ctx.font=curWeight+' '+dateSz+'px '+curFont;
+  const tw = ctx.measureText(dateInp.value||'날짜').width;
+  return x >= dateX-tw-10 && x <= dateX+10 && y >= dateY-dateSz-10 && y <= dateY+16;
+}
+
+/* 마우스 */
+cv.addEventListener('mousedown', e=>{
+  const p=toCanvasXY(e.clientX,e.clientY);
+  if(hitDate(p.x,p.y)){ dragging=true; cv.style.cursor='grabbing'; }
+});
+cv.addEventListener('mousemove', e=>{
+  const p=toCanvasXY(e.clientX,e.clientY);
+  if(dragging){ dateX=p.x; dateY=p.y; draw(); }
+  else{ cv.style.cursor=hitDate(p.x,p.y)?'grab':'default'; }
+});
+cv.addEventListener('mouseup', ()=>{ dragging=false; cv.style.cursor='default'; draw(); });
+
+/* 터치 */
+cv.addEventListener('touchstart', e=>{
+  const t=e.touches[0], p=toCanvasXY(t.clientX,t.clientY);
+  if(hitDate(p.x,p.y)){ dragging=true; e.preventDefault(); }
+},{passive:false});
+cv.addEventListener('touchmove', e=>{
+  if(!dragging) return;
+  e.preventDefault();
+  const t=e.touches[0], p=toCanvasXY(t.clientX,t.clientY);
+  dateX=p.x; dateY=p.y; draw();
+},{passive:false});
+cv.addEventListener('touchend', ()=>{ dragging=false; draw(); });
+
 document.fonts.ready.then(()=>{setTimeout(draw,120);});
 dateInp.addEventListener('input',draw);seqInp.addEventListener('input',draw);
 document.getElementById('minus').addEventListener('click',()=>{let v=parseInt(seqInp.value)||1;if(v>1){seqInp.value=v-1;}draw();});
@@ -271,6 +337,7 @@ setupSwatches('txtSwatches',txtPicker,v=>{txtColor=v;});
 dateSzSlider.addEventListener('input',function(){dateSz=+this.value;dateSzVal.textContent=this.value;draw();});
 seqSzSlider.addEventListener('input',function(){seqSz=+this.value;seqSzVal.textContent=this.value;draw();});
 saveBtn.addEventListener('click',()=>{
+  dragging=false;
   document.fonts.ready.then(()=>{setTimeout(()=>{
     draw();setTimeout(()=>{
       const dv=(dateInp.value||'date').replace(/\s/g,'');
