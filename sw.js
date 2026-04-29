@@ -1,4 +1,4 @@
-const CACHE = 'cover-card-v1';
+const CACHE = 'cover-card-v3';
 const FILES = [
   './index.html',
   './cover_card.html',
@@ -21,8 +21,15 @@ self.addEventListener('activate', e => {
   );
 });
 
+/* 항상 네트워크 우선 → 캐시 폴백 */
 self.addEventListener('fetch', e => {
   e.respondWith(
-    caches.match(e.request).then(r => r || fetch(e.request))
+    fetch(e.request)
+      .then(res => {
+        const clone = res.clone();
+        caches.open(CACHE).then(c => c.put(e.request, clone));
+        return res;
+      })
+      .catch(() => caches.match(e.request))
   );
 });
