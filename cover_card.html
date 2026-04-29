@@ -21,7 +21,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:#1a1a2e;color:#fff;display
 .save-btn{background:#E05A2B;color:#fff;border:none;border-radius:8px;padding:9px 22px;font-size:14px;font-weight:700;font-family:'Noto Sans KR',sans-serif;cursor:pointer;}
 .save-btn:active{opacity:.85;}
 
-.canvas-wrap{flex:1;display:flex;align-items:center;justify-content:center;background:#2a2a3e;overflow:hidden;}
+.canvas-wrap{flex:1;display:flex;align-items:center;justify-content:center;background:#2a2a3e;overflow:hidden;position:relative;}
 canvas{display:block;max-width:100%;max-height:100%;}
 
 .bottom-area{flex-shrink:0;background:#1a1a2e;padding-bottom:env(safe-area-inset-bottom,0px);}
@@ -43,11 +43,17 @@ canvas{display:block;max-width:100%;max-height:100%;}
 .input-field::placeholder{color:rgba(255,255,255,0.3);font-weight:400;font-size:13px;}
 
 /* 원형 메뉴 */
-.circle-menu{display:flex;justify-content:center;gap:24px;padding:10px 0;}
-.cbtn{width:68px;height:68px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.07);color:#fff;font-size:11px;font-weight:600;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;}
-.cbtn.on{background:rgba(255,255,255,0.2);border-color:rgba(255,255,255,0.6);}
-.cbtn:active{transform:scale(.93);}
-.cbtn-icon{font-size:18px;line-height:1;}
+.circle-menu{display:flex;justify-content:center;align-items:center;gap:28px;padding:12px 0 6px;}
+.cbtn{width:72px;height:72px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.25);background:rgba(255,255,255,0.06);color:#fff;font-size:11px;font-weight:600;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:background .15s,border-color .15s;}
+.cbtn.on{background:rgba(255,255,255,0.18);border-color:rgba(255,255,255,0.7);}
+.cbtn:active{transform:scale(.91);}
+.cbtn-icon{font-size:20px;line-height:1;}
+
+/* 도트 인디케이터 */
+.dot-row{display:flex;justify-content:center;align-items:center;gap:6px;padding:6px 0 10px;}
+.dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.28);transition:background .2s;}
+.dot.on{background:rgba(255,255,255,0.9);}
+.dot-arrow{color:rgba(255,255,255,0.4);font-size:13px;position:absolute;right:20px;}
 
 /* 패널 */
 .panel{display:none;background:#fff;border-radius:16px 16px 0 0;padding:14px 16px 10px;position:relative;}
@@ -96,6 +102,12 @@ input[type=range]{flex:1;accent-color:#E05A2B;}
 
 <div class="canvas-wrap">
   <canvas id="cv"></canvas>
+  <div id="cvHint" style="position:absolute;bottom:12px;left:50%;transform:translateX(-50%);
+    background:rgba(0,0,0,0.5);color:rgba(255,255,255,0.8);font-size:11px;
+    font-family:'Noto Sans KR',sans-serif;border-radius:20px;padding:5px 14px;
+    pointer-events:none;white-space:nowrap;transition:opacity .4s;">
+    ✋ 드래그 이동 &nbsp;|&nbsp; 🤏 핀치 확대 &nbsp;|&nbsp; 👆👆 더블탭 편집
+  </div>
 </div>
 
 <div class="bottom-area">
@@ -201,11 +213,21 @@ input[type=range]{flex:1;accent-color:#E05A2B;}
       <span class="cbtn-icon">🎨</span><span>스타일</span>
     </div>
     <div class="cbtn" id="cbtnFont" onclick="togglePanel('panelFont','cbtnFont')">
-      <span class="cbtn-icon">✏️</span><span>글꼴&크기</span>
+      <span class="cbtn-icon">✏️</span><span>글꼴<br>&amp; 크기</span>
     </div>
     <div class="cbtn" id="cbtnColor" onclick="togglePanel('panelColor','cbtnColor')">
-      <span class="cbtn-icon">🖊</span><span>글자색&정렬</span>
+      <span class="cbtn-icon">🖊</span><span>글자 색<br>&amp; 정렬</span>
     </div>
+  </div>
+
+  <!-- 도트 인디케이터 -->
+  <div style="position:relative;">
+    <div class="dot-row">
+      <span class="dot on" id="dot0"></span>
+      <span class="dot" id="dot1"></span>
+      <span class="dot" id="dot2"></span>
+    </div>
+    <span class="dot-arrow">›</span>
   </div>
 
 </div>
@@ -242,6 +264,7 @@ let seqText  = '1번';
 let tx = _s.tx !== undefined ? _s.tx : W/2;
 let ty = _s.ty !== undefined ? _s.ty : H/2;
 let dragging = false, dragOffX = 0, dragOffY = 0;
+let pinching = false, pinchStartDist = 0, pinchStartSz = 0, pinchStartDateSz = 0;
 let boxW = 0, boxH = 0;
 
 /* ── 그라디언트 ── */
@@ -270,16 +293,25 @@ function draw(){
   const lineGap = Math.round(seqSz * 0.25);
   const totalH  = dateSz + lineGap + seqSz;
 
-  /* 전체 묶음을 캔버스 정중앙 기준으로 배치 */
-  const centerY = H / 2;
-  const dateY   = centerY - totalH/2 + dateSz/2;
-  const seqY    = centerY + totalH/2 - seqSz/2;
+  /* tx,ty 기준으로 자유 배치 */
+  const dateY = ty - totalH/2 + dateSz/2;
+  const seqY  = ty + totalH/2 - seqSz/2;
 
-  const ax = align==='left' ? 60 : align==='right' ? W-60 : W/2;
+  const ax = align==='left' ? tx - boxW/2 + 10 : align==='right' ? tx + boxW/2 - 10 : tx;
 
   ctx.textAlign    = align;
   ctx.textBaseline = 'middle';
   ctx.fillStyle    = txtColor;
+
+  /* 드래그 중 선택 표시 */
+  if(dragging || pinching){
+    ctx.save();
+    ctx.strokeStyle='rgba(255,255,255,0.5)';
+    ctx.lineWidth=2;
+    ctx.setLineDash([8,5]);
+    ctx.strokeRect(tx-boxW/2, ty-boxH/2, boxW, boxH);
+    ctx.restore();
+  }
 
   /* 날짜 */
   ctx.font = curWeight+' '+dateSz+'px '+curFont;
@@ -296,10 +328,6 @@ function draw(){
   const sw = ctx.measureText(seqText).width;
   boxW = Math.max(dw, sw) + 40;
   boxH = totalH + 40;
-
-  /* tx,ty 를 중앙 묶음 기준으로 고정 */
-  tx = W/2;
-  ty = centerY;
 }
 
 /* ── 초기 렌더 ── */
@@ -319,40 +347,153 @@ document.getElementById('seqInput').addEventListener('input', function(){
   seqText = this.value || '1번'; draw(); saveS();
 });
 
-/* ── 드래그 (터치) ── */
+/* ── 좌표 변환 ── */
 function toCV(cx, cy){
   const r = cv.getBoundingClientRect();
   return { x:(cx-r.left)*(W/r.width), y:(cy-r.top)*(H/r.height) };
 }
 function hitBox(x, y){
-  return Math.abs(x-tx) < boxW/2+10 && Math.abs(y-ty) < boxH/2+10;
+  return Math.abs(x-tx) < boxW/2+20 && Math.abs(y-ty) < boxH/2+20;
+}
+function pinchDist(t){ return Math.hypot(t[0].clientX-t[1].clientX, t[0].clientY-t[1].clientY); }
+function pinchMid(t){
+  return toCV((t[0].clientX+t[1].clientX)/2, (t[0].clientY+t[1].clientY)/2);
 }
 
+/* ── 더블탭으로 텍스트 편집 ── */
+let lastTap = 0;
+let editTarget = null; // 'date' | 'seq'
+const editOverlay = document.createElement('div');
+editOverlay.style.cssText='display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.55);align-items:center;justify-content:center;flex-direction:column;gap:12px;';
+editOverlay.innerHTML=`
+  <div style="background:#1e1e2e;border-radius:16px;padding:20px 20px 16px;width:88vw;max-width:360px;">
+    <div id="editLabel" style="color:rgba(255,255,255,0.55);font-size:12px;font-weight:700;margin-bottom:8px;font-family:'Noto Sans KR',sans-serif;"></div>
+    <input id="editInput" type="text" inputmode="text" autocomplete="off" spellcheck="false"
+      style="width:100%;background:rgba(255,255,255,0.1);border:1.5px solid rgba(255,255,255,0.25);border-radius:10px;
+             color:#fff;font-size:22px;font-weight:700;font-family:'Noto Sans KR',sans-serif;
+             padding:10px 14px;outline:none;-webkit-user-select:text;user-select:text;"/>
+    <div style="display:flex;gap:8px;margin-top:12px;">
+      <button id="editCancel" style="flex:1;height:40px;border-radius:8px;border:1.5px solid rgba(255,255,255,0.2);background:transparent;color:#fff;font-size:14px;font-family:'Noto Sans KR',sans-serif;cursor:pointer;">취소</button>
+      <button id="editOk" style="flex:2;height:40px;border-radius:8px;border:none;background:#E05A2B;color:#fff;font-size:14px;font-weight:700;font-family:'Noto Sans KR',sans-serif;cursor:pointer;">확인</button>
+    </div>
+  </div>`;
+document.body.appendChild(editOverlay);
+
+function openEdit(target){
+  editTarget = target;
+  editOverlay.style.display='flex';
+  const inp = document.getElementById('editInput');
+  document.getElementById('editLabel').textContent = target==='date' ? '📅 날짜 입력' : '🔢 번호 입력';
+  inp.value = target==='date' ? dateText : seqText;
+  inp.placeholder = target==='date' ? '예) 4월29일' : '예) 3번';
+  setTimeout(()=>inp.focus(),80);
+}
+function closeEdit(apply){
+  if(apply){
+    const v = document.getElementById('editInput').value.trim();
+    if(editTarget==='date'){ dateText=v||todayLabel(); document.getElementById('dateInput').value=dateText; }
+    else { seqText=v||'1번'; document.getElementById('seqInput').value=seqText; }
+    draw(); saveS();
+  }
+  editOverlay.style.display='none';
+}
+document.getElementById('editCancel').addEventListener('click',()=>closeEdit(false));
+document.getElementById('editOk').addEventListener('click',()=>closeEdit(true));
+document.getElementById('editInput').addEventListener('keydown',e=>{ if(e.key==='Enter') closeEdit(true); });
+editOverlay.addEventListener('click',e=>{ if(e.target===editOverlay) closeEdit(false); });
+
+/* ── 터치 이벤트 ── */
 cv.addEventListener('touchstart', e=>{
+  const now = Date.now();
+
+  if(e.touches.length===2){
+    /* 핀치 시작 */
+    dragging = false;
+    pinching = true;
+    pinchStartDist = pinchDist(e.touches);
+    pinchStartSz = seqSz;
+    pinchStartDateSz = dateSz;
+    e.preventDefault();
+    return;
+  }
+
+  /* 더블탭 감지 */
   const p = toCV(e.touches[0].clientX, e.touches[0].clientY);
-  if(hitBox(p.x,p.y)){ dragging=true; dragOffX=p.x-tx; dragOffY=p.y-ty; e.preventDefault(); }
+  if(now - lastTap < 300 && hitBox(p.x, p.y)){
+    lastTap = 0;
+    /* 날짜/번호 중 어느 쪽을 탭했는지 판별 */
+    const lineGap = Math.round(seqSz * 0.25);
+    const totalH  = dateSz + lineGap + seqSz;
+    const dateY   = ty - totalH/2 + dateSz/2;
+    openEdit(p.y < (dateY + seqSz*0.3) ? 'date' : 'seq');
+    e.preventDefault();
+    return;
+  }
+  lastTap = now;
+
+  if(hitBox(p.x, p.y)){
+    dragging=true; dragOffX=p.x-tx; dragOffY=p.y-ty; e.preventDefault();
+  }
 },{passive:false});
+
 cv.addEventListener('touchmove', e=>{
+  if(e.touches.length===2 && pinching){
+    e.preventDefault();
+    const dist = pinchDist(e.touches);
+    const ratio = dist / pinchStartDist;
+    /* 번호+날짜 크기를 비율로 스케일 */
+    const newSeqSz = Math.round(Math.max(40, Math.min(300, pinchStartSz * ratio)));
+    seqSz  = newSeqSz;
+    dateSz = Math.round(Math.max(20, Math.min(160, pinchStartDateSz * ratio)));
+    /* 핀치 중심점으로 텍스트 위치도 이동 */
+    const mid = pinchMid(e.touches);
+    tx = tx * 0.85 + mid.x * 0.15;
+    ty = ty * 0.85 + mid.y * 0.15;
+    /* UI 슬라이더 동기화 */
+    document.getElementById('seqSzR').value = seqSz;
+    document.getElementById('seqSzV').textContent = seqSz;
+    document.getElementById('dateSzR').value = dateSz;
+    document.getElementById('dateSzV').textContent = dateSz;
+    draw();
+    return;
+  }
   if(!dragging) return;
   e.preventDefault();
   const p = toCV(e.touches[0].clientX, e.touches[0].clientY);
-  tx = Math.max(50, Math.min(W-50, p.x-dragOffX));
-  ty = Math.max(50, Math.min(H-50, p.y-dragOffY));
+  tx = Math.max(boxW/2, Math.min(W-boxW/2, p.x-dragOffX));
+  ty = Math.max(boxH/2, Math.min(H-boxH/2, p.y-dragOffY));
   draw();
 },{passive:false});
-cv.addEventListener('touchend', ()=>{ if(dragging){ dragging=false; saveS(); } });
 
-/* ── 드래그 (마우스) ── */
+cv.addEventListener('touchend', e=>{
+  if(e.touches.length < 2 && pinching){
+    pinching = false; saveS(); return;
+  }
+  if(dragging){ dragging=false; saveS(); }
+});
+
+/* ── 마우스 이벤트 ── */
 cv.addEventListener('mousedown', e=>{
   const p = toCV(e.clientX, e.clientY);
   if(hitBox(p.x,p.y)){ dragging=true; dragOffX=p.x-tx; dragOffY=p.y-ty; cv.style.cursor='grabbing'; }
 });
 cv.addEventListener('mousemove', e=>{
   const p = toCV(e.clientX, e.clientY);
-  if(dragging){ tx=Math.max(50,Math.min(W-50,p.x-dragOffX)); ty=Math.max(50,Math.min(H-50,p.y-dragOffY)); draw(); }
-  else { cv.style.cursor = hitBox(p.x,p.y) ? 'grab' : 'default'; }
+  if(dragging){
+    tx=Math.max(boxW/2,Math.min(W-boxW/2,p.x-dragOffX));
+    ty=Math.max(boxH/2,Math.min(H-boxH/2,p.y-dragOffY));
+    draw();
+  } else { cv.style.cursor = hitBox(p.x,p.y) ? 'grab' : 'default'; }
 });
 cv.addEventListener('mouseup', ()=>{ if(dragging){ dragging=false; cv.style.cursor='default'; saveS(); } });
+cv.addEventListener('dblclick', e=>{
+  const p = toCV(e.clientX, e.clientY);
+  if(!hitBox(p.x,p.y)) return;
+  const lineGap = Math.round(seqSz * 0.25);
+  const totalH  = dateSz + lineGap + seqSz;
+  const dateY   = ty - totalH/2 + dateSz/2;
+  openEdit(p.y < (dateY + seqSz*0.3) ? 'date' : 'seq');
+});
 
 /* ── 패널 ── */
 function togglePanel(pid, bid){
@@ -432,15 +573,18 @@ document.getElementById('saveBtn').addEventListener('click', ()=>{
   document.getElementById('seqInput').blur();
   document.fonts.ready.then(()=>{
     setTimeout(()=>{
+      const _d=dragging, _p=pinching;
+      dragging=false; pinching=false;
       draw();
       setTimeout(()=>{
+        dragging=_d; pinching=_p;
         const a=document.createElement('a');
         a.href=cv.toDataURL('image/jpeg',0.96);
         a.download=dateText.replace(/\s/g,'')+'_'+seqText.replace(/\s/g,'')+'.jpg';
         a.click();
         const btn=document.getElementById('saveBtn');
         btn.textContent='완료 ✓';
-        setTimeout(()=>{ btn.textContent='💾 저장'; }, 1600);
+        setTimeout(()=>{ btn.textContent='💾 저장'; draw(); }, 1600);
       }, 80);
     }, 80);
   });
@@ -460,6 +604,12 @@ document.getElementById('saveBtn').addEventListener('click', ()=>{
   document.getElementById('alignRow').querySelectorAll('.abtn').forEach(b=>b.classList.toggle('on',b.dataset.a===align));
   document.getElementById('txtColorRow').querySelectorAll('.tc').forEach(s=>s.classList.toggle('on',s.dataset.c===txtColor));
 })();
+
+/* ── 힌트 페이드아웃 ── */
+setTimeout(()=>{
+  const h=document.getElementById('cvHint');
+  if(h){ h.style.opacity='0'; setTimeout(()=>h.remove(),500); }
+}, 3000);
 
 if('serviceWorker' in navigator&&(location.hostname.endsWith('github.io')||location.hostname==='localhost')){
   navigator.serviceWorker.register('./sw.js').catch(()=>{});
