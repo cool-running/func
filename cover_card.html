@@ -1,391 +1,446 @@
 <!DOCTYPE html>
-<html lang="ko" translate="no" class="notranslate">
+<html lang="ko" translate="no">
 <head>
 <meta charset="UTF-8">
-<meta name="google" content="notranslate">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<meta name="theme-color" content="#185FA5">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#1a1a2e">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>표지 카드 생성기</title>
+<title>표지 카드</title>
 <link rel="manifest" href="./manifest.json">
 <link rel="apple-touch-icon" href="./icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@700;900&family=Noto+Serif+KR:wght@900&family=Nanum+Gothic:wght@800&family=Black+Han+Sans&family=Jua&family=Nanum+Myeongjo:wght@800&display=swap" rel="stylesheet">
 <style>
-:root{
-  --blue:#185FA5;--blue-l:#EBF4FF;
-  --border:#D8D6CE;
-  --bg:#F5F4F0;--card:#fff;
-  --text:#1a1a1a;--sub:#666;--hint:#aaa;
-  --r:12px;--nav-h:62px;
-}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-.notranslate{translate:no !important}
-body{
-  font-family:-apple-system,'Noto Sans KR',sans-serif;
-  background:var(--bg);color:var(--text);font-size:14px;min-height:100vh;
-  -webkit-user-select:none;user-select:none;
-  padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px));
-}
-.header{background:var(--blue);color:white;padding:14px 16px 12px;display:flex;align-items:center;gap:10px}
-.back-btn{height:30px;padding:0 10px;background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.35);border-radius:8px;color:white;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;white-space:nowrap;flex-shrink:0}
-.header h1{font-size:15px;font-weight:700}
-.header-sub{font-size:10px;opacity:0.65;margin-top:1px}
-.main{padding:14px;display:flex;flex-direction:column;gap:10px}
-.preview-wrap{border-radius:var(--r);overflow:hidden;box-shadow:0 2px 14px rgba(0,0,0,0.14)}
-canvas{display:block;width:100%}
-.input-card{background:var(--card);border-radius:var(--r);border:0.5px solid var(--border);overflow:hidden}
-.input-row{display:flex;align-items:center;padding:0 16px;height:56px;gap:12px;border-bottom:0.5px solid var(--border)}
-.input-row:last-child{border-bottom:none}
-.i-lbl{font-size:11px;font-weight:700;color:var(--sub);width:36px;flex-shrink:0;letter-spacing:.03em}
-.text-inp{flex:1;border:none;outline:none;font-size:24px;font-weight:900;color:var(--text);background:transparent;padding:0;-webkit-user-select:text;user-select:text;font-family:'Noto Sans KR',sans-serif}
-.text-inp::placeholder{color:var(--hint);font-weight:400;font-size:16px}
-.seq-ctrl{display:flex;align-items:center;gap:8px;flex:1}
-.sq-btn{width:36px;height:36px;border-radius:50%;border:0.5px solid var(--border);background:var(--bg);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;user-select:none;flex-shrink:0;color:var(--text)}
-.sq-btn:active{background:var(--blue-l);transform:scale(0.91)}
-.seq-num-inp{font-size:24px;font-weight:900;color:var(--text);border:none;outline:none;background:transparent;text-align:center;width:54px;-webkit-user-select:text;user-select:text;font-family:'Noto Sans KR',sans-serif}
-.seq-unit{font-size:14px;color:var(--sub);font-weight:600}
-.acc{background:var(--card);border-radius:var(--r);border:0.5px solid var(--border);overflow:hidden}
-.acc-head{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;cursor:pointer;user-select:none}
-.acc-head:active{opacity:.7}
-.acc-title{font-size:12px;font-weight:700;color:var(--sub);letter-spacing:.04em}
-.acc-arrow{font-size:11px;color:var(--hint);transition:transform .2s}
-.acc-arrow.open{transform:rotate(180deg)}
-.acc-body{border-top:0.5px solid var(--border);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
-.acc-body.collapsed{display:none}
-.font-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.font-btn{padding:10px 8px;border:0.5px solid var(--border);border-radius:8px;background:var(--bg);cursor:pointer;text-align:center}
-.font-btn:active{transform:scale(.97)}
-.font-btn.on{border-color:var(--blue);background:var(--blue-l)}
-.font-name{font-size:10px;color:var(--sub);margin-bottom:5px}
-.font-sample{font-size:16px;color:var(--text);line-height:1.25}
-.color-row{display:flex;align-items:center;gap:10px}
-.c-lbl{font-size:12px;font-weight:700;color:var(--sub);width:44px;flex-shrink:0}
-.swatches{display:flex;gap:7px;flex-wrap:wrap;flex:1}
-.sw{width:30px;height:30px;border-radius:7px;cursor:pointer;border:2px solid transparent;flex-shrink:0}
-.sw:active{transform:scale(.88)}
-.sw.on{border-color:#fff;outline:2.5px solid var(--blue)}
-.color-pick{width:38px;height:30px;border:0.5px solid var(--border);border-radius:7px;padding:0;cursor:pointer;background:none;flex-shrink:0}
-.slider-row{display:flex;align-items:center;gap:10px}
-.s-lbl{font-size:12px;font-weight:700;color:var(--sub);width:44px;flex-shrink:0}
-.s-val{font-size:13px;font-weight:700;color:var(--blue);width:32px;text-align:right;flex-shrink:0}
-input[type=range]{flex:1;accent-color:var(--blue)}
-.save-btn{width:100%;padding:15px;background:var(--blue);color:#fff;border:none;border-radius:var(--r);font-family:'Noto Sans KR',sans-serif;font-size:15px;font-weight:700;cursor:pointer}
-.save-btn:active{opacity:.82;transform:scale(.99)}
-.bottom-nav{
-  position:fixed;bottom:0;left:0;right:0;
-  height:calc(var(--nav-h) + env(safe-area-inset-bottom,0px));
-  padding-bottom:env(safe-area-inset-bottom,0px);
-  background:var(--card);border-top:0.5px solid var(--border);
-  display:flex;align-items:stretch;z-index:200;
-}
-.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;border:none;background:none;padding-bottom:2px}
-.nav-item.on{color:var(--blue)}
-.nav-icon{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:8px;font-size:20px}
-.nav-item.on .nav-icon{background:rgba(24,95,165,.1)}
-.nav-label{font-size:10px;font-weight:600;letter-spacing:-0.01em}
+html,body{width:100%;height:100%;overflow:hidden;}
+body{font-family:'Noto Sans KR',sans-serif;background:#1a1a2e;color:#fff;display:flex;flex-direction:column;-webkit-user-select:none;user-select:none;}
+
+.topbar{height:56px;padding:0 16px;padding-top:env(safe-area-inset-top,0px);display:flex;align-items:center;justify-content:space-between;background:#1a1a2e;flex-shrink:0;z-index:10;}
+.back-btn{color:#fff;font-size:15px;font-weight:600;background:none;border:none;cursor:pointer;padding:8px 0;display:flex;align-items:center;gap:4px;}
+.save-btn{background:#E05A2B;color:#fff;border:none;border-radius:8px;padding:9px 22px;font-size:14px;font-weight:700;font-family:'Noto Sans KR',sans-serif;cursor:pointer;}
+.save-btn:active{opacity:.85;}
+
+.canvas-wrap{flex:1;display:flex;align-items:center;justify-content:center;background:#2a2a3e;position:relative;overflow:hidden;}
+canvas{display:block;max-width:100%;max-height:100%;}
+
+.bottom-area{flex-shrink:0;background:#1a1a2e;padding-bottom:env(safe-area-inset-bottom,0px);}
+
+.circle-menu{display:flex;justify-content:center;gap:24px;padding:14px 0 10px;}
+.cbtn{width:68px;height:68px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.07);color:#fff;font-size:11px;font-weight:600;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;}
+.cbtn.on{background:rgba(255,255,255,0.2);border-color:rgba(255,255,255,0.6);}
+.cbtn:active{transform:scale(.93);}
+.cbtn-icon{font-size:18px;line-height:1;}
+
+.panel{display:none;background:#fff;border-radius:16px 16px 0 0;padding:14px 16px 10px;position:relative;}
+.panel.show{display:block;}
+.pcls{position:absolute;right:12px;top:12px;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,0.08);border:none;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#555;}
+
+/* 스타일 패널 */
+.color-row{display:flex;gap:7px;align-items:center;margin-bottom:12px;flex-wrap:wrap;}
+.sc{width:32px;height:32px;border-radius:50%;cursor:pointer;border:2.5px solid transparent;flex-shrink:0;}
+.sc.on{border-color:#E05A2B;transform:scale(1.12);}
+.sc-custom{width:32px;height:32px;border-radius:50%;border:2px dashed #ccc;overflow:hidden;cursor:pointer;flex-shrink:0;position:relative;}
+.sc-custom input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;}
+.sc-custom-inner{width:100%;height:100%;background:conic-gradient(red,yellow,lime,cyan,blue,magenta,red);}
+
+.bg-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.bgs{aspect-ratio:1;border-radius:8px;cursor:pointer;border:2.5px solid transparent;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:rgba(255,255,255,0.85);text-shadow:0 1px 2px rgba(0,0,0,0.5);}
+.bgs.on{border-color:#E05A2B;}
+.bgs:active{transform:scale(.95);}
+
+/* 글꼴 패널 */
+.sz-row{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.sz-lbl{font-size:12px;color:#888;width:48px;flex-shrink:0;}
+.sz-val{font-size:13px;font-weight:700;color:#E05A2B;width:28px;text-align:right;flex-shrink:0;}
+input[type=range]{flex:1;accent-color:#E05A2B;}
+.font-scroll{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;}
+.font-scroll::-webkit-scrollbar{display:none;}
+.fc{flex-shrink:0;width:100px;border:1.5px solid #eee;border-radius:10px;padding:8px 6px;cursor:pointer;background:#fff;text-align:center;}
+.fc.on{border-color:#E05A2B;background:#FFF5F2;}
+.fc:active{transform:scale(.97);}
+.fc-nm{font-size:9px;color:#aaa;margin-bottom:4px;}
+.fc-sp{font-size:14px;color:#1a1a1a;line-height:1.3;}
+
+/* 글자색/정렬 패널 */
+.align-row{display:flex;gap:8px;margin-bottom:12px;}
+.abtn{flex:1;height:36px;border-radius:8px;border:1.5px solid #ddd;background:#fff;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.abtn.on{border-color:#E05A2B;background:#FFF5F2;}
+.tc{width:32px;height:32px;border-radius:50%;cursor:pointer;border:2.5px solid transparent;flex-shrink:0;}
+.tc.on{border-color:#E05A2B;transform:scale(1.12);}
+.tc-custom{width:32px;height:32px;border-radius:50%;border:2px dashed #ccc;overflow:hidden;cursor:pointer;flex-shrink:0;position:relative;}
+.tc-custom input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;}
+.tc-custom-inner{width:100%;height:100%;background:conic-gradient(red,yellow,lime,cyan,blue,magenta,red);}
 </style>
 </head>
 <body>
 
-<div class="header">
-  <button class="back-btn" onclick="location.href='./index.html'">← 홈</button>
-  <div style="flex:1;margin-left:8px">
-    <h1>표지 카드 생성기</h1>
-    <div class="header-sub">농협 전산 갤러리 구분용</div>
-  </div>
+<div class="topbar">
+  <button class="back-btn" onclick="location.href='./index.html'">← 글 쓰기</button>
+  <button class="save-btn" id="saveBtn">저장</button>
 </div>
 
-<div class="main">
-  <div class="preview-wrap"><canvas id="cv"></canvas></div>
+<div class="canvas-wrap" id="canvasWrap">
+  <canvas id="cv"></canvas>
+</div>
 
-  <div class="input-card">
-    <div class="input-row">
-      <div class="i-lbl">날짜</div>
-      <input class="text-inp" id="dateInp" type="text" placeholder="10월 27일" autocomplete="off" spellcheck="false"/>
+<div class="bottom-area">
+
+  <!-- 스타일 패널 -->
+  <div class="panel" id="panelStyle">
+    <button class="pcls" onclick="closePanel()">✕</button>
+    <div class="color-row" id="bgColorRow">
+      <div class="sc on" data-c="#4DB6AC" style="background:#4DB6AC"></div>
+      <div class="sc" data-c="#185FA5" style="background:#185FA5"></div>
+      <div class="sc" data-c="#1a6b2e" style="background:#1a6b2e"></div>
+      <div class="sc" data-c="#B71C1C" style="background:#B71C1C"></div>
+      <div class="sc" data-c="#E65100" style="background:#E65100"></div>
+      <div class="sc" data-c="#37474F" style="background:#37474F"></div>
+      <div class="sc" data-c="#212121" style="background:#212121"></div>
+      <div class="sc" data-c="#ffffff" style="background:#fff;border-color:#ddd"></div>
+      <div class="sc-custom"><div class="sc-custom-inner"></div><input type="color" id="bgCustom" value="#4DB6AC"/></div>
     </div>
-    <div class="input-row">
-      <div class="i-lbl">순번</div>
-      <div class="seq-ctrl">
-        <button class="sq-btn" id="minus">−</button>
-        <input class="seq-num-inp" id="seqInp" type="text" inputmode="numeric" autocomplete="off"/>
-        <button class="sq-btn" id="plus">+</button>
-        <span class="seq-unit">번</span>
-      </div>
-    </div>
-  </div>
-
-  <button class="save-btn" id="saveBtn">이미지 저장 (갤러리)</button>
-
-  <div class="acc">
-    <div class="acc-head" onclick="toggle(this)"><span class="acc-title">글자체</span><span class="acc-arrow">▼</span></div>
-    <div class="acc-body collapsed">
-      <div class="font-grid" id="fontGrid">
-        <div class="font-btn on" data-font="'Noto Sans KR',sans-serif" data-weight="900">
-          <div class="font-name">맑은 고딕 계열</div>
-          <div class="font-sample" style="font-family:'Noto Sans KR';font-weight:900;">10월27일 1번</div>
-        </div>
-        <div class="font-btn" data-font="'Nanum Gothic',sans-serif" data-weight="800">
-          <div class="font-name">굴림 계열</div>
-          <div class="font-sample" style="font-family:'Nanum Gothic';font-weight:800;">10월27일 1번</div>
-        </div>
-        <div class="font-btn" data-font="'Noto Serif KR',serif" data-weight="900">
-          <div class="font-name">바탕 계열</div>
-          <div class="font-sample" style="font-family:'Noto Serif KR';font-weight:900;">10월27일 1번</div>
-        </div>
-        <div class="font-btn" data-font="'Nanum Myeongjo',serif" data-weight="800">
-          <div class="font-name">나눔명조 계열</div>
-          <div class="font-sample" style="font-family:'Nanum Myeongjo';font-weight:800;">10월27일 1번</div>
-        </div>
-        <div class="font-btn" data-font="'Black Han Sans',sans-serif" data-weight="400">
-          <div class="font-name">HY헤드라인 계열</div>
-          <div class="font-sample" style="font-family:'Black Han Sans';">10월27일 1번</div>
-        </div>
-        <div class="font-btn" data-font="'Jua',sans-serif" data-weight="400">
-          <div class="font-name">HY강B 계열</div>
-          <div class="font-sample" style="font-family:'Jua';">10월27일 1번</div>
-        </div>
-      </div>
+    <div class="bg-grid" id="bgGrid">
+      <div class="bgs on" data-bg="solid">단색</div>
+      <div class="bgs" data-bg="grid" style="background:#4a7c8a;background-image:linear-gradient(rgba(255,255,255,.18) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.18) 1px,transparent 1px);background-size:18px 18px;">격자</div>
+      <div class="bgs" data-bg="g1" style="background:linear-gradient(135deg,#667eea,#764ba2)">보라</div>
+      <div class="bgs" data-bg="g2" style="background:linear-gradient(135deg,#f093fb,#f5576c)">핑크</div>
+      <div class="bgs" data-bg="g3" style="background:linear-gradient(135deg,#4facfe,#00f2fe)">하늘</div>
+      <div class="bgs" data-bg="g4" style="background:linear-gradient(135deg,#43e97b,#38f9d7)">민트</div>
+      <div class="bgs" data-bg="g5" style="background:linear-gradient(135deg,#fa709a,#fee140)">석양</div>
+      <div class="bgs" data-bg="g6" style="background:linear-gradient(135deg,#30cfd0,#330867)">딥씨</div>
     </div>
   </div>
 
-  <div class="acc">
-    <div class="acc-head" onclick="toggle(this)"><span class="acc-title">배경색</span><span class="acc-arrow">▼</span></div>
-    <div class="acc-body collapsed">
-      <div class="color-row">
-        <div class="c-lbl">색상</div>
-        <div class="swatches" id="bgSwatches">
-          <div class="sw on" data-c="#1a6b2e" style="background:#1a6b2e"></div>
-          <div class="sw" data-c="#185FA5" style="background:#185FA5"></div>
-          <div class="sw" data-c="#B71C1C" style="background:#B71C1C"></div>
-          <div class="sw" data-c="#E65100" style="background:#E65100"></div>
-          <div class="sw" data-c="#4A148C" style="background:#4A148C"></div>
-          <div class="sw" data-c="#212121" style="background:#212121"></div>
-          <div class="sw" data-c="#ffffff" style="background:#fff;border-color:#ccc"></div>
-          <div class="sw" data-c="#F5F0E8" style="background:#F5F0E8;border-color:#ccc"></div>
-        </div>
-        <input type="color" class="color-pick" id="bgPicker" value="#1a6b2e"/>
-      </div>
+  <!-- 글꼴 패널 -->
+  <div class="panel" id="panelFont">
+    <button class="pcls" onclick="closePanel()">✕</button>
+    <div class="sz-row">
+      <span class="sz-lbl">날짜 크기</span>
+      <input type="range" id="dateSzR" min="20" max="160" value="60" step="2"/>
+      <span class="sz-val" id="dateSzV">60</span>
+    </div>
+    <div class="sz-row">
+      <span class="sz-lbl">순번 크기</span>
+      <input type="range" id="seqSzR" min="40" max="300" value="160" step="4"/>
+      <span class="sz-val" id="seqSzV">160</span>
+    </div>
+    <div class="font-scroll" id="fontScroll">
+      <div class="fc on" data-font="'Noto Sans KR',sans-serif" data-w="900"><div class="fc-nm">맑은고딕</div><div class="fc-sp" style="font-family:'Noto Sans KR';font-weight:900;">4월29일<br>3번</div></div>
+      <div class="fc" data-font="'Nanum Gothic',sans-serif" data-w="800"><div class="fc-nm">굴림</div><div class="fc-sp" style="font-family:'Nanum Gothic';font-weight:800;">4월29일<br>3번</div></div>
+      <div class="fc" data-font="'Noto Serif KR',serif" data-w="900"><div class="fc-nm">바탕</div><div class="fc-sp" style="font-family:'Noto Serif KR';font-weight:900;">4월29일<br>3번</div></div>
+      <div class="fc" data-font="'Nanum Myeongjo',serif" data-w="800"><div class="fc-nm">명조</div><div class="fc-sp" style="font-family:'Nanum Myeongjo';font-weight:800;">4월29일<br>3번</div></div>
+      <div class="fc" data-font="'Black Han Sans',sans-serif" data-w="400"><div class="fc-nm">HY헤드라인</div><div class="fc-sp" style="font-family:'Black Han Sans';">4월29일<br>3번</div></div>
+      <div class="fc" data-font="'Jua',sans-serif" data-w="400"><div class="fc-nm">HY강B</div><div class="fc-sp" style="font-family:'Jua';">4월29일<br>3번</div></div>
     </div>
   </div>
 
-  <div class="acc">
-    <div class="acc-head" onclick="toggle(this)"><span class="acc-title">글자색</span><span class="acc-arrow">▼</span></div>
-    <div class="acc-body collapsed">
-      <div class="color-row">
-        <div class="c-lbl">색상</div>
-        <div class="swatches" id="txtSwatches">
-          <div class="sw on" data-c="#ffffff" style="background:#fff;border-color:#ccc"></div>
-          <div class="sw" data-c="#212121" style="background:#212121"></div>
-          <div class="sw" data-c="#FFD600" style="background:#FFD600"></div>
-          <div class="sw" data-c="#FF6F00" style="background:#FF6F00"></div>
-          <div class="sw" data-c="#185FA5" style="background:#185FA5"></div>
-          <div class="sw" data-c="#B71C1C" style="background:#B71C1C"></div>
-        </div>
-        <input type="color" class="color-pick" id="txtPicker" value="#ffffff"/>
-      </div>
+  <!-- 글자색/정렬 패널 -->
+  <div class="panel" id="panelColor">
+    <button class="pcls" onclick="closePanel()">✕</button>
+    <div class="align-row" id="alignRow">
+      <button class="abtn on" data-a="left">☰</button>
+      <button class="abtn" data-a="center">≡</button>
+      <button class="abtn" data-a="right">↦</button>
+    </div>
+    <div class="color-row" id="txtColorRow">
+      <div class="tc on" data-c="#ffffff" style="background:#fff;border-color:#ddd"></div>
+      <div class="tc" data-c="#212121" style="background:#212121"></div>
+      <div class="tc" data-c="#FFD600" style="background:#FFD600"></div>
+      <div class="tc" data-c="#FF6F00" style="background:#FF6F00"></div>
+      <div class="tc" data-c="#E05A2B" style="background:#E05A2B"></div>
+      <div class="tc" data-c="#185FA5" style="background:#185FA5"></div>
+      <div class="tc" data-c="#1a6b2e" style="background:#1a6b2e"></div>
+      <div class="tc-custom"><div class="tc-custom-inner"></div><input type="color" id="txtCustom" value="#ffffff"/></div>
     </div>
   </div>
 
-  <div class="acc">
-    <div class="acc-head" onclick="toggle(this)"><span class="acc-title">글자 크기</span><span class="acc-arrow">▼</span></div>
-    <div class="acc-body collapsed">
-      <div class="slider-row">
-        <div class="s-lbl">날짜</div>
-        <input type="range" id="dateSz" min="30" max="200" value="80" step="5"/>
-        <div class="s-val" id="dateSzVal">80</div>
-      </div>
-      <div class="slider-row">
-        <div class="s-lbl">순번</div>
-        <input type="range" id="seqSz" min="100" max="700" value="500" step="5"/>
-        <div class="s-val" id="seqSzVal">500</div>
-      </div>
+  <!-- 원형 메뉴 -->
+  <div class="circle-menu">
+    <div class="cbtn" id="cbtnStyle" onclick="togglePanel('panelStyle','cbtnStyle')">
+      <span class="cbtn-icon">🎨</span><span>스타일</span>
+    </div>
+    <div class="cbtn" id="cbtnFont" onclick="togglePanel('panelFont','cbtnFont')">
+      <span class="cbtn-icon">✏️</span><span>글꼴&크기</span>
+    </div>
+    <div class="cbtn" id="cbtnColor" onclick="togglePanel('panelColor','cbtnColor')">
+      <span class="cbtn-icon">🖊</span><span>글자색&정렬</span>
     </div>
   </div>
 
 </div>
-
-<nav class="bottom-nav">
-  <button class="nav-item on">
-    <div class="nav-icon">📋</div>
-    <span class="nav-label">표지카드</span>
-  </button>
-</nav>
 
 <script>
-function toggle(h){
-  const b=h.nextElementSibling,a=h.querySelector('.acc-arrow'),o=!b.classList.contains('collapsed');
-  b.classList.toggle('collapsed',o);a.classList.toggle('open',!o);
-}
-const dateInp=document.getElementById('dateInp');
-const seqInp=document.getElementById('seqInp');
+/* ── 상태 ── */
+const LS='ccv3';
+function load(){try{return JSON.parse(localStorage.getItem(LS))||{};}catch(e){return {};}}
+function save(){try{localStorage.setItem(LS,JSON.stringify({bgColor,bgType,txtColor,dateSz,seqSz,curFont,curWeight,align,tx,ty}));}catch(e){}}
+
+const _s=load();
+let bgColor  = _s.bgColor  ||'#4DB6AC';
+let bgType   = _s.bgType   ||'solid';
+let txtColor = _s.txtColor ||'#ffffff';
+let dateSz   = _s.dateSz   ||60;
+let seqSz    = _s.seqSz    ||160;
+let curFont  = _s.curFont  ||"'Noto Sans KR',sans-serif";
+let curWeight= _s.curWeight||'900';
+let align    = _s.align    ||'center';
+let tx, ty;  /* 캔버스 좌표로 초기화는 draw 후 */
+
+/* ── 캔버스 ── */
 const cv=document.getElementById('cv');
 const ctx=cv.getContext('2d');
-const saveBtn=document.getElementById('saveBtn');
-const bgPicker=document.getElementById('bgPicker');
-const txtPicker=document.getElementById('txtPicker');
-const dateSzSlider=document.getElementById('dateSz');
-const seqSzSlider=document.getElementById('seqSz');
-const dateSzVal=document.getElementById('dateSzVal');
-const seqSzVal=document.getElementById('seqSzVal');
 const W=900,H=900;
 cv.width=W;cv.height=H;
 
-/* ── localStorage 설정 저장/복원 ── */
-const LS='coverCardSettings';
-function loadSettings(){try{return JSON.parse(localStorage.getItem(LS))||{};}catch(e){return {};}}
-function saveSettings(){
-  try{
-    localStorage.setItem(LS,JSON.stringify({
-      bgColor,txtColor,dateSz,seqSz,curFont,curWeight,dateX,dateY
-    }));
-  }catch(e){}
-}
-const _s=loadSettings();
-let bgColor  = _s.bgColor  ||'#1a6b2e';
-let txtColor = _s.txtColor ||'#ffffff';
-let dateSz   = _s.dateSz   ||80;
-let seqSz    = _s.seqSz    ||500;
-let curFont  = _s.curFont  ||"'Noto Sans KR',sans-serif";
-let curWeight= _s.curWeight||'900';
-let dateX    = _s.dateX    ||(W-Math.round(W*0.06));
-let dateY    = _s.dateY    ||Math.round(H*0.1);
-let dragging = false;
+function todayLabel(){const d=new Date();return(d.getMonth()+1)+'월'+d.getDate()+'일';}
+let dateText=todayLabel();
+let seqText='1번';
 
-function todayLabel(){const d=new Date();return(d.getMonth()+1)+'월 '+d.getDate()+'일';}
-dateInp.value=todayLabel();seqInp.value='1';
+/* 드래그 상태 */
+let dragging=false;
+let dragOffX=0,dragOffY=0;
+
+/* 텍스트 박스 크기 (draw 후 채움) */
+let boxW=0,boxH=0;
+
+function getGrad(type,w,h){
+  const presets={
+    g1:['#667eea','#764ba2'],
+    g2:['#f093fb','#f5576c'],
+    g3:['#4facfe','#00f2fe'],
+    g4:['#43e97b','#38f9d7'],
+    g5:['#fa709a','#fee140'],
+    g6:['#30cfd0','#330867'],
+  };
+  if(!presets[type]) return null;
+  const g=ctx.createLinearGradient(0,0,w,h);
+  g.addColorStop(0,presets[type][0]);
+  g.addColorStop(1,presets[type][1]);
+  return g;
+}
 
 function draw(){
-  ctx.fillStyle=bgColor;ctx.fillRect(0,0,W,H);
+  /* 배경 */
+  const grad=getGrad(bgType,W,H);
+  if(grad){
+    ctx.fillStyle=grad; ctx.fillRect(0,0,W,H);
+  } else if(bgType==='grid'){
+    ctx.fillStyle=bgColor; ctx.fillRect(0,0,W,H);
+    ctx.strokeStyle='rgba(255,255,255,0.18)'; ctx.lineWidth=1;
+    const gs=Math.round(W/30);
+    for(let x=0;x<=W;x+=gs){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+    for(let y=0;y<=H;y+=gs){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  } else {
+    ctx.fillStyle=bgColor; ctx.fillRect(0,0,W,H);
+  }
+
+  /* 텍스트 정렬 기준 */
+  const lineGap=Math.round(seqSz*0.18);
+  const totalH=dateSz+lineGap+seqSz;
+
+  /* tx,ty 초기화 (처음 또는 저장값 복원) */
+  if(tx===undefined) tx = _s.tx!==undefined ? _s.tx : W/2;
+  if(ty===undefined) ty = _s.ty!==undefined ? _s.ty : H/2;
+
+  /* 정렬에 따른 x 기준 */
+  let ax=tx;
+  ctx.textAlign=align==='left'?'left':align==='right'?'right':'center';
+  ctx.textBaseline='middle';
   ctx.fillStyle=txtColor;
 
   /* 날짜 */
   ctx.font=curWeight+' '+dateSz+'px '+curFont;
-  ctx.textAlign='right';
-  ctx.textBaseline='alphabetic';
-  ctx.fillText(dateInp.value||'날짜', dateX, dateY);
+  const dateY=ty-totalH/2+dateSz/2;
+  ctx.fillText(dateText, ax, dateY);
 
-  /* 드래그 중 핸들 표시 */
-  if(dragging){
-    ctx.strokeStyle='rgba(255,255,255,0.6)';
-    ctx.lineWidth=2;
-    ctx.setLineDash([6,4]);
-    const m = ctx.measureText(dateInp.value||'날짜');
-    const tw = m.width;
-    ctx.strokeRect(dateX-tw-6, dateY-dateSz-4, tw+12, dateSz+12);
-    ctx.setLineDash([]);
-  }
-
-  /* 순번 — 정중앙 */
-  const sT=seqInp.value||'?';
+  /* 순번 */
   ctx.font=curWeight+' '+seqSz+'px '+curFont;
-  ctx.textAlign='center';
-  ctx.textBaseline='middle';
-  ctx.fillText(sT, W/2, H/2);
-}
+  const seqY=ty+totalH/2-seqSz/2;
+  ctx.fillText(seqText, ax, seqY);
 
-/* 캔버스 → 내부 좌표 변환 */
-function toCanvasXY(clientX, clientY){
-  const rect = cv.getBoundingClientRect();
-  const scaleX = W / rect.width;
-  const scaleY = H / rect.height;
-  return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY };
-}
-
-/* 날짜 텍스트 히트 테스트 */
-function hitDate(x, y){
+  /* 박스 크기 계산 (히트테스트용) */
   ctx.font=curWeight+' '+dateSz+'px '+curFont;
-  const tw = ctx.measureText(dateInp.value||'날짜').width;
-  return x >= dateX-tw-10 && x <= dateX+10 && y >= dateY-dateSz-10 && y <= dateY+16;
+  const dw=ctx.measureText(dateText).width;
+  ctx.font=curWeight+' '+seqSz+'px '+curFont;
+  const sw=ctx.measureText(seqText).width;
+  boxW=Math.max(dw,sw)+40;
+  boxH=totalH+40;
 }
 
-/* 마우스 */
-cv.addEventListener('mousedown', e=>{
-  const p=toCanvasXY(e.clientX,e.clientY);
-  if(hitDate(p.x,p.y)){ dragging=true; cv.style.cursor='grabbing'; }
-});
-cv.addEventListener('mousemove', e=>{
-  const p=toCanvasXY(e.clientX,e.clientY);
-  if(dragging){ dateX=p.x; dateY=p.y; draw(); }
-  else{ cv.style.cursor=hitDate(p.x,p.y)?'grab':'default'; }
-});
-cv.addEventListener('mouseup', ()=>{ dragging=false; cv.style.cursor='default'; saveSettings(); draw(); });
+document.fonts.ready.then(()=>{setTimeout(draw,100);});
 
-/* 터치 */
-cv.addEventListener('touchstart', e=>{
-  const t=e.touches[0], p=toCanvasXY(t.clientX,t.clientY);
-  if(hitDate(p.x,p.y)){ dragging=true; e.preventDefault(); }
+/* ── 입력: 날짜/순번 탭해서 편집 ── */
+cv.addEventListener('dblclick', e=>{
+  const p=toCV(e.clientX,e.clientY);
+  if(hitBox(p.x,p.y)){
+    const v=prompt('날짜와 순번을 입력\n예) 4월29일, 3번',dateText+'\n'+seqText);
+    if(v!==null){
+      const lines=v.split('\n');
+      if(lines[0]) dateText=lines[0].trim();
+      if(lines[1]) seqText=lines[1].trim();
+      draw(); save();
+    }
+  }
+});
+
+/* ── 드래그 이동 ── */
+function toCV(cx,cy){
+  const r=cv.getBoundingClientRect();
+  return {x:(cx-r.left)*(W/r.width), y:(cy-r.top)*(H/r.height)};
+}
+function hitBox(x,y){
+  const hx=align==='center'?tx:align==='left'?tx:tx;
+  return Math.abs(x-tx)<boxW/2+10 && Math.abs(y-ty)<boxH/2+10;
+}
+
+cv.addEventListener('touchstart',e=>{
+  const t=e.touches[0],p=toCV(t.clientX,t.clientY);
+  if(hitBox(p.x,p.y)){dragging=true;dragOffX=p.x-tx;dragOffY=p.y-ty;e.preventDefault();}
 },{passive:false});
-cv.addEventListener('touchmove', e=>{
-  if(!dragging) return;
+cv.addEventListener('touchmove',e=>{
+  if(!dragging)return;
   e.preventDefault();
-  const t=e.touches[0], p=toCanvasXY(t.clientX,t.clientY);
-  dateX=p.x; dateY=p.y; draw();
+  const t=e.touches[0],p=toCV(t.clientX,t.clientY);
+  tx=Math.max(50,Math.min(W-50,p.x-dragOffX));
+  ty=Math.max(50,Math.min(H-50,p.y-dragOffY));
+  draw();
 },{passive:false});
-cv.addEventListener('touchend', ()=>{ dragging=false; saveSettings(); draw(); });
+cv.addEventListener('touchend',()=>{if(dragging){dragging=false;save();}});
 
-document.fonts.ready.then(()=>{setTimeout(draw,120);});
-dateInp.addEventListener('input',draw);seqInp.addEventListener('input',draw);
-document.getElementById('minus').addEventListener('click',()=>{let v=parseInt(seqInp.value)||1;if(v>1){seqInp.value=v-1;}draw();});
-document.getElementById('plus').addEventListener('click',()=>{let v=parseInt(seqInp.value)||0;seqInp.value=v+1;draw();});
-/* 저장된 설정으로 UI 복원 */
-bgPicker.value=bgColor;
-txtPicker.value=txtColor;
-dateSzSlider.value=dateSz; dateSzVal.textContent=dateSz;
-seqSzSlider.value=seqSz;  seqSzVal.textContent=seqSz;
-document.getElementById('fontGrid').querySelectorAll('.font-btn').forEach(b=>{
-  if(b.dataset.font===curFont&&b.dataset.weight===curWeight) b.classList.add('on');
-  else b.classList.remove('on');
+cv.addEventListener('mousedown',e=>{
+  const p=toCV(e.clientX,e.clientY);
+  if(hitBox(p.x,p.y)){dragging=true;dragOffX=p.x-tx;dragOffY=p.y-ty;cv.style.cursor='grabbing';}
 });
-['bgSwatches','txtSwatches'].forEach(cid=>{
-  document.getElementById(cid).querySelectorAll('.sw').forEach(sw=>{
-    const isActive=(cid==='bgSwatches'&&sw.dataset.c===bgColor)||(cid==='txtSwatches'&&sw.dataset.c===txtColor);
-    sw.classList.toggle('on',isActive);
-  });
+cv.addEventListener('mousemove',e=>{
+  const p=toCV(e.clientX,e.clientY);
+  if(dragging){tx=Math.max(50,Math.min(W-50,p.x-dragOffX));ty=Math.max(50,Math.min(H-50,p.y-dragOffY));draw();}
+  else{cv.style.cursor=hitBox(p.x,p.y)?'grab':'default';}
 });
+cv.addEventListener('mouseup',()=>{if(dragging){dragging=false;cv.style.cursor='default';save();}});
 
-document.getElementById('fontGrid').querySelectorAll('.font-btn').forEach(btn=>{
-  btn.addEventListener('click',function(){
-    document.getElementById('fontGrid').querySelectorAll('.font-btn').forEach(b=>b.classList.remove('on'));
-    this.classList.add('on');curFont=this.dataset.font;curWeight=this.dataset.weight;
-    saveSettings();
-    document.fonts.ready.then(()=>{setTimeout(draw,80);});
-  });
-});
-function setupSwatches(cid,picker,setter){
-  document.getElementById(cid).querySelectorAll('.sw').forEach(sw=>{
-    sw.addEventListener('click',function(){
-      document.getElementById(cid).querySelectorAll('.sw').forEach(s=>s.classList.remove('on'));
-      this.classList.add('on');picker.value=this.dataset.c;setter(this.dataset.c);saveSettings();draw();
-    });
-  });
-  picker.addEventListener('input',function(){
-    document.getElementById(cid).querySelectorAll('.sw').forEach(s=>s.classList.remove('on'));
-    setter(this.value);saveSettings();draw();
-  });
+/* ── 패널 토글 ── */
+function togglePanel(pid,bid){
+  const showing=document.getElementById(pid).classList.contains('show');
+  closePanel();
+  if(!showing){
+    document.getElementById(pid).classList.add('show');
+    document.getElementById(bid).classList.add('on');
+  }
 }
-setupSwatches('bgSwatches',bgPicker,v=>{bgColor=v;});
-setupSwatches('txtSwatches',txtPicker,v=>{txtColor=v;});
-dateSzSlider.addEventListener('input',function(){dateSz=+this.value;dateSzVal.textContent=this.value;saveSettings();draw();});
-seqSzSlider.addEventListener('input',function(){seqSz=+this.value;seqSzVal.textContent=this.value;saveSettings();draw();});
-saveBtn.addEventListener('click',()=>{
-  dragging=false;
-  document.fonts.ready.then(()=>{setTimeout(()=>{
-    draw();setTimeout(()=>{
-      const dv=(dateInp.value||'date').replace(/\s/g,'');
-      const sv=seqInp.value||'1';
-      const a=document.createElement('a');
-      a.href=cv.toDataURL('image/jpeg',0.96);
-      a.download=dv+'_'+sv+'번.jpg';a.click();
-      saveBtn.textContent='저장 완료 ✓';
-      setTimeout(()=>{saveBtn.textContent='이미지 저장 (갤러리)';},1600);
-    },100);
-  },80);});
+function closePanel(){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('show'));
+  document.querySelectorAll('.cbtn').forEach(b=>b.classList.remove('on'));
+}
+
+/* ── 배경색 스와치 ── */
+document.getElementById('bgColorRow').querySelectorAll('.sc').forEach(el=>{
+  el.addEventListener('click',function(){
+    document.getElementById('bgColorRow').querySelectorAll('.sc').forEach(s=>s.classList.remove('on'));
+    this.classList.add('on');
+    bgColor=this.dataset.c;
+    document.getElementById('bgCustom').value=bgColor;
+    draw();save();
+  });
 });
-/* 서비스워커 */
-if('serviceWorker' in navigator){
+document.getElementById('bgCustom').addEventListener('input',function(){
+  document.getElementById('bgColorRow').querySelectorAll('.sc').forEach(s=>s.classList.remove('on'));
+  bgColor=this.value; draw(); save();
+});
+
+/* ── 배경 타입 ── */
+document.getElementById('bgGrid').querySelectorAll('.bgs').forEach(el=>{
+  el.addEventListener('click',function(){
+    document.getElementById('bgGrid').querySelectorAll('.bgs').forEach(s=>s.classList.remove('on'));
+    this.classList.add('on');
+    bgType=this.dataset.bg; draw(); save();
+  });
+});
+
+/* ── 글꼴 슬라이더 ── */
+document.getElementById('dateSzR').addEventListener('input',function(){
+  dateSz=+this.value; document.getElementById('dateSzV').textContent=this.value; draw(); save();
+});
+document.getElementById('seqSzR').addEventListener('input',function(){
+  seqSz=+this.value; document.getElementById('seqSzV').textContent=this.value; draw(); save();
+});
+
+/* ── 글꼴 선택 ── */
+document.getElementById('fontScroll').querySelectorAll('.fc').forEach(el=>{
+  el.addEventListener('click',function(){
+    document.getElementById('fontScroll').querySelectorAll('.fc').forEach(f=>f.classList.remove('on'));
+    this.classList.add('on');
+    curFont=this.dataset.font; curWeight=this.dataset.w;
+    document.fonts.ready.then(()=>{setTimeout(()=>{draw();save();},60);});
+  });
+});
+
+/* ── 정렬 ── */
+document.getElementById('alignRow').querySelectorAll('.abtn').forEach(el=>{
+  el.addEventListener('click',function(){
+    document.getElementById('alignRow').querySelectorAll('.abtn').forEach(b=>b.classList.remove('on'));
+    this.classList.add('on'); align=this.dataset.a; draw(); save();
+  });
+});
+
+/* ── 글자색 ── */
+document.getElementById('txtColorRow').querySelectorAll('.tc').forEach(el=>{
+  el.addEventListener('click',function(){
+    document.getElementById('txtColorRow').querySelectorAll('.tc').forEach(s=>s.classList.remove('on'));
+    this.classList.add('on'); txtColor=this.dataset.c;
+    document.getElementById('txtCustom').value=txtColor;
+    draw(); save();
+  });
+});
+document.getElementById('txtCustom').addEventListener('input',function(){
+  document.getElementById('txtColorRow').querySelectorAll('.tc').forEach(s=>s.classList.remove('on'));
+  txtColor=this.value; draw(); save();
+});
+
+/* ── 저장 ── */
+document.getElementById('saveBtn').addEventListener('click',()=>{
+  dragging=false;
+  document.fonts.ready.then(()=>{
+    setTimeout(()=>{
+      draw();
+      setTimeout(()=>{
+        const a=document.createElement('a');
+        a.href=cv.toDataURL('image/jpeg',0.96);
+        const dl=dateText.replace(/\s/g,'')+'_'+seqText.replace(/\s/g,'')+'.jpg';
+        a.download=dl; a.click();
+        document.getElementById('saveBtn').textContent='완료 ✓';
+        setTimeout(()=>{document.getElementById('saveBtn').textContent='저장';},1600);
+      },80);
+    },80);
+  });
+});
+
+/* ── 저장값으로 UI 복원 ── */
+(function restoreUI(){
+  const r=document.getElementById('dateSzR');
+  r.value=dateSz; document.getElementById('dateSzV').textContent=dateSz;
+  const r2=document.getElementById('seqSzR');
+  r2.value=seqSz; document.getElementById('seqSzV').textContent=seqSz;
+  document.getElementById('bgCustom').value=bgColor;
+  document.getElementById('txtCustom').value=txtColor;
+  document.getElementById('bgColorRow').querySelectorAll('.sc').forEach(s=>{
+    s.classList.toggle('on',s.dataset.c===bgColor);
+  });
+  document.getElementById('bgGrid').querySelectorAll('.bgs').forEach(s=>{
+    s.classList.toggle('on',s.dataset.bg===bgType);
+  });
+  document.getElementById('fontScroll').querySelectorAll('.fc').forEach(f=>{
+    f.classList.toggle('on',f.dataset.font===curFont);
+  });
+  document.getElementById('alignRow').querySelectorAll('.abtn').forEach(b=>{
+    b.classList.toggle('on',b.dataset.a===align);
+  });
+  document.getElementById('txtColorRow').querySelectorAll('.tc').forEach(s=>{
+    s.classList.toggle('on',s.dataset.c===txtColor);
+  });
+})();
+
+if('serviceWorker' in navigator && (location.hostname.endsWith('github.io') || location.hostname==='localhost')){
   navigator.serviceWorker.register('./sw.js').catch(()=>{});
 }
 </script>

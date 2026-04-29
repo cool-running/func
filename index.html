@@ -8,7 +8,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="표지카드">
+<meta name="apple-mobile-web-app-title" content="손해평가">
 <title>표지 카드 생성기</title>
 <link rel="manifest" href="./manifest.json">
 <link rel="apple-touch-icon" href="./icon-192.png">
@@ -143,7 +143,7 @@ body{
 <nav class="bottom-nav">
   <button class="nav-item on" onclick="location.href='./cover_card.html'">
     <div class="nav-icon">📋</div>
-    <span>표지카드</span>
+    <span>손해평가</span>
   </button>
 </nav>
 
@@ -189,10 +189,9 @@ if (!isStandalone) {
   });
 }
 
-/* ── 서비스워커 등록 ── */
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js')
-    .catch(e => console.log('SW 등록 실패:', e));
+/* ── 서비스워커 등록 (GitHub Pages / localhost 전용) ── */
+if ('serviceWorker' in navigator && (location.hostname.endsWith('github.io') || location.hostname === 'localhost')) {
+  navigator.serviceWorker.register('./sw.js').catch(()=>{});
 }
 </script>
 </body>

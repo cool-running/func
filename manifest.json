@@ -1,6 +1,6 @@
 {
-  "name": "표지 카드 생성기",
-  "short_name": "표지카드",
+  "name": "손해평가",
+  "short_name": "손해평가",
   "description": "농협 전산 갤러리 구분용 표지 카드 생성기",
   "start_url": "./index.html",
   "display": "standalone",
