@@ -177,19 +177,42 @@ kakao.maps.load(function(){
   map.addControl(new kakao.maps.ZoomControl(), kakao.maps.ControlPosition.RIGHT);
 
   // 지도 클릭 → 선택 위치
-  // 모바일 터치 탭 이벤트
-  kakao.maps.event.addListener(map, 'tap', function(mouseEvent){
-    const latlng = mouseEvent.latLng;
-    setSelMarker(latlng.getLat(), latlng.getLng());
-    switchTab('sel');
-  });
-  // PC 클릭 이벤트
+  // 클릭/터치 통합 이벤트
   kakao.maps.event.addListener(map, 'click', function(mouseEvent){
     const latlng = mouseEvent.latLng;
     setSelMarker(latlng.getLat(), latlng.getLng());
-    // 선택 탭으로 자동 전환
     switchTab('sel');
   });
+
+  // 모바일 터치 직접 처리
+  const mapDiv = document.getElementById('map');
+  let touchStartTime = 0;
+  let touchStartX = 0, touchStartY = 0;
+
+  mapDiv.addEventListener('touchstart', function(e){
+    touchStartTime = Date.now();
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+  }, {passive:true});
+
+  mapDiv.addEventListener('touchend', function(e){
+    const dt = Date.now() - touchStartTime;
+    const dx = Math.abs(e.changedTouches[0].clientX - touchStartX);
+    const dy = Math.abs(e.changedTouches[0].clientY - touchStartY);
+    // 탭 판정: 300ms 이내, 10px 이내 이동
+    if(dt < 300 && dx < 10 && dy < 10){
+      const touch = e.changedTouches[0];
+      const rect = mapDiv.getBoundingClientRect();
+      const proj = map.getProjection();
+      const point = new kakao.maps.Point(
+        touch.clientX - rect.left,
+        touch.clientY - rect.top
+      );
+      const latlng = proj.coordsFromContainerPoint(point);
+      setSelMarker(latlng.getLat(), latlng.getLng());
+      switchTab('sel');
+    }
+  }, {passive:true});
 
   getLocation();
 });
