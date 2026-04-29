@@ -174,6 +174,13 @@ kakao.maps.load(function(){
 
   map.addControl(new kakao.maps.ZoomControl(), kakao.maps.ControlPosition.RIGHT);
 
+  // 지적도 레이어 기본 ON
+  map.addOverlayMapTypeId(kakao.maps.MapTypeId.USE_DISTRICT);
+  parcelLayerOn = true;
+  document.getElementById('parcelBtn').textContent = '🏘 지적도 OFF';
+  document.getElementById('parcelBtn').style.background = '#185FA5';
+  document.getElementById('parcelBtn').style.color = '#fff';
+
   // 지도 클릭 → 필지 선택
   kakao.maps.event.addListener(map, 'click', function(mouseEvent){
     const latlng = mouseEvent.latLng;
@@ -182,6 +189,43 @@ kakao.maps.load(function(){
 
   getLocation();
 });
+
+/* ── 폴리곤 하이라이트 ── */
+let highlightPolygon = null;
+
+function highlightParcel(lat, lng){
+  // 기존 하이라이트 제거
+  if(highlightPolygon){ highlightPolygon.setMap(null); highlightPolygon = null; }
+
+  // vworld WFS로 필지 폴리곤 가져오기
+  const url = `https://api.vworld.kr/req/data?service=data&request=GetFeature`
+    + `&data=LT_C_UFPRD&key=${VWORLD_KEY}&domain=https://cool-running.github.io/func`
+    + `&geometry=true&attribute=true&crs=EPSG:4326`
+    + `&geomFilter=POINT(${lng}%20${lat})&size=1`;
+
+  fetch(url)
+    .then(r => r.json())
+    .then(data => {
+      if(!data.response || data.response.status !== 'OK') return;
+      const features = data.response.result?.featureCollection?.features;
+      if(!features || !features.length) return;
+      const geom = features[0].geometry;
+      let coords = geom.type === 'Polygon' ? geom.coordinates[0]
+                 : geom.type === 'MultiPolygon' ? geom.coordinates[0][0] : [];
+      if(!coords.length) return;
+      const path = coords.map(c => new kakao.maps.LatLng(c[1], c[0]));
+      highlightPolygon = new kakao.maps.Polygon({
+        map: map,
+        path: path,
+        strokeWeight: 3,
+        strokeColor: '#E53935',
+        strokeOpacity: 1,
+        fillColor: '#FF6B6B',
+        fillOpacity: 0.35
+      });
+    })
+    .catch(() => {});
+}
 
 /* ── 지도 탭 처리 ── */
 function onMapTap(lat, lng){
@@ -197,6 +241,7 @@ function onMapTap(lat, lng){
   document.getElementById('selJibun').textContent='주소 확인 중...';
   document.getElementById('selRoad').textContent='—';
   showToast('📍 필지 확인 중...');
+  highlightParcel(lat, lng);
 
   // 카카오 역지오코딩
   geocoder.coord2Address(lng, lat, (result, status)=>{
