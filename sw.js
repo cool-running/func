@@ -1,4 +1,4 @@
-const CACHE = 'sonhae-v5';
+const CACHE = 'sonhae-v6';
 const ASSETS = [
   './',
   './index.html',
