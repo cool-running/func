@@ -261,7 +261,7 @@ function getGrad(type){
   return g;
 }
 
-/* ── 그리기 — 상단 50%: 날짜 / 하단 50%: 번호 ── */
+/* ── 그리기 — 원래 레이아웃 복원 ── */
 function draw(){
   /* 배경 */
   const grad=getGrad(bgType);
@@ -277,27 +277,24 @@ function draw(){
     ctx.fillStyle=bgColor; ctx.fillRect(0,0,W,H);
   }
 
-  /* 중간 구분선 */
-  ctx.save();
-  ctx.strokeStyle='rgba(255,255,255,0.2)';
-  ctx.lineWidth=2;
-  ctx.setLineDash([12,10]);
-  ctx.beginPath(); ctx.moveTo(40,H/2); ctx.lineTo(W-40,H/2); ctx.stroke();
-  ctx.restore();
-
   /* 텍스트 */
-  const ax = align==='left' ? 60 : align==='right' ? W-60 : W/2;
+  const lineGap = Math.round(seqSz*0.18);
+  const totalH  = dateSz + lineGap + seqSz;
+  const cx = W/2;
+  const cy = H/2;
+
+  const ax = align==='left' ? 60 : align==='right' ? W-60 : cx;
   ctx.textAlign    = align;
   ctx.textBaseline = 'middle';
   ctx.fillStyle    = txtColor;
 
-  /* 날짜 — 상단 절반 중앙 (H/4) */
+  /* 날짜 — 위 */
   ctx.font = curWeight+' '+dateSz+'px '+curFont;
-  ctx.fillText(dateText, ax, H/4);
+  ctx.fillText(dateText, ax, cy - totalH/2 + dateSz/2);
 
-  /* 번호 — 하단 절반 중앙 (H*3/4) */
+  /* 번호 — 아래 */
   ctx.font = curWeight+' '+seqSz+'px '+curFont;
-  ctx.fillText(seqText, ax, H*3/4);
+  ctx.fillText(seqText, ax, cy + totalH/2 - seqSz/2);
 }
 
 /* ── 초기 렌더 ── */
