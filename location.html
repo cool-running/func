@@ -221,25 +221,31 @@ function fetchParcel(lat, lng){
     parcelPolygon = null;
   }
 
-  const url = `https://api.vworld.kr/req/wfs?` +
-    `SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature` +
-    `&TYPENAME=lt_c_ufprd` +
-    `&SRSNAME=EPSG:4326` +
-    `&BBOX=${lng-0.0003},${lat-0.0003},${lng+0.0003},${lat+0.0003},EPSG:4326` +
-    `&OUTPUTFORMAT=application/json` +
-    `&KEY=${VWORLD_KEY}` +
-    `&DOMAIN=https://cool-running.github.io/func`;
+  // vworld Data API - 브라우저에서 직접 호출
+  const url = `https://api.vworld.kr/req/data?` +
+    `service=data&request=GetFeature` +
+    `&data=LT_C_UFPRD` +
+    `&key=${VWORLD_KEY}` +
+    `&domain=https://cool-running.github.io/func` +
+    `&geometry=true&attribute=true` +
+    `&crs=EPSG:4326` +
+    `&geomFilter=POINT(${lng}%20${lat})` +
+    `&size=10`;
 
   fetch(url)
     .then(r => r.json())
     .then(data => {
-      if(!data.features || data.features.length===0){
+      console.log('vworld 응답:', data);
+      if(!data.response || data.response.status !== 'OK'){
         showToast('필지 경계 없음');
         return;
       }
-      // 클릭 지점에서 가장 가까운 필지 찾기
-      const feature = data.features[0];
-      drawParcel(feature);
+      const features = data.response.result.featureCollection.features;
+      if(!features || features.length===0){
+        showToast('필지 경계 없음');
+        return;
+      }
+      drawParcel(features[0]);
     })
     .catch(err => {
       console.error('vworld 오류:', err);
