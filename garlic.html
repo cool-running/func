@@ -134,7 +134,8 @@ input.auto{height:40px;border:0.5px solid var(--border);border-radius:var(--rs);
   height:34px;padding:0 12px;background:transparent;
   border:1.5px solid var(--blue2);border-radius:var(--rs);
   color:var(--blue2);font-size:13px;font-weight:600;cursor:pointer;
-  display:flex;align-items:center;gap:4px;transition:all .15s;
+  display:inline-flex;align-items:center;gap:4px;transition:all .15s;
+  -webkit-appearance:none;appearance:none;
 }
 .bigtext-btn.on{
   background:var(--blue2);color:#fff;
@@ -367,7 +368,7 @@ tbody td input.filled:active{
 
   <div class="section">
     <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:12px">
-      <button class="bigtext-btn" id="bigtext-btn" onclick="toggleBigText()" title="글자 크게">🔍 <span id="bigtext-label">크게</span></button>
+      <button class="bigtext-btn" id="bigtext-btn" onclick="toggleBigText()">🔍 <span id="bigtext-label">크게</span></button>
       <button class="reset-btn" onclick="openResetModal()">전체 초기화</button>
     </div>
     <div style="display:flex;gap:8px;align-items:center">
