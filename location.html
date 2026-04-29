@@ -78,6 +78,7 @@ body{font-family:-apple-system,'Noto Sans KR',sans-serif;color:var(--text);font-
 <div class="map-btns">
   <div class="map-btn-left">
     <button class="maptype-btn" id="maptypeBtn" onclick="toggleMapType()">🛰 위성</button>
+    <button class="maptype-btn" id="parcelBtn" onclick="toggleParcelLayer()" style="color:#185FA5;">🗺 필지경계 ON</button>
   </div>
   <div class="map-btn-right">
     <button class="myloc-btn" onclick="moveToMyLoc()">📍</button>
@@ -142,7 +143,6 @@ let map=null, myMarker=null, selMarker=null, geocoder=null;
 let curLat=null, curLng=null, curAcc=null, curAddr='—';
 let selLat=null, selLng=null, selJibun='—', selRoad='—';
 let isHybrid=false, curTab='me';
-let parcelPolygon=null;
 
 kakao.maps.load(function(){
   geocoder = new kakao.maps.services.Geocoder();
@@ -213,74 +213,39 @@ function onMapTap(lat, lng){
   fetchParcel(lat, lng);
 }
 
-/* ── 필지 경계 조회 (vworld WFS) ── */
+/* ── vworld 필지 타일 레이어 토글 ── */
+let parcelLayer = null;
+let parcelLayerOn = false;
+
+function toggleParcelLayer(){
+  if(!map) return;
+  if(parcelLayerOn){
+    if(parcelLayer) parcelLayer.setMap(null);
+    parcelLayerOn = false;
+    document.getElementById('parcelBtn').textContent = '🗺 필지경계 ON';
+    document.getElementById('parcelBtn').style.background = '#fff';
+    document.getElementById('parcelBtn').style.color = '#185FA5';
+    showToast('필지 경계 레이어 OFF');
+  } else {
+    // vworld WMS 타일을 카카오맵 위에 오버레이
+    parcelLayer = new kakao.maps.TileLayer(
+      `https://api.vworld.kr/req/wmts/1.0.0/${VWORLD_KEY}/lt_c_ufprd/{z}/{y}/{x}.png`
+    );
+    parcelLayer.setMap(map);
+    parcelLayerOn = true;
+    document.getElementById('parcelBtn').textContent = '🗺 필지경계 OFF';
+    document.getElementById('parcelBtn').style.background = '#185FA5';
+    document.getElementById('parcelBtn').style.color = '#fff';
+    showToast('필지 경계 레이어 ON');
+  }
+}
+
 function fetchParcel(lat, lng){
-  // 기존 폴리곤 제거
-  if(parcelPolygon){
-    parcelPolygon.setMap(null);
-    parcelPolygon = null;
-  }
-
-  // vworld Data API - 브라우저에서 직접 호출
-  const url = `https://api.vworld.kr/req/data?` +
-    `service=data&request=GetFeature` +
-    `&data=LT_C_UFPRD` +
-    `&key=${VWORLD_KEY}` +
-    `&domain=https://cool-running.github.io/func` +
-    `&geometry=true&attribute=true` +
-    `&crs=EPSG:4326` +
-    `&geomFilter=POINT(${lng}%20${lat})` +
-    `&size=10`;
-
-  fetch(url)
-    .then(r => r.json())
-    .then(data => {
-      console.log('vworld 응답:', data);
-      if(!data.response || data.response.status !== 'OK'){
-        showToast('필지 경계 없음');
-        return;
-      }
-      const features = data.response.result.featureCollection.features;
-      if(!features || features.length===0){
-        showToast('필지 경계 없음');
-        return;
-      }
-      drawParcel(features[0]);
-    })
-    .catch(err => {
-      console.error('vworld 오류:', err);
-      showToast('필지 조회 실패');
-    });
+  // 필지 경계 레이어가 꺼져있으면 자동으로 켜기
+  if(!parcelLayerOn) toggleParcelLayer();
 }
 
-/* ── 필지 폴리곤 그리기 ── */
-function drawParcel(feature){
-  const geom = feature.geometry;
-  if(!geom) return;
 
-  let coords = [];
-  if(geom.type === 'Polygon'){
-    coords = geom.coordinates[0];
-  } else if(geom.type === 'MultiPolygon'){
-    coords = geom.coordinates[0][0];
-  }
-
-  if(!coords.length) return;
-
-  const path = coords.map(c => new kakao.maps.LatLng(c[1], c[0]));
-
-  parcelPolygon = new kakao.maps.Polygon({
-    map: map,
-    path: path,
-    strokeWeight: 3,
-    strokeColor: '#E53935',
-    strokeOpacity: 0.9,
-    fillColor: '#FF6B6B',
-    fillOpacity: 0.2
-  });
-
-  showToast('🌾 필지 경계 표시됨');
-}
 
 /* ── 탭 전환 ── */
 function switchTab(tab){
