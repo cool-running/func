@@ -567,21 +567,6 @@ document.getElementById('txtCustom').addEventListener('input', function(){
   txtColor=this.value; draw(); saveS();
 });
 
-/* ── 저장 완료 토스트 ── */
-const toast = document.createElement('div');
-toast.style.cssText='display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:999;background:rgba(20,20,30,0.92);backdrop-filter:blur(8px);border-radius:16px;padding:28px 36px;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,0.4);';
-toast.innerHTML=`
-  <div style="font-size:42px;margin-bottom:10px;">✅</div>
-  <div style="color:#fff;font-size:17px;font-weight:700;font-family:'Noto Sans KR',sans-serif;">저장했습니다</div>
-  <div id="toastFilename" style="color:rgba(255,255,255,0.5);font-size:12px;margin-top:6px;font-family:'Noto Sans KR',sans-serif;"></div>`;
-document.body.appendChild(toast);
-
-function showToast(filename){
-  document.getElementById('toastFilename').textContent = filename;
-  toast.style.display='block';
-  setTimeout(()=>{ toast.style.display='none'; }, 1800);
-}
-
 /* ── 저장 ── */
 document.getElementById('saveBtn').addEventListener('click', ()=>{
   document.getElementById('dateInput').blur();
@@ -593,15 +578,13 @@ document.getElementById('saveBtn').addEventListener('click', ()=>{
       draw();
       setTimeout(()=>{
         dragging=_d; pinching=_p;
-        const filename = dateText.replace(/\s/g,'')+'_'+seqText.replace(/\s/g,'')+'.jpg';
         const a=document.createElement('a');
         a.href=cv.toDataURL('image/jpeg',0.96);
-        a.download=filename;
+        a.download=dateText.replace(/\s/g,'')+'_'+seqText.replace(/\s/g,'')+'.jpg';
         a.click();
         const btn=document.getElementById('saveBtn');
         btn.textContent='완료 ✓';
         setTimeout(()=>{ btn.textContent='💾 저장'; draw(); }, 1600);
-        showToast(filename);
       }, 80);
     }, 80);
   });
