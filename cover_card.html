@@ -12,51 +12,79 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@700;900&family=Noto+Serif+KR:wght@900&family=Nanum+Gothic:wght@800&family=Black+Han+Sans&family=Jua&family=Nanum+Myeongjo:wght@800&display=swap" rel="stylesheet">
 <style>
-:root{--nav-h:62px;--top-h:56px;--bottom-h:210px;}
+:root{
+  --nav-h:62px;
+  --top-h:56px;
+  --btm-h:215px;
+  --blue:#185FA5;
+}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{width:100%;height:100%;overflow:hidden;background:#1a1a2e;}
 body{font-family:'Noto Sans KR',sans-serif;color:#fff;-webkit-user-select:none;user-select:none;}
 
-.topbar{position:fixed;top:0;left:0;right:0;height:var(--top-h);padding:0 16px;padding-top:env(safe-area-inset-top,0px);display:flex;align-items:center;justify-content:space-between;background:#1a1a2e;z-index:10;}
-.topbar-title{color:#fff;font-size:17px;font-weight:700;}
+/* ── 탑바 ── */
+.topbar{
+  position:fixed;top:0;left:0;right:0;
+  height:var(--top-h);
+  padding:0 16px;
+  padding-top:env(safe-area-inset-top,0px);
+  display:flex;align-items:center;justify-content:space-between;
+  background:#1a1a2e;z-index:100;
+}
+.topbar-title{font-size:17px;font-weight:700;color:#fff;}
 .save-btn{background:#E05A2B;color:#fff;border:none;border-radius:8px;padding:9px 22px;font-size:14px;font-weight:700;font-family:'Noto Sans KR',sans-serif;cursor:pointer;}
 .save-btn:active{opacity:.85;}
 
-.canvas-wrap{position:fixed;top:var(--top-h);left:0;right:0;bottom:calc(var(--bottom-h) + var(--nav-h) + env(safe-area-inset-bottom,0px));display:flex;align-items:center;justify-content:center;background:#2a2a3e;overflow:hidden;}
+/* ── 캔버스 ── */
+#cvWrap{
+  position:fixed;
+  top:var(--top-h);left:0;right:0;
+  bottom:calc(var(--btm-h) + var(--nav-h) + env(safe-area-inset-bottom,0px));
+  display:flex;align-items:center;justify-content:center;
+  background:#2a2a3e;overflow:hidden;
+}
 canvas{display:block;max-width:100%;max-height:100%;}
 
-.bottom-area{position:fixed;left:0;right:0;bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px));height:var(--bottom-h);background:#1a1a2e;overflow:hidden;}
+/* ── 하단 입력/버튼 영역 ── */
+#btmArea{
+  position:fixed;
+  left:0;right:0;
+  bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px));
+  height:var(--btm-h);
+  background:#1a1a2e;
+  border-top:0.5px solid rgba(255,255,255,0.1);
+  overflow:hidden;
+}
 
-/* 입력바 — 50:50 */
-.input-bar{display:flex;gap:10px;padding:10px 16px 6px;border-top:0.5px solid rgba(255,255,255,0.1);}
-.input-group{flex:1;display:flex;flex-direction:column;gap:4px;}
+/* 입력바 */
+.input-bar{display:flex;gap:10px;padding:8px 16px 6px;}
+.input-group{flex:1;display:flex;flex-direction:column;gap:3px;min-width:0;}
 .input-lbl{font-size:10px;font-weight:700;color:rgba(255,255,255,0.5);letter-spacing:0.05em;}
 .input-field{
-  height:44px;border-radius:10px;
+  height:40px;border-radius:10px;
   border:1.5px solid rgba(255,255,255,0.2);
   background:rgba(255,255,255,0.1);
-  color:#fff;font-size:18px;font-weight:700;
+  color:#fff;font-size:17px;font-weight:700;
   font-family:'Noto Sans KR',sans-serif;
   padding:0 12px;-webkit-user-select:text;user-select:text;
-  outline:none;transition:border-color .15s;
+  outline:none;transition:border-color .15s;width:100%;min-width:0;
 }
 .input-field:focus{border-color:#E05A2B;background:rgba(255,255,255,0.15);}
 .input-field::placeholder{color:rgba(255,255,255,0.3);font-weight:400;font-size:13px;}
 
-/* 원형 메뉴 */
-.circle-menu{display:flex;justify-content:center;align-items:center;gap:28px;padding:12px 0 6px;}
-.cbtn{width:72px;height:72px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.25);background:rgba(255,255,255,0.06);color:#fff;font-size:11px;font-weight:600;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:background .15s,border-color .15s;}
+/* 원형 버튼 */
+.circle-menu{display:flex;justify-content:center;align-items:center;gap:28px;padding:8px 0 4px;}
+.cbtn{width:68px;height:68px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.25);background:rgba(255,255,255,0.06);color:#fff;font-size:11px;font-weight:600;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:background .15s;}
 .cbtn.on{background:rgba(255,255,255,0.18);border-color:rgba(255,255,255,0.7);}
 .cbtn:active{transform:scale(.91);}
-.cbtn-icon{font-size:20px;line-height:1;}
+.cbtn-icon{font-size:19px;line-height:1;}
 
-/* 도트 인디케이터 */
-.dot-row{display:flex;justify-content:center;align-items:center;gap:6px;padding:6px 0 10px;}
-.dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.28);transition:background .2s;}
+/* 도트 */
+.dot-row{display:flex;justify-content:center;align-items:center;gap:6px;padding:3px 0 4px;}
+.dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.28);}
 .dot.on{background:rgba(255,255,255,0.9);}
-.dot-arrow{color:rgba(255,255,255,0.4);font-size:13px;position:absolute;right:20px;}
 
-/* 패널 */
+/* ── 패널 (white) ── */
 .panel{display:none;background:#fff;border-radius:16px 16px 0 0;padding:14px 16px 10px;position:relative;}
 .panel.show{display:block;}
 .pcls{position:absolute;right:12px;top:12px;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,0.08);border:none;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#555;}
@@ -80,7 +108,6 @@ input[type=range]{flex:1;accent-color:#E05A2B;}
 .font-scroll::-webkit-scrollbar{display:none;}
 .fc{flex-shrink:0;width:100px;border:1.5px solid #eee;border-radius:10px;padding:8px 6px;cursor:pointer;background:#fff;text-align:center;}
 .fc.on{border-color:#E05A2B;background:#FFF5F2;}
-.fc:active{transform:scale(.97);}
 .fc-nm{font-size:9px;color:#aaa;margin-bottom:4px;}
 .fc-sp{font-size:14px;color:#1a1a1a;line-height:1.3;}
 
@@ -93,45 +120,50 @@ input[type=range]{flex:1;accent-color:#E05A2B;}
 .tc-custom input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;}
 .tc-custom-inner{width:100%;height:100%;background:conic-gradient(red,yellow,lime,cyan,blue,magenta,red);}
 
-/* 하단 네비 */
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;height:calc(var(--nav-h) + env(safe-area-inset-bottom,0px));padding-bottom:env(safe-area-inset-bottom,0px);background:#fff;border-top:0.5px solid rgba(0,0,0,0.08);box-shadow:0 -2px 12px rgba(0,0,0,0.06);display:flex;align-items:stretch;z-index:200;}
+/* ── 네비바 ── */
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;
+  height:calc(var(--nav-h) + env(safe-area-inset-bottom,0px));
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  background:#fff;
+  border-top:0.5px solid rgba(0,0,0,0.08);
+  box-shadow:0 -2px 12px rgba(0,0,0,0.06);
+  display:flex;align-items:stretch;z-index:200;
+}
 .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;border:none;background:none;color:#bbb;font-size:10px;font-weight:700;letter-spacing:-0.02em;padding:6px 0 4px;border-radius:12px;}
 .nav-item:active{opacity:.6;transform:scale(.93);}
-.nav-item.on{color:#185FA5;}
+.nav-item.on{color:var(--blue);}
 .nav-icon{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;transition:background .15s,transform .15s;}
 .nav-item.on .nav-icon{background:linear-gradient(135deg,#185FA5,#378ADD);box-shadow:0 3px 10px rgba(24,95,165,0.28);transform:translateY(-2px);}
 </style>
 </head>
 <body>
 
+<!-- 탑바 -->
 <div class="topbar">
   <span class="topbar-title">📋 표지 카드</span>
   <button class="save-btn" id="saveBtn">💾 저장</button>
 </div>
 
-<div class="canvas-wrap">
+<!-- 캔버스 -->
+<div id="cvWrap">
   <canvas id="cv"></canvas>
-  <div id="cvHint" style="position:absolute;bottom:12px;left:50%;transform:translateX(-50%);
-    background:rgba(0,0,0,0.5);color:rgba(255,255,255,0.8);font-size:11px;
-    font-family:'Noto Sans KR',sans-serif;border-radius:20px;padding:5px 14px;
-    pointer-events:none;white-space:nowrap;transition:opacity .4s;">
+  <div id="cvHint" style="position:absolute;bottom:12px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.5);color:rgba(255,255,255,0.8);font-size:11px;font-family:'Noto Sans KR',sans-serif;border-radius:20px;padding:5px 14px;pointer-events:none;white-space:nowrap;transition:opacity .4s;">
     ✋ 드래그 이동 &nbsp;|&nbsp; 🤏 핀치 확대 &nbsp;|&nbsp; 👆👆 더블탭 편집
   </div>
 </div>
 
-<div class="bottom-area">
-
-  <!-- 날짜/번호 입력 50:50 -->
+<!-- 하단 입력/버튼 -->
+<div id="btmArea">
+  <!-- 입력바 -->
   <div class="input-bar">
     <div class="input-group">
       <label class="input-lbl">📅 날짜</label>
-      <input type="text" id="dateInput" class="input-field" placeholder="예) 4월29일"
-        inputmode="text" autocomplete="off" autocorrect="off" spellcheck="false"/>
+      <input type="text" id="dateInput" class="input-field" placeholder="예) 4월29일" inputmode="text" autocomplete="off" autocorrect="off" spellcheck="false"/>
     </div>
     <div class="input-group">
       <label class="input-lbl">🔢 번호</label>
-      <input type="text" id="seqInput" class="input-field" placeholder="예) 3번"
-        inputmode="text" autocomplete="off" autocorrect="off" spellcheck="false"/>
+      <input type="text" id="seqInput" class="input-field" placeholder="예) 3번" inputmode="text" autocomplete="off" autocorrect="off" spellcheck="false"/>
     </div>
   </div>
 
@@ -166,33 +198,21 @@ input[type=range]{flex:1;accent-color:#E05A2B;}
     <button class="pcls" onclick="closePanel()">✕</button>
     <div class="sz-row">
       <span class="sz-lbl">날짜 크기</span>
-      <input type="range" id="dateSzR" min="20" max="160" value="60" step="2"/>
+      <input type="range" id="dateSzR" min="20" max="300" value="60" step="2"/>
       <span class="sz-val" id="dateSzV">60</span>
     </div>
     <div class="sz-row">
       <span class="sz-lbl">번호 크기</span>
-      <input type="range" id="seqSzR" min="40" max="300" value="160" step="4"/>
+      <input type="range" id="seqSzR" min="40" max="500" value="160" step="4"/>
       <span class="sz-val" id="seqSzV">160</span>
     </div>
     <div class="font-scroll" id="fontScroll">
-      <div class="fc on" data-font="'Noto Sans KR',sans-serif" data-w="900">
-        <div class="fc-nm">맑은고딕</div><div class="fc-sp" style="font-family:'Noto Sans KR';font-weight:900;">4월29일<br>3번</div>
-      </div>
-      <div class="fc" data-font="'Nanum Gothic',sans-serif" data-w="800">
-        <div class="fc-nm">굴림</div><div class="fc-sp" style="font-family:'Nanum Gothic';font-weight:800;">4월29일<br>3번</div>
-      </div>
-      <div class="fc" data-font="'Noto Serif KR',serif" data-w="900">
-        <div class="fc-nm">바탕</div><div class="fc-sp" style="font-family:'Noto Serif KR';font-weight:900;">4월29일<br>3번</div>
-      </div>
-      <div class="fc" data-font="'Nanum Myeongjo',serif" data-w="800">
-        <div class="fc-nm">명조</div><div class="fc-sp" style="font-family:'Nanum Myeongjo';font-weight:800;">4월29일<br>3번</div>
-      </div>
-      <div class="fc" data-font="'Black Han Sans',sans-serif" data-w="400">
-        <div class="fc-nm">HY헤드라인</div><div class="fc-sp" style="font-family:'Black Han Sans';">4월29일<br>3번</div>
-      </div>
-      <div class="fc" data-font="'Jua',sans-serif" data-w="400">
-        <div class="fc-nm">HY강B</div><div class="fc-sp" style="font-family:'Jua';">4월29일<br>3번</div>
-      </div>
+      <div class="fc on" data-font="'Noto Sans KR',sans-serif" data-w="900"><div class="fc-nm">맑은고딕</div><div class="fc-sp" style="font-family:'Noto Sans KR';font-weight:900;">4월29일<br>3번</div></div>
+      <div class="fc" data-font="'Nanum Gothic',sans-serif" data-w="800"><div class="fc-nm">굴림</div><div class="fc-sp" style="font-family:'Nanum Gothic';font-weight:800;">4월29일<br>3번</div></div>
+      <div class="fc" data-font="'Noto Serif KR',serif" data-w="900"><div class="fc-nm">바탕</div><div class="fc-sp" style="font-family:'Noto Serif KR';font-weight:900;">4월29일<br>3번</div></div>
+      <div class="fc" data-font="'Nanum Myeongjo',serif" data-w="800"><div class="fc-nm">명조</div><div class="fc-sp" style="font-family:'Nanum Myeongjo';font-weight:800;">4월29일<br>3번</div></div>
+      <div class="fc" data-font="'Black Han Sans',sans-serif" data-w="400"><div class="fc-nm">HY헤드라인</div><div class="fc-sp" style="font-family:'Black Han Sans';">4월29일<br>3번</div></div>
+      <div class="fc" data-font="'Jua',sans-serif" data-w="400"><div class="fc-nm">HY강B</div><div class="fc-sp" style="font-family:'Jua';">4월29일<br>3번</div></div>
     </div>
   </div>
 
@@ -229,402 +249,17 @@ input[type=range]{flex:1;accent-color:#E05A2B;}
     </div>
   </div>
 
-  <!-- 도트 인디케이터 -->
+  <!-- 도트 -->
   <div style="position:relative;">
     <div class="dot-row">
       <span class="dot on" id="dot0"></span>
       <span class="dot" id="dot1"></span>
       <span class="dot" id="dot2"></span>
     </div>
-    <span class="dot-arrow">›</span>
   </div>
-
 </div>
 
-<script>
-/* ── 저장소 ── */
-const LS = 'ccv5';
-function loadS(){ try{ return JSON.parse(localStorage.getItem(LS))||{}; }catch(e){ return {}; } }
-function saveS(){
-  try{ localStorage.setItem(LS, JSON.stringify({bgColor,bgType,txtColor,dateSz,seqSz,curFont,curWeight,align,tx,ty})); }catch(e){}
-}
-
-const _s      = loadS();
-let bgColor   = _s.bgColor   || '#4DB6AC';
-let bgType    = _s.bgType    || 'solid';
-let txtColor  = _s.txtColor  || '#ffffff';
-let dateSz    = _s.dateSz    || 60;
-let seqSz     = _s.seqSz     || 160;
-let curFont   = _s.curFont   || "'Noto Sans KR',sans-serif";
-let curWeight = _s.curWeight || '900';
-let align     = _s.align     || 'center';
-
-/* ── 캔버스 ── */
-const cv  = document.getElementById('cv');
-const ctx = cv.getContext('2d');
-const W = 900, H = 900;
-cv.width = W; cv.height = H;
-
-function todayLabel(){ const d=new Date(); return (d.getMonth()+1)+'월'+d.getDate()+'일'; }
-let dateText = todayLabel();
-let seqText  = '1번';
-
-/* ── 드래그 상태 ── */
-let tx = _s.tx !== undefined ? _s.tx : W/2;
-let ty = _s.ty !== undefined ? _s.ty : H/2;
-let dragging = false, dragOffX = 0, dragOffY = 0;
-let pinching = false, pinchStartDist = 0, pinchStartSz = 0, pinchStartDateSz = 0;
-let boxW = 0, boxH = 0;
-
-/* ── 그라디언트 ── */
-function getGrad(type){
-  const p={g1:['#667eea','#764ba2'],g2:['#f093fb','#f5576c'],g3:['#4facfe','#00f2fe'],g4:['#43e97b','#38f9d7'],g5:['#fa709a','#fee140'],g6:['#30cfd0','#330867']};
-  if(!p[type]) return null;
-  const g=ctx.createLinearGradient(0,0,W,H);
-  g.addColorStop(0,p[type][0]); g.addColorStop(1,p[type][1]);
-  return g;
-}
-
-/* ── 그리기 ── */
-function draw(){
-  /* 배경 */
-  const grad=getGrad(bgType);
-  if(grad){ ctx.fillStyle=grad; ctx.fillRect(0,0,W,H); }
-  else if(bgType==='grid'){
-    ctx.fillStyle=bgColor; ctx.fillRect(0,0,W,H);
-    ctx.strokeStyle='rgba(255,255,255,0.18)'; ctx.lineWidth=1;
-    const gs=Math.round(W/30);
-    for(let x=0;x<=W;x+=gs){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
-    for(let y=0;y<=H;y+=gs){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
-  } else { ctx.fillStyle=bgColor; ctx.fillRect(0,0,W,H); }
-
-  /* 텍스트 묶음 높이 계산 */
-  const lineGap = Math.round(seqSz * 0.25);
-  const totalH  = dateSz + lineGap + seqSz;
-
-  /* tx,ty 기준으로 자유 배치 */
-  const dateY = ty - totalH/2 + dateSz/2;
-  const seqY  = ty + totalH/2 - seqSz/2;
-
-  const ax = align==='left' ? tx - boxW/2 + 10 : align==='right' ? tx + boxW/2 - 10 : tx;
-
-  ctx.textAlign    = align;
-  ctx.textBaseline = 'middle';
-  ctx.fillStyle    = txtColor;
-
-  /* 드래그 중 선택 표시 */
-  if(dragging || pinching){
-    ctx.save();
-    ctx.strokeStyle='rgba(255,255,255,0.5)';
-    ctx.lineWidth=2;
-    ctx.setLineDash([8,5]);
-    ctx.strokeRect(tx-boxW/2, ty-boxH/2, boxW, boxH);
-    ctx.restore();
-  }
-
-  /* 날짜 */
-  ctx.font = curWeight+' '+dateSz+'px '+curFont;
-  ctx.fillText(dateText, ax, dateY);
-
-  /* 번호 */
-  ctx.font = curWeight+' '+seqSz+'px '+curFont;
-  ctx.fillText(seqText, ax, seqY);
-
-  /* 박스 크기 (히트 영역) */
-  ctx.font = curWeight+' '+dateSz+'px '+curFont;
-  const dw = ctx.measureText(dateText).width;
-  ctx.font = curWeight+' '+seqSz+'px '+curFont;
-  const sw = ctx.measureText(seqText).width;
-  boxW = Math.max(dw, sw) + 40;
-  boxH = totalH + 40;
-}
-
-/* ── 초기 렌더 ── */
-document.fonts.ready.then(()=>{
-  setTimeout(()=>{
-    draw();
-    document.getElementById('dateInput').value = dateText;
-    document.getElementById('seqInput').value  = seqText;
-  }, 100);
-});
-
-/* ── 입력 → 실시간 반영 ── */
-document.getElementById('dateInput').addEventListener('input', function(){
-  dateText = this.value || todayLabel(); draw(); saveS();
-});
-document.getElementById('seqInput').addEventListener('input', function(){
-  seqText = this.value || '1번'; draw(); saveS();
-});
-
-/* ── 좌표 변환 ── */
-function toCV(cx, cy){
-  const r = cv.getBoundingClientRect();
-  return { x:(cx-r.left)*(W/r.width), y:(cy-r.top)*(H/r.height) };
-}
-function hitBox(x, y){
-  return Math.abs(x-tx) < boxW/2+20 && Math.abs(y-ty) < boxH/2+20;
-}
-function pinchDist(t){ return Math.hypot(t[0].clientX-t[1].clientX, t[0].clientY-t[1].clientY); }
-function pinchMid(t){
-  return toCV((t[0].clientX+t[1].clientX)/2, (t[0].clientY+t[1].clientY)/2);
-}
-
-/* ── 더블탭으로 텍스트 편집 ── */
-let lastTap = 0;
-let editTarget = null; // 'date' | 'seq'
-const editOverlay = document.createElement('div');
-editOverlay.style.cssText='display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.55);align-items:center;justify-content:center;flex-direction:column;gap:12px;';
-editOverlay.innerHTML=`
-  <div style="background:#1e1e2e;border-radius:16px;padding:20px 20px 16px;width:88vw;max-width:360px;">
-    <div id="editLabel" style="color:rgba(255,255,255,0.55);font-size:12px;font-weight:700;margin-bottom:8px;font-family:'Noto Sans KR',sans-serif;"></div>
-    <input id="editInput" type="text" inputmode="text" autocomplete="off" spellcheck="false"
-      style="width:100%;background:rgba(255,255,255,0.1);border:1.5px solid rgba(255,255,255,0.25);border-radius:10px;
-             color:#fff;font-size:22px;font-weight:700;font-family:'Noto Sans KR',sans-serif;
-             padding:10px 14px;outline:none;-webkit-user-select:text;user-select:text;"/>
-    <div style="display:flex;gap:8px;margin-top:12px;">
-      <button id="editCancel" style="flex:1;height:40px;border-radius:8px;border:1.5px solid rgba(255,255,255,0.2);background:transparent;color:#fff;font-size:14px;font-family:'Noto Sans KR',sans-serif;cursor:pointer;">취소</button>
-      <button id="editOk" style="flex:2;height:40px;border-radius:8px;border:none;background:#E05A2B;color:#fff;font-size:14px;font-weight:700;font-family:'Noto Sans KR',sans-serif;cursor:pointer;">확인</button>
-    </div>
-  </div>`;
-document.body.appendChild(editOverlay);
-
-function openEdit(target){
-  editTarget = target;
-  editOverlay.style.display='flex';
-  const inp = document.getElementById('editInput');
-  document.getElementById('editLabel').textContent = target==='date' ? '📅 날짜 입력' : '🔢 번호 입력';
-  inp.value = target==='date' ? dateText : seqText;
-  inp.placeholder = target==='date' ? '예) 4월29일' : '예) 3번';
-  setTimeout(()=>inp.focus(),80);
-}
-function closeEdit(apply){
-  if(apply){
-    const v = document.getElementById('editInput').value.trim();
-    if(editTarget==='date'){ dateText=v||todayLabel(); document.getElementById('dateInput').value=dateText; }
-    else { seqText=v||'1번'; document.getElementById('seqInput').value=seqText; }
-    draw(); saveS();
-  }
-  editOverlay.style.display='none';
-}
-document.getElementById('editCancel').addEventListener('click',()=>closeEdit(false));
-document.getElementById('editOk').addEventListener('click',()=>closeEdit(true));
-document.getElementById('editInput').addEventListener('keydown',e=>{ if(e.key==='Enter') closeEdit(true); });
-editOverlay.addEventListener('click',e=>{ if(e.target===editOverlay) closeEdit(false); });
-
-/* ── 터치 이벤트 ── */
-cv.addEventListener('touchstart', e=>{
-  const now = Date.now();
-
-  if(e.touches.length===2){
-    /* 핀치 시작 */
-    dragging = false;
-    pinching = true;
-    pinchStartDist = pinchDist(e.touches);
-    pinchStartSz = seqSz;
-    pinchStartDateSz = dateSz;
-    e.preventDefault();
-    return;
-  }
-
-  /* 더블탭 감지 */
-  const p = toCV(e.touches[0].clientX, e.touches[0].clientY);
-  if(now - lastTap < 300 && hitBox(p.x, p.y)){
-    lastTap = 0;
-    /* 날짜/번호 중 어느 쪽을 탭했는지 판별 */
-    const lineGap = Math.round(seqSz * 0.25);
-    const totalH  = dateSz + lineGap + seqSz;
-    const dateY   = ty - totalH/2 + dateSz/2;
-    openEdit(p.y < (dateY + seqSz*0.3) ? 'date' : 'seq');
-    e.preventDefault();
-    return;
-  }
-  lastTap = now;
-
-  if(hitBox(p.x, p.y)){
-    dragging=true; dragOffX=p.x-tx; dragOffY=p.y-ty; e.preventDefault();
-  }
-},{passive:false});
-
-cv.addEventListener('touchmove', e=>{
-  if(e.touches.length===2 && pinching){
-    e.preventDefault();
-    const dist = pinchDist(e.touches);
-    const ratio = dist / pinchStartDist;
-    /* 번호+날짜 크기를 비율로 스케일 */
-    const newSeqSz = Math.round(Math.max(40, Math.min(300, pinchStartSz * ratio)));
-    seqSz  = newSeqSz;
-    dateSz = Math.round(Math.max(20, Math.min(160, pinchStartDateSz * ratio)));
-    /* 핀치 중심점으로 텍스트 위치도 이동 */
-    const mid = pinchMid(e.touches);
-    tx = tx * 0.85 + mid.x * 0.15;
-    ty = ty * 0.85 + mid.y * 0.15;
-    /* UI 슬라이더 동기화 */
-    document.getElementById('seqSzR').value = seqSz;
-    document.getElementById('seqSzV').textContent = seqSz;
-    document.getElementById('dateSzR').value = dateSz;
-    document.getElementById('dateSzV').textContent = dateSz;
-    draw();
-    return;
-  }
-  if(!dragging) return;
-  e.preventDefault();
-  const p = toCV(e.touches[0].clientX, e.touches[0].clientY);
-  tx = Math.max(boxW/2, Math.min(W-boxW/2, p.x-dragOffX));
-  ty = Math.max(boxH/2, Math.min(H-boxH/2, p.y-dragOffY));
-  draw();
-},{passive:false});
-
-cv.addEventListener('touchend', e=>{
-  if(e.touches.length < 2 && pinching){
-    pinching = false; saveS(); return;
-  }
-  if(dragging){ dragging=false; saveS(); }
-});
-
-/* ── 마우스 이벤트 ── */
-cv.addEventListener('mousedown', e=>{
-  const p = toCV(e.clientX, e.clientY);
-  if(hitBox(p.x,p.y)){ dragging=true; dragOffX=p.x-tx; dragOffY=p.y-ty; cv.style.cursor='grabbing'; }
-});
-cv.addEventListener('mousemove', e=>{
-  const p = toCV(e.clientX, e.clientY);
-  if(dragging){
-    tx=Math.max(boxW/2,Math.min(W-boxW/2,p.x-dragOffX));
-    ty=Math.max(boxH/2,Math.min(H-boxH/2,p.y-dragOffY));
-    draw();
-  } else { cv.style.cursor = hitBox(p.x,p.y) ? 'grab' : 'default'; }
-});
-cv.addEventListener('mouseup', ()=>{ if(dragging){ dragging=false; cv.style.cursor='default'; saveS(); } });
-cv.addEventListener('dblclick', e=>{
-  const p = toCV(e.clientX, e.clientY);
-  if(!hitBox(p.x,p.y)) return;
-  const lineGap = Math.round(seqSz * 0.25);
-  const totalH  = dateSz + lineGap + seqSz;
-  const dateY   = ty - totalH/2 + dateSz/2;
-  openEdit(p.y < (dateY + seqSz*0.3) ? 'date' : 'seq');
-});
-
-/* ── 패널 ── */
-function togglePanel(pid, bid){
-  const show = document.getElementById(pid).classList.contains('show');
-  closePanel();
-  if(!show){ document.getElementById(pid).classList.add('show'); document.getElementById(bid).classList.add('on'); }
-  document.getElementById('dateInput').blur();
-  document.getElementById('seqInput').blur();
-}
-function closePanel(){
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('show'));
-  document.querySelectorAll('.cbtn').forEach(b=>b.classList.remove('on'));
-}
-
-/* ── 배경색 ── */
-document.getElementById('bgColorRow').querySelectorAll('.sc').forEach(el=>{
-  el.addEventListener('click', function(){
-    document.getElementById('bgColorRow').querySelectorAll('.sc').forEach(s=>s.classList.remove('on'));
-    this.classList.add('on'); bgColor=this.dataset.c;
-    document.getElementById('bgCustom').value=bgColor; draw(); saveS();
-  });
-});
-document.getElementById('bgCustom').addEventListener('input', function(){
-  document.getElementById('bgColorRow').querySelectorAll('.sc').forEach(s=>s.classList.remove('on'));
-  bgColor=this.value; draw(); saveS();
-});
-
-/* ── 배경 타입 ── */
-document.getElementById('bgGrid').querySelectorAll('.bgs').forEach(el=>{
-  el.addEventListener('click', function(){
-    document.getElementById('bgGrid').querySelectorAll('.bgs').forEach(s=>s.classList.remove('on'));
-    this.classList.add('on'); bgType=this.dataset.bg; draw(); saveS();
-  });
-});
-
-/* ── 크기 슬라이더 ── */
-document.getElementById('dateSzR').addEventListener('input', function(){
-  dateSz=+this.value; document.getElementById('dateSzV').textContent=this.value; draw(); saveS();
-});
-document.getElementById('seqSzR').addEventListener('input', function(){
-  seqSz=+this.value; document.getElementById('seqSzV').textContent=this.value; draw(); saveS();
-});
-
-/* ── 글꼴 ── */
-document.getElementById('fontScroll').querySelectorAll('.fc').forEach(el=>{
-  el.addEventListener('click', function(){
-    document.getElementById('fontScroll').querySelectorAll('.fc').forEach(f=>f.classList.remove('on'));
-    this.classList.add('on'); curFont=this.dataset.font; curWeight=this.dataset.w;
-    document.fonts.ready.then(()=>{ setTimeout(()=>{ draw(); saveS(); }, 60); });
-  });
-});
-
-/* ── 정렬 ── */
-document.getElementById('alignRow').querySelectorAll('.abtn').forEach(el=>{
-  el.addEventListener('click', function(){
-    document.getElementById('alignRow').querySelectorAll('.abtn').forEach(b=>b.classList.remove('on'));
-    this.classList.add('on'); align=this.dataset.a; draw(); saveS();
-  });
-});
-
-/* ── 글자색 ── */
-document.getElementById('txtColorRow').querySelectorAll('.tc').forEach(el=>{
-  el.addEventListener('click', function(){
-    document.getElementById('txtColorRow').querySelectorAll('.tc').forEach(s=>s.classList.remove('on'));
-    this.classList.add('on'); txtColor=this.dataset.c;
-    document.getElementById('txtCustom').value=txtColor; draw(); saveS();
-  });
-});
-document.getElementById('txtCustom').addEventListener('input', function(){
-  document.getElementById('txtColorRow').querySelectorAll('.tc').forEach(s=>s.classList.remove('on'));
-  txtColor=this.value; draw(); saveS();
-});
-
-/* ── 저장 ── */
-document.getElementById('saveBtn').addEventListener('click', ()=>{
-  document.getElementById('dateInput').blur();
-  document.getElementById('seqInput').blur();
-  document.fonts.ready.then(()=>{
-    setTimeout(()=>{
-      const _d=dragging, _p=pinching;
-      dragging=false; pinching=false;
-      draw();
-      setTimeout(()=>{
-        dragging=_d; pinching=_p;
-        const a=document.createElement('a');
-        a.href=cv.toDataURL('image/jpeg',0.96);
-        a.download=dateText.replace(/\s/g,'')+'_'+seqText.replace(/\s/g,'')+'.jpg';
-        a.click();
-        const btn=document.getElementById('saveBtn');
-        btn.textContent='완료 ✓';
-        setTimeout(()=>{ btn.textContent='💾 저장'; draw(); }, 1600);
-      }, 80);
-    }, 80);
-  });
-});
-
-/* ── UI 복원 ── */
-(function(){
-  document.getElementById('dateSzR').value=dateSz;
-  document.getElementById('dateSzV').textContent=dateSz;
-  document.getElementById('seqSzR').value=seqSz;
-  document.getElementById('seqSzV').textContent=seqSz;
-  document.getElementById('bgCustom').value=bgColor;
-  document.getElementById('txtCustom').value=txtColor;
-  document.getElementById('bgColorRow').querySelectorAll('.sc').forEach(s=>s.classList.toggle('on',s.dataset.c===bgColor));
-  document.getElementById('bgGrid').querySelectorAll('.bgs').forEach(s=>s.classList.toggle('on',s.dataset.bg===bgType));
-  document.getElementById('fontScroll').querySelectorAll('.fc').forEach(f=>f.classList.toggle('on',f.dataset.font===curFont));
-  document.getElementById('alignRow').querySelectorAll('.abtn').forEach(b=>b.classList.toggle('on',b.dataset.a===align));
-  document.getElementById('txtColorRow').querySelectorAll('.tc').forEach(s=>s.classList.toggle('on',s.dataset.c===txtColor));
-})();
-
-/* ── 힌트 페이드아웃 ── */
-setTimeout(()=>{
-  const h=document.getElementById('cvHint');
-  if(h){ h.style.opacity='0'; setTimeout(()=>h.remove(),500); }
-}, 3000);
-
-if('serviceWorker' in navigator&&(location.hostname.endsWith('github.io')||location.hostname==='localhost')){
-  navigator.serviceWorker.register('./sw.js').catch(()=>{});
-}
-</script>
-<!-- 하단 네비 -->
+<!-- 네비바 -->
 <nav class="bottom-nav">
   <button class="nav-item on"><div class="nav-icon">📋</div><span>표지카드</span></button>
   <button class="nav-item" onclick="location.href='./camera.html'"><div class="nav-icon">📷</div><span>카메라</span></button>
@@ -633,5 +268,181 @@ if('serviceWorker' in navigator&&(location.hostname.endsWith('github.io')||locat
   <button class="nav-item" onclick="location.href='./settings.html'"><div class="nav-icon">⚙️</div><span>설정</span></button>
 </nav>
 
+<script>
+const LS='ccv5';
+function loadS(){try{return JSON.parse(localStorage.getItem(LS))||{};}catch(e){return{};}}
+function saveS(){try{localStorage.setItem(LS,JSON.stringify({bgColor,bgType,txtColor,dateSz,seqSz,curFont,curWeight,align,tx,ty}));}catch(e){}}
+
+const _s=loadS();
+let bgColor=_s.bgColor||'#4DB6AC', bgType=_s.bgType||'solid';
+let txtColor=_s.txtColor||'#ffffff';
+let dateSz=_s.dateSz||60, seqSz=_s.seqSz||160;
+let curFont=_s.curFont||"'Noto Sans KR',sans-serif", curWeight=_s.curWeight||'900';
+let align=_s.align||'center';
+
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+const W=900,H=900; cv.width=W; cv.height=H;
+
+function todayLabel(){const d=new Date();return(d.getMonth()+1)+'월'+d.getDate()+'일';}
+let dateText=todayLabel(), seqText='1번';
+let tx=_s.tx!==undefined?_s.tx:W/2, ty=_s.ty!==undefined?_s.ty:Math.round(H*0.38);
+let dragging=false,dragOffX=0,dragOffY=0;
+let pinching=false,pinchStartDist=0,pinchStartSz=0,pinchStartDateSz=0;
+let boxW=0,boxH=0;
+
+function getGrad(type){
+  const p={g1:['#667eea','#764ba2'],g2:['#f093fb','#f5576c'],g3:['#4facfe','#00f2fe'],g4:['#43e97b','#38f9d7'],g5:['#fa709a','#fee140'],g6:['#30cfd0','#330867']};
+  if(!p[type])return null;
+  const g=ctx.createLinearGradient(0,0,W,H);
+  g.addColorStop(0,p[type][0]);g.addColorStop(1,p[type][1]);return g;
+}
+
+function draw(){
+  const grad=getGrad(bgType);
+  if(grad){ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);}
+  else if(bgType==='grid'){
+    ctx.fillStyle=bgColor;ctx.fillRect(0,0,W,H);
+    ctx.strokeStyle='rgba(255,255,255,0.18)';ctx.lineWidth=1;
+    const gs=Math.round(W/30);
+    for(let x=0;x<=W;x+=gs){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+    for(let y=0;y<=H;y+=gs){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  } else {ctx.fillStyle=bgColor;ctx.fillRect(0,0,W,H);}
+
+  const lineGap=Math.round(seqSz*0.25), totalH=dateSz+lineGap+seqSz;
+  const dateY=ty-totalH/2+dateSz/2, seqY=ty+totalH/2-seqSz/2;
+  const ax=align==='left'?tx-boxW/2+10:align==='right'?tx+boxW/2-10:tx;
+
+  ctx.textAlign=align; ctx.textBaseline='middle'; ctx.fillStyle=txtColor;
+
+  if(dragging||pinching){
+    ctx.save();ctx.strokeStyle='rgba(255,255,255,0.5)';ctx.lineWidth=2;
+    ctx.setLineDash([8,5]);ctx.strokeRect(tx-boxW/2,ty-boxH/2,boxW,boxH);ctx.restore();
+  }
+
+  ctx.font=curWeight+' '+dateSz+'px '+curFont; ctx.fillText(dateText,ax,dateY);
+  ctx.font=curWeight+' '+seqSz+'px '+curFont; ctx.fillText(seqText,ax,seqY);
+
+  ctx.font=curWeight+' '+dateSz+'px '+curFont; const dw=ctx.measureText(dateText).width;
+  ctx.font=curWeight+' '+seqSz+'px '+curFont; const sw=ctx.measureText(seqText).width;
+  boxW=Math.max(dw,sw)+40; boxH=totalH+40;
+}
+
+document.fonts.ready.then(()=>{
+  setTimeout(()=>{draw();document.getElementById('dateInput').value=dateText;document.getElementById('seqInput').value=seqText;},100);
+});
+
+document.getElementById('dateInput').addEventListener('input',function(){dateText=this.value||todayLabel();draw();saveS();});
+document.getElementById('seqInput').addEventListener('input',function(){seqText=this.value||'1번';draw();saveS();});
+
+function toCV(cx,cy){const r=cv.getBoundingClientRect();return{x:(cx-r.left)*(W/r.width),y:(cy-r.top)*(H/r.height)};}
+function hitBox(x,y){return Math.abs(x-tx)<boxW/2+20&&Math.abs(y-ty)<boxH/2+20;}
+function pinchDist(t){return Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY);}
+function pinchMid(t){return toCV((t[0].clientX+t[1].clientX)/2,(t[0].clientY+t[1].clientY)/2);}
+
+let lastTap=0,editTarget=null;
+const editOverlay=document.createElement('div');
+editOverlay.style.cssText='display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.55);align-items:center;justify-content:center;flex-direction:column;';
+editOverlay.innerHTML=`<div style="background:#1e1e2e;border-radius:16px;padding:20px;width:88vw;max-width:360px;">
+  <div id="editLabel" style="color:rgba(255,255,255,0.55);font-size:12px;font-weight:700;margin-bottom:8px;font-family:'Noto Sans KR',sans-serif;"></div>
+  <input id="editInput" type="text" inputmode="text" autocomplete="off" spellcheck="false"
+    style="width:100%;background:rgba(255,255,255,0.1);border:1.5px solid rgba(255,255,255,0.25);border-radius:10px;color:#fff;font-size:22px;font-weight:700;font-family:'Noto Sans KR',sans-serif;padding:10px 14px;outline:none;-webkit-user-select:text;user-select:text;"/>
+  <div style="display:flex;gap:8px;margin-top:12px;">
+    <button id="editCancel" style="flex:1;height:40px;border-radius:8px;border:1.5px solid rgba(255,255,255,0.2);background:transparent;color:#fff;font-size:14px;font-family:'Noto Sans KR',sans-serif;cursor:pointer;">취소</button>
+    <button id="editOk" style="flex:2;height:40px;border-radius:8px;border:none;background:#E05A2B;color:#fff;font-size:14px;font-weight:700;font-family:'Noto Sans KR',sans-serif;cursor:pointer;">확인</button>
+  </div></div>`;
+document.body.appendChild(editOverlay);
+
+function openEdit(t){editTarget=t;editOverlay.style.display='flex';const inp=document.getElementById('editInput');document.getElementById('editLabel').textContent=t==='date'?'📅 날짜 입력':'🔢 번호 입력';inp.value=t==='date'?dateText:seqText;inp.placeholder=t==='date'?'예) 4월29일':'예) 3번';setTimeout(()=>inp.focus(),80);}
+function closeEdit(apply){if(apply){const v=document.getElementById('editInput').value.trim();if(editTarget==='date'){dateText=v||todayLabel();document.getElementById('dateInput').value=dateText;}else{seqText=v||'1번';document.getElementById('seqInput').value=seqText;}draw();saveS();}editOverlay.style.display='none';}
+document.getElementById('editCancel').addEventListener('click',()=>closeEdit(false));
+document.getElementById('editOk').addEventListener('click',()=>closeEdit(true));
+document.getElementById('editInput').addEventListener('keydown',e=>{if(e.key==='Enter')closeEdit(true);});
+editOverlay.addEventListener('click',e=>{if(e.target===editOverlay)closeEdit(false);});
+
+cv.addEventListener('touchstart',e=>{
+  const now=Date.now();
+  if(e.touches.length===2){dragging=false;pinching=true;pinchStartDist=pinchDist(e.touches);pinchStartSz=seqSz;pinchStartDateSz=dateSz;e.preventDefault();return;}
+  const p=toCV(e.touches[0].clientX,e.touches[0].clientY);
+  if(now-lastTap<300&&hitBox(p.x,p.y)){lastTap=0;const lg=Math.round(seqSz*0.25),th=dateSz+lg+seqSz,dy=ty-th/2+dateSz/2;openEdit(p.y<(dy+seqSz*0.3)?'date':'seq');e.preventDefault();return;}
+  lastTap=now;
+  if(hitBox(p.x,p.y)){dragging=true;dragOffX=p.x-tx;dragOffY=p.y-ty;e.preventDefault();}
+},{passive:false});
+
+cv.addEventListener('touchmove',e=>{
+  if(e.touches.length===2&&pinching){
+    e.preventDefault();
+    const ratio=pinchDist(e.touches)/pinchStartDist;
+    seqSz=Math.round(Math.max(40,Math.min(500,pinchStartSz*ratio)));
+    dateSz=Math.round(Math.max(20,Math.min(300,pinchStartDateSz*ratio)));
+    const mid=pinchMid(e.touches);tx=tx*0.85+mid.x*0.15;ty=ty*0.85+mid.y*0.15;
+    document.getElementById('seqSzR').value=seqSz;document.getElementById('seqSzV').textContent=seqSz;
+    document.getElementById('dateSzR').value=dateSz;document.getElementById('dateSzV').textContent=dateSz;
+    draw();return;
+  }
+  if(!dragging)return;e.preventDefault();
+  const p=toCV(e.touches[0].clientX,e.touches[0].clientY);
+  tx=Math.max(boxW/2,Math.min(W-boxW/2,p.x-dragOffX));ty=Math.max(boxH/2,Math.min(H-boxH/2,p.y-dragOffY));draw();
+},{passive:false});
+
+cv.addEventListener('touchend',e=>{if(e.touches.length<2&&pinching){pinching=false;saveS();return;}if(dragging){dragging=false;saveS();}});
+cv.addEventListener('mousedown',e=>{const p=toCV(e.clientX,e.clientY);if(hitBox(p.x,p.y)){dragging=true;dragOffX=p.x-tx;dragOffY=p.y-ty;cv.style.cursor='grabbing';}});
+cv.addEventListener('mousemove',e=>{const p=toCV(e.clientX,e.clientY);if(dragging){tx=Math.max(boxW/2,Math.min(W-boxW/2,p.x-dragOffX));ty=Math.max(boxH/2,Math.min(H-boxH/2,p.y-dragOffY));draw();}else{cv.style.cursor=hitBox(p.x,p.y)?'grab':'default';}});
+cv.addEventListener('mouseup',()=>{if(dragging){dragging=false;cv.style.cursor='default';saveS();}});
+cv.addEventListener('dblclick',e=>{const p=toCV(e.clientX,e.clientY);if(!hitBox(p.x,p.y))return;const lg=Math.round(seqSz*0.25),th=dateSz+lg+seqSz,dy=ty-th/2+dateSz/2;openEdit(p.y<(dy+seqSz*0.3)?'date':'seq');});
+
+function togglePanel(pid,bid){const show=document.getElementById(pid).classList.contains('show');closePanel();if(!show){document.getElementById(pid).classList.add('show');document.getElementById(bid).classList.add('on');}document.getElementById('dateInput').blur();document.getElementById('seqInput').blur();}
+function closePanel(){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('show'));document.querySelectorAll('.cbtn').forEach(b=>b.classList.remove('on'));}
+
+document.getElementById('bgColorRow').querySelectorAll('.sc').forEach(el=>{el.addEventListener('click',function(){document.getElementById('bgColorRow').querySelectorAll('.sc').forEach(s=>s.classList.remove('on'));this.classList.add('on');bgColor=this.dataset.c;document.getElementById('bgCustom').value=bgColor;draw();saveS();});});
+document.getElementById('bgCustom').addEventListener('input',function(){document.getElementById('bgColorRow').querySelectorAll('.sc').forEach(s=>s.classList.remove('on'));bgColor=this.value;draw();saveS();});
+document.getElementById('bgGrid').querySelectorAll('.bgs').forEach(el=>{el.addEventListener('click',function(){document.getElementById('bgGrid').querySelectorAll('.bgs').forEach(s=>s.classList.remove('on'));this.classList.add('on');bgType=this.dataset.bg;draw();saveS();});});
+document.getElementById('dateSzR').addEventListener('input',function(){dateSz=+this.value;document.getElementById('dateSzV').textContent=this.value;draw();saveS();});
+document.getElementById('seqSzR').addEventListener('input',function(){seqSz=+this.value;document.getElementById('seqSzV').textContent=this.value;draw();saveS();});
+document.getElementById('fontScroll').querySelectorAll('.fc').forEach(el=>{el.addEventListener('click',function(){document.getElementById('fontScroll').querySelectorAll('.fc').forEach(f=>f.classList.remove('on'));this.classList.add('on');curFont=this.dataset.font;curWeight=this.dataset.w;document.fonts.ready.then(()=>{setTimeout(()=>{draw();saveS();},60);});});});
+document.getElementById('alignRow').querySelectorAll('.abtn').forEach(el=>{el.addEventListener('click',function(){document.getElementById('alignRow').querySelectorAll('.abtn').forEach(b=>b.classList.remove('on'));this.classList.add('on');align=this.dataset.a;draw();saveS();});});
+document.getElementById('txtColorRow').querySelectorAll('.tc').forEach(el=>{el.addEventListener('click',function(){document.getElementById('txtColorRow').querySelectorAll('.tc').forEach(s=>s.classList.remove('on'));this.classList.add('on');txtColor=this.dataset.c;document.getElementById('txtCustom').value=txtColor;draw();saveS();});});
+document.getElementById('txtCustom').addEventListener('input',function(){document.getElementById('txtColorRow').querySelectorAll('.tc').forEach(s=>s.classList.remove('on'));txtColor=this.value;draw();saveS();});
+
+/* 저장 완료 토스트 */
+const toast=document.createElement('div');
+toast.style.cssText='display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:999;background:rgba(20,20,30,0.92);backdrop-filter:blur(8px);border-radius:16px;padding:28px 36px;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,0.4);';
+toast.innerHTML='<div style="font-size:42px;margin-bottom:10px;">✅</div><div style="color:#fff;font-size:17px;font-weight:700;font-family:\'Noto Sans KR\',sans-serif;">저장했습니다</div><div id="toastFilename" style="color:rgba(255,255,255,0.5);font-size:12px;margin-top:6px;font-family:\'Noto Sans KR\',sans-serif;"></div>';
+document.body.appendChild(toast);
+function showToast(fn){document.getElementById('toastFilename').textContent=fn;toast.style.display='block';setTimeout(()=>{toast.style.display='none';},1800);}
+
+document.getElementById('saveBtn').addEventListener('click',()=>{
+  document.getElementById('dateInput').blur();document.getElementById('seqInput').blur();
+  document.fonts.ready.then(()=>{
+    setTimeout(()=>{
+      const _d=dragging,_p=pinching;dragging=false;pinching=false;draw();
+      setTimeout(()=>{
+        dragging=_d;pinching=_p;
+        const fn=dateText.replace(/\s/g,'')+'_'+seqText.replace(/\s/g,'')+'.jpg';
+        const a=document.createElement('a');a.href=cv.toDataURL('image/jpeg',0.96);a.download=fn;a.click();
+        document.getElementById('saveBtn').textContent='완료 ✓';
+        setTimeout(()=>{document.getElementById('saveBtn').textContent='💾 저장';draw();},1600);
+        showToast(fn);
+      },80);
+    },80);
+  });
+});
+
+(function(){
+  document.getElementById('dateSzR').value=dateSz;document.getElementById('dateSzV').textContent=dateSz;
+  document.getElementById('seqSzR').value=seqSz;document.getElementById('seqSzV').textContent=seqSz;
+  document.getElementById('bgCustom').value=bgColor;document.getElementById('txtCustom').value=txtColor;
+  document.getElementById('bgColorRow').querySelectorAll('.sc').forEach(s=>s.classList.toggle('on',s.dataset.c===bgColor));
+  document.getElementById('bgGrid').querySelectorAll('.bgs').forEach(s=>s.classList.toggle('on',s.dataset.bg===bgType));
+  document.getElementById('fontScroll').querySelectorAll('.fc').forEach(f=>f.classList.toggle('on',f.dataset.font===curFont));
+  document.getElementById('alignRow').querySelectorAll('.abtn').forEach(b=>b.classList.toggle('on',b.dataset.a===align));
+  document.getElementById('txtColorRow').querySelectorAll('.tc').forEach(s=>s.classList.toggle('on',s.dataset.c===txtColor));
+})();
+
+setTimeout(()=>{const h=document.getElementById('cvHint');if(h){h.style.opacity='0';setTimeout(()=>h.remove(),500);}},3000);
+
+if('serviceWorker' in navigator&&(location.hostname.endsWith('github.io')||location.hostname==='localhost')){
+  navigator.serviceWorker.register('./sw.js').catch(()=>{});
+}
+</script>
 </body>
 </html>
