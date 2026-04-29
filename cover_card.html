@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ko" translate="no" class="notranslate">
+<head>
+<meta charset="UTF-8">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#185FA5">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>표지 카드 생성기</title>
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@700;900&family=Noto+Serif+KR:wght@900&family=Nanum+Gothic:wght@800&family=Black+Han+Sans&family=Jua&family=Nanum+Myeongjo:wght@800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blue:#185FA5;--blue-l:#EBF4FF;
+  --border:#D8D6CE;
+  --bg:#F5F4F0;--card:#fff;
+  --text:#1a1a1a;--sub:#666;--hint:#aaa;
+  --r:12px;--nav-h:62px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+.notranslate{translate:no !important}
+body{
+  font-family:-apple-system,'Noto Sans KR',sans-serif;
+  background:var(--bg);color:var(--text);font-size:14px;min-height:100vh;
+  -webkit-user-select:none;user-select:none;
+  padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px));
+}
+.header{background:var(--blue);color:white;padding:14px 16px 12px;display:flex;align-items:center;gap:10px}
+.back-btn{height:30px;padding:0 10px;background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.35);border-radius:8px;color:white;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;white-space:nowrap;flex-shrink:0}
+.header h1{font-size:15px;font-weight:700}
+.header-sub{font-size:10px;opacity:0.65;margin-top:1px}
+.main{padding:14px;display:flex;flex-direction:column;gap:10px}
+.preview-wrap{border-radius:var(--r);overflow:hidden;box-shadow:0 2px 14px rgba(0,0,0,0.14)}
+canvas{display:block;width:100%}
+.input-card{background:var(--card);border-radius:var(--r);border:0.5px solid var(--border);overflow:hidden}
+.input-row{display:flex;align-items:center;padding:0 16px;height:56px;gap:12px;border-bottom:0.5px solid var(--border)}
+.input-row:last-child{border-bottom:none}
+.i-lbl{font-size:11px;font-weight:700;color:var(--sub);width:36px;flex-shrink:0;letter-spacing:.03em}
+.text-inp{flex:1;border:none;outline:none;font-size:24px;font-weight:900;color:var(--text);background:transparent;padding:0;-webkit-user-select:text;user-select:text;font-family:'Noto Sans KR',sans-serif}
+.text-inp::placeholder{color:var(--hint);font-weight:400;font-size:16px}
+.seq-ctrl{display:flex;align-items:center;gap:8px;flex:1}
+.sq-btn{width:36px;height:36px;border-radius:50%;border:0.5px solid var(--border);background:var(--bg);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;user-select:none;flex-shrink:0;color:var(--text)}
+.sq-btn:active{background:var(--blue-l);transform:scale(0.91)}
+.seq-num-inp{font-size:24px;font-weight:900;color:var(--text);border:none;outline:none;background:transparent;text-align:center;width:54px;-webkit-user-select:text;user-select:text;font-family:'Noto Sans KR',sans-serif}
+.seq-unit{font-size:14px;color:var(--sub);font-weight:600}
+.acc{background:var(--card);border-radius:var(--r);border:0.5px solid var(--border);overflow:hidden}
+.acc-head{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;cursor:pointer;user-select:none}
+.acc-head:active{opacity:.7}
+.acc-title{font-size:12px;font-weight:700;color:var(--sub);letter-spacing:.04em}
+.acc-arrow{font-size:11px;color:var(--hint);transition:transform .2s}
+.acc-arrow.open{transform:rotate(180deg)}
+.acc-body{border-top:0.5px solid var(--border);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.acc-body.collapsed{display:none}
+.font-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.font-btn{padding:10px 8px;border:0.5px solid var(--border);border-radius:8px;background:var(--bg);cursor:pointer;text-align:center}
+.font-btn:active{transform:scale(.97)}
+.font-btn.on{border-color:var(--blue);background:var(--blue-l)}
+.font-name{font-size:10px;color:var(--sub);margin-bottom:5px}
+.font-sample{font-size:16px;color:var(--text);line-height:1.25}
+.color-row{display:flex;align-items:center;gap:10px}
+.c-lbl{font-size:12px;font-weight:700;color:var(--sub);width:44px;flex-shrink:0}
+.swatches{display:flex;gap:7px;flex-wrap:wrap;flex:1}
+.sw{width:30px;height:30px;border-radius:7px;cursor:pointer;border:2px solid transparent;flex-shrink:0}
+.sw:active{transform:scale(.88)}
+.sw.on{border-color:#fff;outline:2.5px solid var(--blue)}
+.color-pick{width:38px;height:30px;border:0.5px solid var(--border);border-radius:7px;padding:0;cursor:pointer;background:none;flex-shrink:0}
+.slider-row{display:flex;align-items:center;gap:10px}
+.s-lbl{font-size:12px;font-weight:700;color:var(--sub);width:44px;flex-shrink:0}
+.s-val{font-size:13px;font-weight:700;color:var(--blue);width:32px;text-align:right;flex-shrink:0}
+input[type=range]{flex:1;accent-color:var(--blue)}
+.save-btn{width:100%;padding:15px;background:var(--blue);color:#fff;border:none;border-radius:var(--r);font-family:'Noto Sans KR',sans-serif;font-size:15px;font-weight:700;cursor:pointer}
+.save-btn:active{opacity:.82;transform:scale(.99)}
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;
+  height:calc(var(--nav-h) + env(safe-area-inset-bottom,0px));
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  background:var(--card);border-top:0.5px solid var(--border);
+  display:flex;align-items:stretch;z-index:200;
+}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;border:none;background:none;padding-bottom:2px}
+.nav-item.on{color:var(--blue)}
+.nav-icon{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:8px;font-size:20px}
+.nav-item.on .nav-icon{background:rgba(24,95,165,.1)}
+.nav-label{font-size:10px;font-weight:600;letter-spacing:-0.01em}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <button class="back-btn" onclick="location.href='./index.html'">← 홈</button>
+  <div style="flex:1;margin-left:8px">
+    <h1>표지 카드 생성기</h1>
+    <div class="header-sub">농협 전산 갤러리 구분용</div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="preview-wrap"><canvas id="cv"></canvas></div>
+
+  <div class="input-card">
+    <div class="input-row">
+      <div class="i-lbl">날짜</div>
+      <input class="text-inp" id="dateInp" type="text" placeholder="10월 27일" autocomplete="off" spellcheck="false"/>
+    </div>
+    <div class="input-row">
+      <div class="i-lbl">순번</div>
+      <div class="seq-ctrl">
+        <button class="sq-btn" id="minus">−</button>
+        <input class="seq-num-inp" id="seqInp" type="text" inputmode="numeric" autocomplete="off"/>
+        <button class="sq-btn" id="plus">+</button>
+        <span class="seq-unit">번</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="acc">
+    <div class="acc-head" onclick="toggle(this)"><span class="acc-title">글자체</span><span class="acc-arrow">▼</span></div>
+    <div class="acc-body collapsed">
+      <div class="font-grid" id="fontGrid">
+        <div class="font-btn on" data-font="'Noto Sans KR',sans-serif" data-weight="900">
+          <div class="font-name">맑은 고딕 계열</div>
+          <div class="font-sample" style="font-family:'Noto Sans KR';font-weight:900;">10월27일 1번</div>
+        </div>
+        <div class="font-btn" data-font="'Nanum Gothic',sans-serif" data-weight="800">
+          <div class="font-name">굴림 계열</div>
+          <div class="font-sample" style="font-family:'Nanum Gothic';font-weight:800;">10월27일 1번</div>
+        </div>
+        <div class="font-btn" data-font="'Noto Serif KR',serif" data-weight="900">
+          <div class="font-name">바탕 계열</div>
+          <div class="font-sample" style="font-family:'Noto Serif KR';font-weight:900;">10월27일 1번</div>
+        </div>
+        <div class="font-btn" data-font="'Nanum Myeongjo',serif" data-weight="800">
+          <div class="font-name">나눔명조 계열</div>
+          <div class="font-sample" style="font-family:'Nanum Myeongjo';font-weight:800;">10월27일 1번</div>
+        </div>
+        <div class="font-btn" data-font="'Black Han Sans',sans-serif" data-weight="400">
+          <div class="font-name">HY헤드라인 계열</div>
+          <div class="font-sample" style="font-family:'Black Han Sans';">10월27일 1번</div>
+        </div>
+        <div class="font-btn" data-font="'Jua',sans-serif" data-weight="400">
+          <div class="font-name">HY강B 계열</div>
+          <div class="font-sample" style="font-family:'Jua';">10월27일 1번</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="acc">
+    <div class="acc-head" onclick="toggle(this)"><span class="acc-title">배경색</span><span class="acc-arrow">▼</span></div>
+    <div class="acc-body collapsed">
+      <div class="color-row">
+        <div class="c-lbl">색상</div>
+        <div class="swatches" id="bgSwatches">
+          <div class="sw on" data-c="#1a6b2e" style="background:#1a6b2e"></div>
+          <div class="sw" data-c="#185FA5" style="background:#185FA5"></div>
+          <div class="sw" data-c="#B71C1C" style="background:#B71C1C"></div>
+          <div class="sw" data-c="#E65100" style="background:#E65100"></div>
+          <div class="sw" data-c="#4A148C" style="background:#4A148C"></div>
+          <div class="sw" data-c="#212121" style="background:#212121"></div>
+          <div class="sw" data-c="#ffffff" style="background:#fff;border-color:#ccc"></div>
+          <div class="sw" data-c="#F5F0E8" style="background:#F5F0E8;border-color:#ccc"></div>
+        </div>
+        <input type="color" class="color-pick" id="bgPicker" value="#1a6b2e"/>
+      </div>
+    </div>
+  </div>
+
+  <div class="acc">
+    <div class="acc-head" onclick="toggle(this)"><span class="acc-title">글자색</span><span class="acc-arrow">▼</span></div>
+    <div class="acc-body collapsed">
+      <div class="color-row">
+        <div class="c-lbl">색상</div>
+        <div class="swatches" id="txtSwatches">
+          <div class="sw on" data-c="#ffffff" style="background:#fff;border-color:#ccc"></div>
+          <div class="sw" data-c="#212121" style="background:#212121"></div>
+          <div class="sw" data-c="#FFD600" style="background:#FFD600"></div>
+          <div class="sw" data-c="#FF6F00" style="background:#FF6F00"></div>
+          <div class="sw" data-c="#185FA5" style="background:#185FA5"></div>
+          <div class="sw" data-c="#B71C1C" style="background:#B71C1C"></div>
+        </div>
+        <input type="color" class="color-pick" id="txtPicker" value="#ffffff"/>
+      </div>
+    </div>
+  </div>
+
+  <div class="acc">
+    <div class="acc-head" onclick="toggle(this)"><span class="acc-title">글자 크기</span><span class="acc-arrow">▼</span></div>
+    <div class="acc-body collapsed">
+      <div class="slider-row">
+        <div class="s-lbl">날짜</div>
+        <input type="range" id="dateSz" min="60" max="220" value="130" step="5"/>
+        <div class="s-val" id="dateSzVal">130</div>
+      </div>
+      <div class="slider-row">
+        <div class="s-lbl">순번</div>
+        <input type="range" id="seqSz" min="80" max="260" value="160" step="5"/>
+        <div class="s-val" id="seqSzVal">160</div>
+      </div>
+    </div>
+  </div>
+
+  <button class="save-btn" id="saveBtn">이미지 저장 (갤러리)</button>
+</div>
+
+<nav class="bottom-nav">
+  <button class="nav-item on">
+    <div class="nav-icon">📋</div>
+    <span class="nav-label">표지카드</span>
+  </button>
+</nav>
+
+<script>
+function toggle(h){
+  const b=h.nextElementSibling,a=h.querySelector('.acc-arrow'),o=!b.classList.contains('collapsed');
+  b.classList.toggle('collapsed',o);a.classList.toggle('open',!o);
+}
+const dateInp=document.getElementById('dateInp');
+const seqInp=document.getElementById('seqInp');
+const cv=document.getElementById('cv');
+const ctx=cv.getContext('2d');
+const saveBtn=document.getElementById('saveBtn');
+const bgPicker=document.getElementById('bgPicker');
+const txtPicker=document.getElementById('txtPicker');
+const dateSzSlider=document.getElementById('dateSz');
+const seqSzSlider=document.getElementById('seqSz');
+const dateSzVal=document.getElementById('dateSzVal');
+const seqSzVal=document.getElementById('seqSzVal');
+const W=900,H=900;
+cv.width=W;cv.height=H;
+let bgColor='#1a6b2e',txtColor='#ffffff',dateSz=130,seqSz=160;
+let curFont="'Noto Sans KR',sans-serif",curWeight='900';
+function todayLabel(){const d=new Date();return(d.getMonth()+1)+'월 '+d.getDate()+'일';}
+dateInp.value=todayLabel();seqInp.value='1';
+function draw(){
+  ctx.fillStyle=bgColor;ctx.fillRect(0,0,W,H);
+  const dT=dateInp.value||'날짜',sT=(seqInp.value||'?')+'번';
+  const gap=Math.round(H*0.055),totalH=dateSz+gap+seqSz,startY=(H-totalH)/2+dateSz;
+  ctx.fillStyle=txtColor;ctx.textAlign='center';ctx.textBaseline='alphabetic';
+  ctx.font=curWeight+' '+dateSz+'px '+curFont;ctx.fillText(dT,W/2,startY);
+  ctx.font=curWeight+' '+seqSz+'px '+curFont;ctx.fillText(sT,W/2,startY+gap+seqSz);
+}
+document.fonts.ready.then(()=>{setTimeout(draw,120);});
+dateInp.addEventListener('input',draw);seqInp.addEventListener('input',draw);
+document.getElementById('minus').addEventListener('click',()=>{let v=parseInt(seqInp.value)||1;if(v>1){seqInp.value=v-1;}draw();});
+document.getElementById('plus').addEventListener('click',()=>{let v=parseInt(seqInp.value)||0;seqInp.value=v+1;draw();});
+document.getElementById('fontGrid').querySelectorAll('.font-btn').forEach(btn=>{
+  btn.addEventListener('click',function(){
+    document.getElementById('fontGrid').querySelectorAll('.font-btn').forEach(b=>b.classList.remove('on'));
+    this.classList.add('on');curFont=this.dataset.font;curWeight=this.dataset.weight;
+    document.fonts.ready.then(()=>{setTimeout(draw,80);});
+  });
+});
+function setupSwatches(cid,picker,setter){
+  document.getElementById(cid).querySelectorAll('.sw').forEach(sw=>{
+    sw.addEventListener('click',function(){
+      document.getElementById(cid).querySelectorAll('.sw').forEach(s=>s.classList.remove('on'));
+      this.classList.add('on');picker.value=this.dataset.c;setter(this.dataset.c);draw();
+    });
+  });
+  picker.addEventListener('input',function(){
+    document.getElementById(cid).querySelectorAll('.sw').forEach(s=>s.classList.remove('on'));
+    setter(this.value);draw();
+  });
+}
+setupSwatches('bgSwatches',bgPicker,v=>{bgColor=v;});
+setupSwatches('txtSwatches',txtPicker,v=>{txtColor=v;});
+dateSzSlider.addEventListener('input',function(){dateSz=+this.value;dateSzVal.textContent=this.value;draw();});
+seqSzSlider.addEventListener('input',function(){seqSz=+this.value;seqSzVal.textContent=this.value;draw();});
+saveBtn.addEventListener('click',()=>{
+  document.fonts.ready.then(()=>{setTimeout(()=>{
+    draw();setTimeout(()=>{
+      const dv=(dateInp.value||'date').replace(/\s/g,'');
+      const sv=seqInp.value||'1';
+      const a=document.createElement('a');
+      a.href=cv.toDataURL('image/jpeg',0.96);
+      a.download=dv+'_'+sv+'번.jpg';a.click();
+      saveBtn.textContent='저장 완료 ✓';
+      setTimeout(()=>{saveBtn.textContent='이미지 저장 (갤러리)';},1600);
+    },100);
+  },80);});
+});
+/* 서비스워커 */
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('./sw.js').catch(()=>{});
+}
+</script>
+</body>
+</html>
