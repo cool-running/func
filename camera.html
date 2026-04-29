@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ko" translate="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#185FA5">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>카메라</title>
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<style>
+:root{
+  --blue:#185FA5;--blue-l:#EBF4FF;
+  --border:#D8D6CE;--bg:#F5F4F0;--card:#fff;
+  --text:#1a1a1a;--sub:#666;--hint:#aaa;
+  --nav-h:62px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;background:var(--bg);}
+body{
+  font-family:-apple-system,'Noto Sans KR',sans-serif;
+  color:var(--text);font-size:14px;
+  display:flex;flex-direction:column;
+  padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px));
+  -webkit-user-select:none;user-select:none;
+}
+
+/* 탑바 */
+.topbar{
+  height:56px;padding:0 16px;
+  padding-top:env(safe-area-inset-top,0px);
+  display:flex;align-items:center;justify-content:space-between;
+  background:#fff;border-bottom:0.5px solid var(--border);
+  flex-shrink:0;z-index:10;
+}
+.topbar-title{font-size:17px;font-weight:700;}
+.topbar-count{font-size:13px;color:var(--sub);font-weight:600;}
+
+/* 촬영 버튼 영역 */
+.shoot-area{
+  padding:16px;display:flex;gap:10px;flex-shrink:0;
+  background:#fff;border-bottom:0.5px solid var(--border);
+}
+.shoot-btn{
+  flex:1;height:52px;border-radius:12px;
+  border:none;cursor:pointer;
+  font-size:14px;font-weight:700;
+  font-family:-apple-system,'Noto Sans KR',sans-serif;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.shoot-btn.primary{background:var(--blue);color:#fff;}
+.shoot-btn.secondary{background:var(--blue-l);color:var(--blue);}
+.shoot-btn:active{opacity:.8;transform:scale(.97);}
+
+/* 숨긴 input */
+#camInput{display:none;}
+#gallInput{display:none;}
+
+/* 사진 그리드 */
+.photo-grid{
+  flex:1;overflow-y:auto;
+  padding:12px;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:4px;
+  align-content:start;
+}
+.photo-item{
+  position:relative;aspect-ratio:1;
+  border-radius:8px;overflow:hidden;
+  background:#e0e0e0;
+}
+.photo-item img{
+  width:100%;height:100%;object-fit:cover;display:block;
+}
+.photo-del{
+  position:absolute;top:4px;right:4px;
+  width:22px;height:22px;border-radius:50%;
+  background:rgba(0,0,0,0.55);border:none;
+  color:#fff;font-size:14px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  line-height:1;
+}
+.photo-num{
+  position:absolute;bottom:4px;left:5px;
+  font-size:10px;font-weight:700;color:#fff;
+  text-shadow:0 1px 3px rgba(0,0,0,0.7);
+}
+
+/* 빈 상태 */
+.empty{
+  grid-column:1/4;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:60px 20px;gap:12px;color:var(--hint);text-align:center;
+}
+.empty-icon{font-size:48px;}
+.empty-txt{font-size:14px;font-weight:600;}
+.empty-sub{font-size:12px;line-height:1.6;}
+
+/* 전체보기 오버레이 */
+.viewer{
+  display:none;position:fixed;inset:0;z-index:300;
+  background:rgba(0,0,0,0.95);
+  flex-direction:column;align-items:center;justify-content:center;
+}
+.viewer.show{display:flex;}
+.viewer img{max-width:100%;max-height:calc(100vh - 120px);object-fit:contain;}
+.viewer-bar{
+  position:absolute;bottom:0;left:0;right:0;
+  padding:16px;padding-bottom:calc(16px + env(safe-area-inset-bottom,0px));
+  display:flex;gap:10px;background:rgba(0,0,0,0.6);
+}
+.viewer-close{
+  position:absolute;top:16px;right:16px;
+  width:36px;height:36px;border-radius:50%;
+  background:rgba(255,255,255,0.15);border:none;
+  color:#fff;font-size:20px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+}
+.vbtn{
+  flex:1;height:44px;border-radius:10px;border:none;
+  font-size:14px;font-weight:700;cursor:pointer;
+  font-family:-apple-system,'Noto Sans KR',sans-serif;
+}
+.vbtn.dl{background:var(--blue);color:#fff;}
+.vbtn.del{background:rgba(255,255,255,0.15);color:#fff;}
+
+/* 하단 네비 */
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;
+  height:calc(var(--nav-h) + env(safe-area-inset-bottom,0px));
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  background:var(--card);border-top:0.5px solid var(--border);
+  display:flex;align-items:stretch;z-index:200;
+}
+.nav-item{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:5px;cursor:pointer;border:none;background:none;
+  color:var(--hint);font-size:10px;font-weight:600;
+  letter-spacing:-0.01em;padding-bottom:2px;
+}
+.nav-item:active{opacity:.55}
+.nav-item.on{color:var(--blue)}
+.nav-icon{
+  width:28px;height:28px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;font-size:20px;
+}
+.nav-item.on .nav-icon{background:rgba(24,95,165,.1)}
+
+/* 토스트 */
+.toast{
+  display:none;position:fixed;bottom:calc(var(--nav-h) + 16px + env(safe-area-inset-bottom,0px));
+  left:50%;transform:translateX(-50%);
+  background:rgba(20,20,30,0.92);color:#fff;
+  font-size:13px;font-weight:600;
+  font-family:-apple-system,'Noto Sans KR',sans-serif;
+  padding:10px 20px;border-radius:20px;
+  white-space:nowrap;z-index:400;
+}
+</style>
+</head>
+<body>
+
+<!-- 탑바 -->
+<div class="topbar">
+  <span class="topbar-title">📷 카메라</span>
+  <span class="topbar-count" id="countLabel">0장</span>
+</div>
+
+<!-- 촬영 버튼 -->
+<div class="shoot-area">
+  <button class="shoot-btn primary" onclick="document.getElementById('camInput').click()">
+    📷 촬영
+  </button>
+  <button class="shoot-btn secondary" onclick="document.getElementById('gallInput').click()">
+    🖼 갤러리
+  </button>
+</div>
+
+<!-- 카메라 input (후면 카메라 우선) -->
+<input type="file" id="camInput" accept="image/*" capture="environment" multiple>
+<!-- 갤러리 input -->
+<input type="file" id="gallInput" accept="image/*" multiple>
+
+<!-- 사진 그리드 -->
+<div class="photo-grid" id="photoGrid">
+  <div class="empty" id="emptyState">
+    <div class="empty-icon">📷</div>
+    <div class="empty-txt">촬영된 사진이 없어요</div>
+    <div class="empty-sub">위 촬영 버튼을 눌러<br>사진을 추가하세요</div>
+  </div>
+</div>
+
+<!-- 전체보기 오버레이 -->
+<div class="viewer" id="viewer">
+  <button class="viewer-close" onclick="closeViewer()">✕</button>
+  <img id="viewerImg" src="" alt="">
+  <div class="viewer-bar">
+    <button class="vbtn dl" onclick="downloadCurrent()">💾 저장</button>
+    <button class="vbtn del" onclick="deleteCurrent()">🗑 삭제</button>
+  </div>
+</div>
+
+<!-- 토스트 -->
+<div class="toast" id="toast"></div>
+
+<!-- 하단 네비 -->
+<nav class="bottom-nav">
+  <button class="nav-item" onclick="location.href='./index.html'">
+    <div class="nav-icon">🏠</div><span>홈</span>
+  </button>
+  <button class="nav-item" onclick="location.href='./cover_card.html'">
+    <div class="nav-icon">📋</div><span>표지카드</span>
+  </button>
+  <button class="nav-item on">
+    <div class="nav-icon">📷</div><span>카메라</span>
+  </button>
+  <button class="nav-item" onclick="location.href='./location.html'">
+    <div class="nav-icon">📍</div><span>위치</span>
+  </button>
+  <button class="nav-item" onclick="location.href='./settings.html'">
+    <div class="nav-icon">⚙️</div><span>설정</span>
+  </button>
+</nav>
+
+<script>
+let photos = []; // {dataUrl, filename}
+let viewerIdx = -1;
+
+/* ── 사진 추가 ── */
+function handleFiles(files){
+  if(!files || !files.length) return;
+  let loaded = 0;
+  Array.from(files).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const ts = new Date();
+      const name = '사진_' + (ts.getMonth()+1).toString().padStart(2,'0')
+                 + ts.getDate().toString().padStart(2,'0')
+                 + '_' + ts.getHours().toString().padStart(2,'0')
+                 + ts.getMinutes().toString().padStart(2,'0')
+                 + ts.getSeconds().toString().padStart(2,'0') + '_' + (photos.length+1) + '.jpg';
+      photos.push({ dataUrl: e.target.result, filename: name });
+
+      /* 촬영 즉시 자동 다운로드 */
+      const a = document.createElement('a');
+      a.href = e.target.result;
+      a.download = name;
+      a.click();
+
+      loaded++;
+      if(loaded === files.length){ renderGrid(); showToast('💾 ' + loaded + '장 저장됐어요'); }
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+document.getElementById('camInput').addEventListener('change', function(){ handleFiles(this.files); this.value=''; });
+document.getElementById('gallInput').addEventListener('change', function(){ handleFiles(this.files); this.value=''; });
+
+/* ── 그리드 렌더 ── */
+function renderGrid(){
+  const grid = document.getElementById('photoGrid');
+  const empty = document.getElementById('emptyState');
+  // 기존 사진 아이템 제거
+  grid.querySelectorAll('.photo-item').forEach(el=>el.remove());
+
+  document.getElementById('countLabel').textContent = photos.length + '장';
+
+  if(photos.length === 0){
+    empty.style.display='flex'; return;
+  }
+  empty.style.display='none';
+
+  photos.forEach((p, i) => {
+    const div = document.createElement('div');
+    div.className = 'photo-item';
+    div.innerHTML = `
+      <img src="${p.dataUrl}" alt="사진${i+1}" loading="lazy">
+      <span class="photo-num">${i+1}</span>
+      <button class="photo-del" onclick="event.stopPropagation();deletePhoto(${i})">✕</button>`;
+    div.addEventListener('click', ()=>openViewer(i));
+    grid.appendChild(div);
+  });
+}
+
+/* ── 삭제 ── */
+function deletePhoto(idx){
+  photos.splice(idx, 1);
+  renderGrid();
+  showToast('🗑 삭제했어요');
+}
+
+/* ── 뷰어 ── */
+function openViewer(idx){
+  viewerIdx = idx;
+  document.getElementById('viewerImg').src = photos[idx].dataUrl;
+  document.getElementById('viewer').classList.add('show');
+}
+function closeViewer(){
+  document.getElementById('viewer').classList.remove('show');
+  viewerIdx = -1;
+}
+function downloadCurrent(){
+  if(viewerIdx < 0) return;
+  const a = document.createElement('a');
+  a.href = photos[viewerIdx].dataUrl;
+  a.download = photos[viewerIdx].filename;
+  a.click();
+  showToast('💾 저장했어요');
+}
+function deleteCurrent(){
+  if(viewerIdx < 0) return;
+  const idx = viewerIdx;
+  closeViewer();
+  deletePhoto(idx);
+}
+
+/* ── 토스트 ── */
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(()=>{ t.style.display='none'; }, 1800);
+}
+
+renderGrid();
+</script>
+</body>
+</html>
