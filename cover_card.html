@@ -232,14 +232,30 @@ const dateSzVal=document.getElementById('dateSzVal');
 const seqSzVal=document.getElementById('seqSzVal');
 const W=900,H=900;
 cv.width=W;cv.height=H;
-let bgColor='#1a6b2e',txtColor='#ffffff',dateSz=80,seqSz=500;
-let curFont="'Noto Sans KR',sans-serif",curWeight='900';
+
+/* ── localStorage 설정 저장/복원 ── */
+const LS='coverCardSettings';
+function loadSettings(){try{return JSON.parse(localStorage.getItem(LS))||{};}catch(e){return {};}}
+function saveSettings(){
+  try{
+    localStorage.setItem(LS,JSON.stringify({
+      bgColor,txtColor,dateSz,seqSz,curFont,curWeight,dateX,dateY
+    }));
+  }catch(e){}
+}
+const _s=loadSettings();
+let bgColor  = _s.bgColor  ||'#1a6b2e';
+let txtColor = _s.txtColor ||'#ffffff';
+let dateSz   = _s.dateSz   ||80;
+let seqSz    = _s.seqSz    ||500;
+let curFont  = _s.curFont  ||"'Noto Sans KR',sans-serif";
+let curWeight= _s.curWeight||'900';
+let dateX    = _s.dateX    ||(W-Math.round(W*0.06));
+let dateY    = _s.dateY    ||Math.round(H*0.1);
+let dragging = false;
+
 function todayLabel(){const d=new Date();return(d.getMonth()+1)+'월 '+d.getDate()+'일';}
 dateInp.value=todayLabel();seqInp.value='1';
-/* 날짜 위치 (캔버스 좌표 기준) */
-let dateX = W - Math.round(W*0.06);
-let dateY = Math.round(H*0.1);
-let dragging = false;
 
 function draw(){
   ctx.fillStyle=bgColor;ctx.fillRect(0,0,W,H);
@@ -295,7 +311,7 @@ cv.addEventListener('mousemove', e=>{
   if(dragging){ dateX=p.x; dateY=p.y; draw(); }
   else{ cv.style.cursor=hitDate(p.x,p.y)?'grab':'default'; }
 });
-cv.addEventListener('mouseup', ()=>{ dragging=false; cv.style.cursor='default'; draw(); });
+cv.addEventListener('mouseup', ()=>{ dragging=false; cv.style.cursor='default'; saveSettings(); draw(); });
 
 /* 터치 */
 cv.addEventListener('touchstart', e=>{
@@ -308,16 +324,33 @@ cv.addEventListener('touchmove', e=>{
   const t=e.touches[0], p=toCanvasXY(t.clientX,t.clientY);
   dateX=p.x; dateY=p.y; draw();
 },{passive:false});
-cv.addEventListener('touchend', ()=>{ dragging=false; draw(); });
+cv.addEventListener('touchend', ()=>{ dragging=false; saveSettings(); draw(); });
 
 document.fonts.ready.then(()=>{setTimeout(draw,120);});
 dateInp.addEventListener('input',draw);seqInp.addEventListener('input',draw);
 document.getElementById('minus').addEventListener('click',()=>{let v=parseInt(seqInp.value)||1;if(v>1){seqInp.value=v-1;}draw();});
 document.getElementById('plus').addEventListener('click',()=>{let v=parseInt(seqInp.value)||0;seqInp.value=v+1;draw();});
+/* 저장된 설정으로 UI 복원 */
+bgPicker.value=bgColor;
+txtPicker.value=txtColor;
+dateSzSlider.value=dateSz; dateSzVal.textContent=dateSz;
+seqSzSlider.value=seqSz;  seqSzVal.textContent=seqSz;
+document.getElementById('fontGrid').querySelectorAll('.font-btn').forEach(b=>{
+  if(b.dataset.font===curFont&&b.dataset.weight===curWeight) b.classList.add('on');
+  else b.classList.remove('on');
+});
+['bgSwatches','txtSwatches'].forEach(cid=>{
+  document.getElementById(cid).querySelectorAll('.sw').forEach(sw=>{
+    const isActive=(cid==='bgSwatches'&&sw.dataset.c===bgColor)||(cid==='txtSwatches'&&sw.dataset.c===txtColor);
+    sw.classList.toggle('on',isActive);
+  });
+});
+
 document.getElementById('fontGrid').querySelectorAll('.font-btn').forEach(btn=>{
   btn.addEventListener('click',function(){
     document.getElementById('fontGrid').querySelectorAll('.font-btn').forEach(b=>b.classList.remove('on'));
     this.classList.add('on');curFont=this.dataset.font;curWeight=this.dataset.weight;
+    saveSettings();
     document.fonts.ready.then(()=>{setTimeout(draw,80);});
   });
 });
@@ -325,18 +358,18 @@ function setupSwatches(cid,picker,setter){
   document.getElementById(cid).querySelectorAll('.sw').forEach(sw=>{
     sw.addEventListener('click',function(){
       document.getElementById(cid).querySelectorAll('.sw').forEach(s=>s.classList.remove('on'));
-      this.classList.add('on');picker.value=this.dataset.c;setter(this.dataset.c);draw();
+      this.classList.add('on');picker.value=this.dataset.c;setter(this.dataset.c);saveSettings();draw();
     });
   });
   picker.addEventListener('input',function(){
     document.getElementById(cid).querySelectorAll('.sw').forEach(s=>s.classList.remove('on'));
-    setter(this.value);draw();
+    setter(this.value);saveSettings();draw();
   });
 }
 setupSwatches('bgSwatches',bgPicker,v=>{bgColor=v;});
 setupSwatches('txtSwatches',txtPicker,v=>{txtColor=v;});
-dateSzSlider.addEventListener('input',function(){dateSz=+this.value;dateSzVal.textContent=this.value;draw();});
-seqSzSlider.addEventListener('input',function(){seqSz=+this.value;seqSzVal.textContent=this.value;draw();});
+dateSzSlider.addEventListener('input',function(){dateSz=+this.value;dateSzVal.textContent=this.value;saveSettings();draw();});
+seqSzSlider.addEventListener('input',function(){seqSz=+this.value;seqSzVal.textContent=this.value;saveSettings();draw();});
 saveBtn.addEventListener('click',()=>{
   dragging=false;
   document.fonts.ready.then(()=>{setTimeout(()=>{
