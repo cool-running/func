@@ -9,117 +9,66 @@
 <title>위치</title>
 <link rel="manifest" href="./manifest.json">
 <link rel="apple-touch-icon" href="./icon-192.png">
-<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=4e37fe9df4f59f95a43e3210327db09b&libraries=services&autoload=false"></script>
 <style>
 :root{
   --blue:#185FA5;--blue-l:#EBF4FF;
   --border:#D8D6CE;--bg:#F5F4F0;--card:#fff;
   --text:#1a1a1a;--sub:#666;--hint:#aaa;
-  --nav-h:62px;
+  --nav-h:62px;--top-h:56px;--panel-h:200px;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;}
-body{
-  font-family:-apple-system,'Noto Sans KR',sans-serif;
-  color:var(--text);font-size:14px;
-  position:relative;
-  -webkit-user-select:none;user-select:none;
-}
+html,body{width:100%;height:100%;overflow:hidden;}
+body{font-family:-apple-system,'Noto Sans KR',sans-serif;color:var(--text);font-size:14px;-webkit-user-select:none;user-select:none;}
 
-/* 탑바 */
-.topbar{
-  height:56px;padding:0 16px;
-  padding-top:env(safe-area-inset-top,0px);
-  display:flex;align-items:center;justify-content:space-between;
-  background:#fff;border-bottom:0.5px solid var(--border);
-  flex-shrink:0;z-index:10;
-}
+.topbar{position:fixed;top:0;left:0;right:0;height:var(--top-h);padding:0 16px;padding-top:env(safe-area-inset-top,0px);display:flex;align-items:center;justify-content:space-between;background:#fff;border-bottom:0.5px solid var(--border);z-index:100;}
 .topbar-title{font-size:17px;font-weight:700;}
-.gps-badge{font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;background:#eee;color:var(--hint);}
+.gps-badge{font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;background:#FFF8E1;color:#F57F17;}
 .gps-badge.ok{background:#E8F5E9;color:#2E7D32;}
-.gps-badge.loading{background:#FFF8E1;color:#F57F17;}
 .gps-badge.err{background:#FFEBEE;color:#C62828;}
 
-/* 지도 */
 #map{
-  width:100%;
-  position:absolute;
-  top:56px;
-  left:0;right:0;
-  bottom:240px;
+  position:fixed;
+  top:var(--top-h);left:0;right:0;
+  bottom:calc(var(--panel-h) + var(--nav-h) + env(safe-area-inset-bottom,0px));
+  z-index:1;
 }
 
-/* 하단 정보 패널 */
-.info-panel{
-  position:absolute;
-  bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px));
-  left:0;right:0;
-  background:#fff;
-  border-top:0.5px solid var(--border);
-  padding:12px 14px 14px;
-}
-.info-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
-.info-lbl{font-size:10px;font-weight:700;color:var(--hint);width:32px;flex-shrink:0;}
-.info-val{font-size:12px;font-weight:600;color:var(--text);flex:1;line-height:1.4;}
-
-/* 버튼 */
-.btn-row{display:flex;gap:8px;margin-top:10px;}
-.btn{
-  flex:1;height:44px;border-radius:10px;border:none;cursor:pointer;
-  font-size:13px;font-weight:700;
-  font-family:-apple-system,'Noto Sans KR',sans-serif;
-  display:flex;align-items:center;justify-content:center;gap:5px;
-}
-.btn:active{opacity:.8;transform:scale(.97);}
-.btn-locate{background:var(--blue);color:#fff;}
-.btn-save{background:#FEE500;color:#3C1E1E;}
-.btn-copy{background:var(--bg);color:var(--text);border:0.5px solid var(--border);}
-
-/* 내 위치 마커 중앙 버튼 */
-.center-btn{
-  position:absolute;bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px) + 200px);
-  right:14px;z-index:5;
+.myloc-btn{
+  position:fixed;right:14px;
+  bottom:calc(var(--panel-h) + var(--nav-h) + env(safe-area-inset-bottom,0px) + 14px);
   width:44px;height:44px;border-radius:50%;
   background:#fff;border:0.5px solid var(--border);
-  box-shadow:0 2px 8px rgba(0,0,0,0.15);
-  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 8px rgba(0,0,0,0.2);
   font-size:22px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;z-index:50;
 }
-.center-btn:active{opacity:.7;}
+.myloc-btn:active{opacity:.7;}
 
-/* 하단 네비 */
-.bottom-nav{
-  position:fixed;bottom:0;left:0;right:0;
-  height:calc(var(--nav-h) + env(safe-area-inset-bottom,0px));
-  padding-bottom:env(safe-area-inset-bottom,0px);
-  background:var(--card);border-top:0.5px solid var(--border);
-  display:flex;align-items:stretch;z-index:200;
+.panel{
+  position:fixed;left:0;right:0;
+  bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px));
+  height:var(--panel-h);
+  background:#fff;border-top:0.5px solid var(--border);
+  padding:10px 14px 12px;z-index:50;
 }
-.nav-item{
-  flex:1;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
-  gap:5px;cursor:pointer;border:none;background:none;
-  color:var(--hint);font-size:10px;font-weight:600;
-  letter-spacing:-0.01em;padding-bottom:2px;
-}
+.info-grid{display:grid;grid-template-columns:36px 1fr;gap:2px 8px;margin-bottom:10px;}
+.info-lbl{font-size:11px;font-weight:700;color:var(--hint);line-height:1.9;}
+.info-val{font-size:12px;font-weight:600;color:var(--text);line-height:1.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.btn-row{display:flex;gap:8px;}
+.btn{flex:1;height:42px;border-radius:10px;border:none;cursor:pointer;font-size:13px;font-weight:700;font-family:-apple-system,'Noto Sans KR',sans-serif;display:flex;align-items:center;justify-content:center;gap:5px;}
+.btn:active{opacity:.8;transform:scale(.97);}
+.btn-loc{background:var(--blue);color:#fff;}
+.btn-copy{background:var(--bg);color:var(--text);border:0.5px solid var(--border);}
+.btn-save{background:#FEE500;color:#3C1E1E;}
+
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;height:calc(var(--nav-h) + env(safe-area-inset-bottom,0px));padding-bottom:env(safe-area-inset-bottom,0px);background:var(--card);border-top:0.5px solid var(--border);display:flex;align-items:stretch;z-index:200;}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;border:none;background:none;color:var(--hint);font-size:10px;font-weight:600;letter-spacing:-0.01em;padding-bottom:2px;}
 .nav-item:active{opacity:.55}
 .nav-item.on{color:var(--blue)}
 .nav-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;}
 .nav-item.on .nav-icon{background:rgba(24,95,165,.1)}
 
-/* 토스트 */
-.toast{
-  display:none;position:fixed;
-  bottom:calc(var(--nav-h) + 16px + env(safe-area-inset-bottom,0px));
-  left:50%;transform:translateX(-50%);
-  background:rgba(20,20,30,0.92);color:#fff;
-  font-size:13px;font-weight:600;
-  font-family:-apple-system,'Noto Sans KR',sans-serif;
-  padding:10px 20px;border-radius:20px;
-  white-space:nowrap;z-index:999;
-}
-
-/* 저장 카드 캔버스 */
+.toast{display:none;position:fixed;bottom:calc(var(--nav-h) + 16px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:rgba(20,20,30,0.92);color:#fff;font-size:13px;font-weight:600;font-family:-apple-system,'Noto Sans KR',sans-serif;padding:10px 20px;border-radius:20px;white-space:nowrap;z-index:999;}
 #captureCanvas{display:none;}
 </style>
 </head>
@@ -127,42 +76,27 @@ body{
 
 <div class="topbar">
   <span class="topbar-title">📍 위치</span>
-  <span id="gpsBadge" class="gps-badge loading">위치 확인 중...</span>
+  <span id="gpsBadge" class="gps-badge">위치 확인 중...</span>
 </div>
 
-<!-- 카카오 지도 -->
 <div id="map"></div>
+<button class="myloc-btn" onclick="moveToMyLoc()">📍</button>
 
-<!-- 내 위치로 이동 버튼 -->
-<button class="center-btn" onclick="moveToMyLocation()" title="내 위치로">📍</button>
-
-<!-- 하단 정보 -->
-<div class="info-panel">
-  <div class="info-row">
-    <span class="info-lbl">위도</span>
-    <span class="info-val" id="latVal">—</span>
-  </div>
-  <div class="info-row">
-    <span class="info-lbl">경도</span>
-    <span class="info-val" id="lngVal">—</span>
-  </div>
-  <div class="info-row">
-    <span class="info-lbl">주소</span>
-    <span class="info-val" id="addrVal">위치를 가져오는 중...</span>
-  </div>
-  <div class="info-row">
-    <span class="info-lbl">정확도</span>
-    <span class="info-val" id="accVal">—</span>
+<div class="panel">
+  <div class="info-grid">
+    <span class="info-lbl">위도</span><span class="info-val" id="latVal">—</span>
+    <span class="info-lbl">경도</span><span class="info-val" id="lngVal">—</span>
+    <span class="info-lbl">주소</span><span class="info-val" id="addrVal">위치를 가져오는 중...</span>
+    <span class="info-lbl">정확도</span><span class="info-val" id="accVal">—</span>
   </div>
   <div class="btn-row">
-    <button class="btn btn-locate" onclick="getLocation()">🔄 위치 갱신</button>
-    <button class="btn btn-copy" onclick="copyCoord()">📋 좌표 복사</button>
+    <button class="btn btn-loc" onclick="getLocation()">🔄 갱신</button>
+    <button class="btn btn-copy" onclick="copyCoord()">📋 복사</button>
     <button class="btn btn-save" onclick="saveCard()">💾 저장</button>
   </div>
 </div>
 
 <canvas id="captureCanvas"></canvas>
-
 <div class="toast" id="toast"></div>
 
 <nav class="bottom-nav">
@@ -173,65 +107,53 @@ body{
   <button class="nav-item" onclick="location.href='./settings.html'"><div class="nav-icon">⚙️</div><span>설정</span></button>
 </nav>
 
+<!-- SDK는 body 맨 끝에, autoload=false로 -->
+<script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=4e37fe9df4f59f95a43e3210327db09b&libraries=services&autoload=false"></script>
 <script>
-let map, marker, curLat=null, curLng=null, curAcc=null, curAddr='—';
+let map=null, marker=null, geocoder=null;
+let curLat=null, curLng=null, curAcc=null, curAddr='—';
 
-/* ── 지도 초기화 ── */
-function initMap(lat, lng){
-  const container = document.getElementById('map');
-  const options = {
-    center: new kakao.maps.LatLng(lat, lng),
+/* ── 카카오맵 초기화 ── */
+kakao.maps.load(function(){
+  geocoder = new kakao.maps.services.Geocoder();
+
+  const defaultPos = new kakao.maps.LatLng(37.5665, 126.9780);
+  map = new kakao.maps.Map(document.getElementById('map'), {
+    center: defaultPos,
     level: 4
-  };
-  map = new kakao.maps.Map(container, options);
-
-  // 내 위치 마커
-  marker = new kakao.maps.Marker({
-    position: new kakao.maps.LatLng(lat, lng),
-    map: map
   });
-
-  // 지도 컨트롤
+  marker = new kakao.maps.Marker({ position: defaultPos, map: map });
   map.addControl(new kakao.maps.ZoomControl(), kakao.maps.ControlPosition.RIGHT);
-}
 
-function updateMap(lat, lng){
-  const pos = new kakao.maps.LatLng(lat, lng);
-  if(!map){
-    initMap(lat, lng);
-  } else {
-    map.setCenter(pos);
-    marker.setPosition(pos);
-  }
-}
+  // 지도 뜨면 바로 GPS 조회
+  getLocation();
+});
 
 /* ── GPS ── */
 function getLocation(){
-  document.getElementById('gpsBadge').className='gps-badge loading';
+  document.getElementById('gpsBadge').className='gps-badge';
   document.getElementById('gpsBadge').textContent='위치 확인 중...';
-
   if(!navigator.geolocation){ setErr('GPS 미지원'); return; }
-
-  navigator.geolocation.getCurrentPosition(pos=>{
-    curLat = pos.coords.latitude;
-    curLng = pos.coords.longitude;
-    curAcc = Math.round(pos.coords.accuracy);
-
-    document.getElementById('latVal').textContent = curLat.toFixed(6);
-    document.getElementById('lngVal').textContent = curLng.toFixed(6);
-    document.getElementById('accVal').textContent = '약 ' + curAcc + 'm';
-    document.getElementById('gpsBadge').className='gps-badge ok';
-    document.getElementById('gpsBadge').textContent='GPS 확인됨';
-
-    updateMap(curLat, curLng);
-    reverseGeocode(curLat, curLng);
-
-  }, err=>{
-    const msg = err.code===1?'위치 권한 거부':err.code===2?'GPS 신호 없음':'시간 초과';
-    setErr(msg);
-    // 위치 권한 없어도 지도는 기본 위치(서울)로 표시
-    if(!map) initMap(37.5665, 126.9780);
-  }, {enableHighAccuracy:true, timeout:15000, maximumAge:0});
+  navigator.geolocation.getCurrentPosition(
+    pos=>{
+      curLat=pos.coords.latitude;
+      curLng=pos.coords.longitude;
+      curAcc=Math.round(pos.coords.accuracy);
+      document.getElementById('latVal').textContent=curLat.toFixed(6);
+      document.getElementById('lngVal').textContent=curLng.toFixed(6);
+      document.getElementById('accVal').textContent='약 '+curAcc+'m';
+      document.getElementById('gpsBadge').className='gps-badge ok';
+      document.getElementById('gpsBadge').textContent='GPS 확인됨';
+      const pos2=new kakao.maps.LatLng(curLat,curLng);
+      map.setCenter(pos2); marker.setPosition(pos2);
+      reverseGeocode(curLat,curLng);
+    },
+    err=>{
+      const m=err.code===1?'위치 권한 거부':err.code===2?'GPS 없음':'시간 초과';
+      setErr(m);
+    },
+    {enableHighAccuracy:true,timeout:15000,maximumAge:0}
+  );
 }
 
 function setErr(msg){
@@ -240,80 +162,67 @@ function setErr(msg){
   document.getElementById('addrVal').textContent=msg;
 }
 
-/* ── 카카오 역지오코딩 ── */
-function reverseGeocode(lat, lng){
-  geocoder.coord2Address(lng, lat, (result, status)=>{
+/* ── 역지오코딩 (카카오) ── */
+function reverseGeocode(lat,lng){
+  geocoder.coord2Address(lng,lat,(result,status)=>{
     if(status===kakao.maps.services.Status.OK){
-      const addr = result[0].road_address
-        ? result[0].road_address.address_name
-        : result[0].address.address_name;
-      curAddr = addr;
-      document.getElementById('addrVal').textContent = addr;
+      const addr=result[0].road_address
+        ?result[0].road_address.address_name
+        :result[0].address.address_name;
+      curAddr=addr;
+      document.getElementById('addrVal').textContent=addr;
     } else {
-      curAddr = curLat.toFixed(5)+', '+curLng.toFixed(5);
+      curAddr=curLat.toFixed(5)+', '+curLng.toFixed(5);
       document.getElementById('addrVal').textContent='주소 변환 실패';
     }
   });
 }
 
-/* ── 내 위치로 이동 ── */
-function moveToMyLocation(){
+/* ── 내 위치로 ── */
+function moveToMyLoc(){
+  if(!map) return;
   if(curLat===null){ getLocation(); return; }
-  map.setCenter(new kakao.maps.LatLng(curLat, curLng));
+  map.setCenter(new kakao.maps.LatLng(curLat,curLng));
   map.setLevel(4);
 }
 
 /* ── 좌표 복사 ── */
 function copyCoord(){
   if(curLat===null){ showToast('먼저 위치를 확인해주세요'); return; }
-  const text = curLat.toFixed(6)+', '+curLng.toFixed(6);
-  navigator.clipboard.writeText(text)
-    .then(()=>showToast('📋 복사됨: '+text))
-    .catch(()=>showToast('복사 실패'));
+  const t=curLat.toFixed(6)+', '+curLng.toFixed(6);
+  navigator.clipboard.writeText(t).then(()=>showToast('📋 복사됨: '+t)).catch(()=>showToast('복사 실패'));
 }
 
 /* ── 위치 카드 저장 ── */
 function saveCard(){
   if(curLat===null){ showToast('먼저 위치를 확인해주세요'); return; }
-
-  const canvas = document.getElementById('captureCanvas');
-  const ctx = canvas.getContext('2d');
-  const W=800, H=400;
-  canvas.width=W; canvas.height=H;
-
-  const now = new Date();
-  const ts = now.getFullYear()+'.'+String(now.getMonth()+1).padStart(2,'0')+'.'+String(now.getDate()).padStart(2,'0')
+  const canvas=document.getElementById('captureCanvas');
+  const ctx=canvas.getContext('2d');
+  const W=800,H=320; canvas.width=W; canvas.height=H;
+  const now=new Date();
+  const ts=now.getFullYear()+'.'+String(now.getMonth()+1).padStart(2,'0')+'.'+String(now.getDate()).padStart(2,'0')
     +' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')+':'+String(now.getSeconds()).padStart(2,'0');
 
-  // 배경
   ctx.fillStyle='#F5F4F0'; ctx.fillRect(0,0,W,H);
-  // 헤더
-  ctx.fillStyle='#185FA5'; ctx.fillRect(0,0,W,60);
+  ctx.fillStyle='#185FA5'; ctx.fillRect(0,0,W,56);
   ctx.fillStyle='#fff'; ctx.font='bold 20px sans-serif';
   ctx.textAlign='left'; ctx.textBaseline='middle';
-  ctx.fillText('📍 현장 위치 확인', 20, 30);
+  ctx.fillText('📍 현장 위치 확인',20,28);
   ctx.font='13px sans-serif'; ctx.textAlign='right';
-  ctx.fillText(ts, W-20, 30);
+  ctx.fillText(ts,W-20,28);
 
-  // 카카오 지도 캡처 (정적 이미지)
-  ctx.fillStyle='#dde8f0'; ctx.fillRect(0,60,W,200);
-  ctx.fillStyle='#185FA5'; ctx.font='bold 15px sans-serif';
-  ctx.textAlign='center'; ctx.textBaseline='middle';
-  ctx.fillText('위도 '+curLat.toFixed(6)+'  경도 '+curLng.toFixed(6), W/2, 160);
-
-  // 정보
   ctx.fillStyle='#fff';
-  ctx.beginPath(); ctx.roundRect(16,274,W-32,110,10); ctx.fill();
+  ctx.beginPath(); ctx.roundRect(16,72,W-32,228,10); ctx.fill();
+
   const rows=[['위도',curLat.toFixed(6)],['경도',curLng.toFixed(6)],['주소',curAddr],['정확도','약 '+curAcc+'m']];
-  let x=32, y=295;
-  rows.forEach(([l,v],i)=>{
-    const col = i<2 ? 0 : (i===2?0:0);
-    ctx.fillStyle='#aaa'; ctx.font='bold 11px sans-serif'; ctx.textAlign='left';
-    ctx.fillText(l, x+(i%2)*380, y+Math.floor(i/2)*46);
-    ctx.fillStyle='#1a1a1a'; ctx.font='bold 13px sans-serif';
-    // 주소 줄바꿈
-    const val = v.length>30 ? v.substring(0,30)+'...' : v;
-    ctx.fillText(val, x+36+(i%2)*380, y+Math.floor(i/2)*46);
+  let y=104;
+  rows.forEach(([l,v])=>{
+    ctx.fillStyle='#aaa'; ctx.font='bold 12px sans-serif'; ctx.textAlign='left';
+    ctx.fillText(l,32,y);
+    ctx.fillStyle='#1a1a1a'; ctx.font='600 14px sans-serif';
+    const val=v.length>42?v.substring(0,42)+'...':v;
+    ctx.fillText(val,90,y);
+    y+=52;
   });
 
   const fname='위치_'+now.getFullYear()+String(now.getMonth()+1).padStart(2,'0')+String(now.getDate()).padStart(2,'0')
@@ -324,19 +233,11 @@ function saveCard(){
   showToast('💾 위치 카드 저장됐어요');
 }
 
-/* ── 토스트 ── */
 function showToast(msg){
   const t=document.getElementById('toast');
   t.textContent=msg; t.style.display='block';
   clearTimeout(t._t); t._t=setTimeout(()=>t.style.display='none',2000);
 }
-
-// 시작 — SDK 로드 완료 후 실행
-kakao.maps.load(function(){
-  // geocoder 초기화
-  window.geocoder = new kakao.maps.services.Geocoder();
-  getLocation();
-});
 </script>
 </body>
 </html>
