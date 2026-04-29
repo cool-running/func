@@ -14,26 +14,19 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{width:100%;height:100%;overflow:hidden;}
-body{
-  font-family:'Noto Sans KR',sans-serif;
-  background:#1a1a2e;color:#fff;
-  display:flex;flex-direction:column;
-  -webkit-user-select:none;user-select:none;
-}
-.topbar{
-  height:56px;padding:0 16px;
-  padding-top:env(safe-area-inset-top,0px);
-  display:flex;align-items:center;justify-content:space-between;
-  background:#1a1a2e;flex-shrink:0;z-index:10;
-}
+body{font-family:'Noto Sans KR',sans-serif;background:#1a1a2e;color:#fff;display:flex;flex-direction:column;-webkit-user-select:none;user-select:none;}
+
+.topbar{height:56px;padding:0 16px;padding-top:env(safe-area-inset-top,0px);display:flex;align-items:center;justify-content:space-between;background:#1a1a2e;flex-shrink:0;z-index:10;}
 .back-btn{color:#fff;font-size:15px;font-weight:600;background:none;border:none;cursor:pointer;padding:8px 0;display:flex;align-items:center;gap:4px;}
 .save-btn{background:#E05A2B;color:#fff;border:none;border-radius:8px;padding:9px 22px;font-size:14px;font-weight:700;font-family:'Noto Sans KR',sans-serif;cursor:pointer;}
 .save-btn:active{opacity:.85;}
-.canvas-wrap{flex:1;display:flex;align-items:center;justify-content:center;background:#2a2a3e;position:relative;overflow:hidden;}
+
+.canvas-wrap{flex:1;display:flex;align-items:center;justify-content:center;background:#2a2a3e;overflow:hidden;}
 canvas{display:block;max-width:100%;max-height:100%;}
+
 .bottom-area{flex-shrink:0;background:#1a1a2e;padding-bottom:env(safe-area-inset-bottom,0px);}
 
-/* 입력바 */
+/* 입력바 — 50:50 */
 .input-bar{display:flex;gap:10px;padding:10px 16px 6px;border-top:0.5px solid rgba(255,255,255,0.1);}
 .input-group{flex:1;display:flex;flex-direction:column;gap:4px;}
 .input-lbl{font-size:10px;font-weight:700;color:rgba(255,255,255,0.5);letter-spacing:0.05em;}
@@ -61,7 +54,6 @@ canvas{display:block;max-width:100%;max-height:100%;}
 .panel.show{display:block;}
 .pcls{position:absolute;right:12px;top:12px;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,0.08);border:none;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#555;}
 
-/* 스타일 패널 */
 .color-row{display:flex;gap:7px;align-items:center;margin-bottom:12px;flex-wrap:wrap;}
 .sc{width:32px;height:32px;border-radius:50%;cursor:pointer;border:2.5px solid transparent;flex-shrink:0;}
 .sc.on{border-color:#E05A2B;transform:scale(1.12);}
@@ -73,7 +65,6 @@ canvas{display:block;max-width:100%;max-height:100%;}
 .bgs.on{border-color:#E05A2B;}
 .bgs:active{transform:scale(.95);}
 
-/* 글꼴 패널 */
 .sz-row{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
 .sz-lbl{font-size:12px;color:#888;width:48px;flex-shrink:0;}
 .sz-val{font-size:13px;font-weight:700;color:#E05A2B;width:28px;text-align:right;flex-shrink:0;}
@@ -86,7 +77,6 @@ input[type=range]{flex:1;accent-color:#E05A2B;}
 .fc-nm{font-size:9px;color:#aaa;margin-bottom:4px;}
 .fc-sp{font-size:14px;color:#1a1a1a;line-height:1.3;}
 
-/* 글자색/정렬 패널 */
 .align-row{display:flex;gap:8px;margin-bottom:12px;}
 .abtn{flex:1;height:36px;border-radius:8px;border:1.5px solid #ddd;background:#fff;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
 .abtn.on{border-color:#E05A2B;background:#FFF5F2;}
@@ -110,6 +100,7 @@ input[type=range]{flex:1;accent-color:#E05A2B;}
 
 <div class="bottom-area">
 
+  <!-- 날짜/번호 입력 50:50 -->
   <div class="input-bar">
     <div class="input-group">
       <label class="input-lbl">📅 날짜</label>
@@ -123,6 +114,7 @@ input[type=range]{flex:1;accent-color:#E05A2B;}
     </div>
   </div>
 
+  <!-- 스타일 패널 -->
   <div class="panel" id="panelStyle">
     <button class="pcls" onclick="closePanel()">✕</button>
     <div class="color-row" id="bgColorRow">
@@ -148,17 +140,18 @@ input[type=range]{flex:1;accent-color:#E05A2B;}
     </div>
   </div>
 
+  <!-- 글꼴 패널 -->
   <div class="panel" id="panelFont">
     <button class="pcls" onclick="closePanel()">✕</button>
     <div class="sz-row">
       <span class="sz-lbl">날짜 크기</span>
-      <input type="range" id="dateSzR" min="20" max="200" value="100" step="2"/>
-      <span class="sz-val" id="dateSzV">100</span>
+      <input type="range" id="dateSzR" min="20" max="160" value="60" step="2"/>
+      <span class="sz-val" id="dateSzV">60</span>
     </div>
     <div class="sz-row">
       <span class="sz-lbl">번호 크기</span>
-      <input type="range" id="seqSzR" min="40" max="400" value="200" step="4"/>
-      <span class="sz-val" id="seqSzV">200</span>
+      <input type="range" id="seqSzR" min="40" max="300" value="160" step="4"/>
+      <span class="sz-val" id="seqSzV">160</span>
     </div>
     <div class="font-scroll" id="fontScroll">
       <div class="fc on" data-font="'Noto Sans KR',sans-serif" data-w="900">
@@ -182,6 +175,7 @@ input[type=range]{flex:1;accent-color:#E05A2B;}
     </div>
   </div>
 
+  <!-- 글자색/정렬 패널 -->
   <div class="panel" id="panelColor">
     <button class="pcls" onclick="closePanel()">✕</button>
     <div class="align-row" id="alignRow">
@@ -201,6 +195,7 @@ input[type=range]{flex:1;accent-color:#E05A2B;}
     </div>
   </div>
 
+  <!-- 원형 메뉴 -->
   <div class="circle-menu">
     <div class="cbtn" id="cbtnStyle" onclick="togglePanel('panelStyle','cbtnStyle')">
       <span class="cbtn-icon">🎨</span><span>스타일</span>
@@ -216,21 +211,19 @@ input[type=range]{flex:1;accent-color:#E05A2B;}
 </div>
 
 <script>
-/* ── 저장소 (버전 v4 — 이전 캐시 무효화) ── */
-const LS = 'ccv4';
+/* ── 저장소 ── */
+const LS = 'ccv5';
 function loadS(){ try{ return JSON.parse(localStorage.getItem(LS))||{}; }catch(e){ return {}; } }
 function saveS(){
-  try{
-    localStorage.setItem(LS, JSON.stringify({bgColor,bgType,txtColor,dateSz,seqSz,curFont,curWeight,align}));
-  }catch(e){}
+  try{ localStorage.setItem(LS, JSON.stringify({bgColor,bgType,txtColor,dateSz,seqSz,curFont,curWeight,align,tx,ty})); }catch(e){}
 }
 
 const _s      = loadS();
 let bgColor   = _s.bgColor   || '#4DB6AC';
 let bgType    = _s.bgType    || 'solid';
 let txtColor  = _s.txtColor  || '#ffffff';
-let dateSz    = _s.dateSz    || 100;
-let seqSz     = _s.seqSz     || 200;
+let dateSz    = _s.dateSz    || 60;
+let seqSz     = _s.seqSz     || 160;
 let curFont   = _s.curFont   || "'Noto Sans KR',sans-serif";
 let curWeight = _s.curWeight || '900';
 let align     = _s.align     || 'center';
@@ -241,82 +234,129 @@ const ctx = cv.getContext('2d');
 const W = 900, H = 900;
 cv.width = W; cv.height = H;
 
-function todayLabel(){
-  const d = new Date();
-  return (d.getMonth()+1)+'월'+d.getDate()+'일';
-}
+function todayLabel(){ const d=new Date(); return (d.getMonth()+1)+'월'+d.getDate()+'일'; }
 let dateText = todayLabel();
 let seqText  = '1번';
 
+/* ── 드래그 상태 ── */
+let tx = _s.tx !== undefined ? _s.tx : W/2;
+let ty = _s.ty !== undefined ? _s.ty : H/2;
+let dragging = false, dragOffX = 0, dragOffY = 0;
+let boxW = 0, boxH = 0;
+
 /* ── 그라디언트 ── */
 function getGrad(type){
-  const p={
-    g1:['#667eea','#764ba2'],g2:['#f093fb','#f5576c'],
-    g3:['#4facfe','#00f2fe'],g4:['#43e97b','#38f9d7'],
-    g5:['#fa709a','#fee140'],g6:['#30cfd0','#330867'],
-  };
+  const p={g1:['#667eea','#764ba2'],g2:['#f093fb','#f5576c'],g3:['#4facfe','#00f2fe'],g4:['#43e97b','#38f9d7'],g5:['#fa709a','#fee140'],g6:['#30cfd0','#330867']};
   if(!p[type]) return null;
   const g=ctx.createLinearGradient(0,0,W,H);
   g.addColorStop(0,p[type][0]); g.addColorStop(1,p[type][1]);
   return g;
 }
 
-/* ── 그리기 — 원래 레이아웃 복원 ── */
+/* ── 그리기 ── */
 function draw(){
   /* 배경 */
   const grad=getGrad(bgType);
-  if(grad){
-    ctx.fillStyle=grad; ctx.fillRect(0,0,W,H);
-  } else if(bgType==='grid'){
+  if(grad){ ctx.fillStyle=grad; ctx.fillRect(0,0,W,H); }
+  else if(bgType==='grid'){
     ctx.fillStyle=bgColor; ctx.fillRect(0,0,W,H);
     ctx.strokeStyle='rgba(255,255,255,0.18)'; ctx.lineWidth=1;
     const gs=Math.round(W/30);
     for(let x=0;x<=W;x+=gs){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
     for(let y=0;y<=H;y+=gs){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
-  } else {
-    ctx.fillStyle=bgColor; ctx.fillRect(0,0,W,H);
-  }
+  } else { ctx.fillStyle=bgColor; ctx.fillRect(0,0,W,H); }
 
-  /* 텍스트 */
-  const lineGap = Math.round(seqSz*0.18);
+  /* 텍스트 묶음 높이 계산 */
+  const lineGap = Math.round(seqSz * 0.25);
   const totalH  = dateSz + lineGap + seqSz;
-  const cx = W/2;
-  const cy = H/2;
 
-  const ax = align==='left' ? 60 : align==='right' ? W-60 : cx;
+  /* 전체 묶음을 캔버스 정중앙 기준으로 배치 */
+  const centerY = H / 2;
+  const dateY   = centerY - totalH/2 + dateSz/2;
+  const seqY    = centerY + totalH/2 - seqSz/2;
+
+  const ax = align==='left' ? 60 : align==='right' ? W-60 : W/2;
+
   ctx.textAlign    = align;
   ctx.textBaseline = 'middle';
   ctx.fillStyle    = txtColor;
 
-  /* 날짜 — 위 */
+  /* 날짜 */
   ctx.font = curWeight+' '+dateSz+'px '+curFont;
-  ctx.fillText(dateText, ax, cy - totalH/2 + dateSz/2);
+  ctx.fillText(dateText, ax, dateY);
 
-  /* 번호 — 아래 */
+  /* 번호 */
   ctx.font = curWeight+' '+seqSz+'px '+curFont;
-  ctx.fillText(seqText, ax, cy + totalH/2 - seqSz/2);
+  ctx.fillText(seqText, ax, seqY);
+
+  /* 박스 크기 (히트 영역) */
+  ctx.font = curWeight+' '+dateSz+'px '+curFont;
+  const dw = ctx.measureText(dateText).width;
+  ctx.font = curWeight+' '+seqSz+'px '+curFont;
+  const sw = ctx.measureText(seqText).width;
+  boxW = Math.max(dw, sw) + 40;
+  boxH = totalH + 40;
+
+  /* tx,ty 를 중앙 묶음 기준으로 고정 */
+  tx = W/2;
+  ty = centerY;
 }
 
 /* ── 초기 렌더 ── */
 document.fonts.ready.then(()=>{
   setTimeout(()=>{
     draw();
-    document.getElementById('dateInput').value=dateText;
-    document.getElementById('seqInput').value=seqText;
-  },100);
+    document.getElementById('dateInput').value = dateText;
+    document.getElementById('seqInput').value  = seqText;
+  }, 100);
 });
 
 /* ── 입력 → 실시간 반영 ── */
-document.getElementById('dateInput').addEventListener('input',function(){
-  dateText=this.value||todayLabel(); draw(); saveS();
+document.getElementById('dateInput').addEventListener('input', function(){
+  dateText = this.value || todayLabel(); draw(); saveS();
 });
-document.getElementById('seqInput').addEventListener('input',function(){
-  seqText=this.value||'1번'; draw(); saveS();
+document.getElementById('seqInput').addEventListener('input', function(){
+  seqText = this.value || '1번'; draw(); saveS();
 });
 
+/* ── 드래그 (터치) ── */
+function toCV(cx, cy){
+  const r = cv.getBoundingClientRect();
+  return { x:(cx-r.left)*(W/r.width), y:(cy-r.top)*(H/r.height) };
+}
+function hitBox(x, y){
+  return Math.abs(x-tx) < boxW/2+10 && Math.abs(y-ty) < boxH/2+10;
+}
+
+cv.addEventListener('touchstart', e=>{
+  const p = toCV(e.touches[0].clientX, e.touches[0].clientY);
+  if(hitBox(p.x,p.y)){ dragging=true; dragOffX=p.x-tx; dragOffY=p.y-ty; e.preventDefault(); }
+},{passive:false});
+cv.addEventListener('touchmove', e=>{
+  if(!dragging) return;
+  e.preventDefault();
+  const p = toCV(e.touches[0].clientX, e.touches[0].clientY);
+  tx = Math.max(50, Math.min(W-50, p.x-dragOffX));
+  ty = Math.max(50, Math.min(H-50, p.y-dragOffY));
+  draw();
+},{passive:false});
+cv.addEventListener('touchend', ()=>{ if(dragging){ dragging=false; saveS(); } });
+
+/* ── 드래그 (마우스) ── */
+cv.addEventListener('mousedown', e=>{
+  const p = toCV(e.clientX, e.clientY);
+  if(hitBox(p.x,p.y)){ dragging=true; dragOffX=p.x-tx; dragOffY=p.y-ty; cv.style.cursor='grabbing'; }
+});
+cv.addEventListener('mousemove', e=>{
+  const p = toCV(e.clientX, e.clientY);
+  if(dragging){ tx=Math.max(50,Math.min(W-50,p.x-dragOffX)); ty=Math.max(50,Math.min(H-50,p.y-dragOffY)); draw(); }
+  else { cv.style.cursor = hitBox(p.x,p.y) ? 'grab' : 'default'; }
+});
+cv.addEventListener('mouseup', ()=>{ if(dragging){ dragging=false; cv.style.cursor='default'; saveS(); } });
+
 /* ── 패널 ── */
-function togglePanel(pid,bid){
-  const show=document.getElementById(pid).classList.contains('show');
+function togglePanel(pid, bid){
+  const show = document.getElementById(pid).classList.contains('show');
   closePanel();
   if(!show){ document.getElementById(pid).classList.add('show'); document.getElementById(bid).classList.add('on'); }
   document.getElementById('dateInput').blur();
@@ -329,45 +369,45 @@ function closePanel(){
 
 /* ── 배경색 ── */
 document.getElementById('bgColorRow').querySelectorAll('.sc').forEach(el=>{
-  el.addEventListener('click',function(){
+  el.addEventListener('click', function(){
     document.getElementById('bgColorRow').querySelectorAll('.sc').forEach(s=>s.classList.remove('on'));
     this.classList.add('on'); bgColor=this.dataset.c;
     document.getElementById('bgCustom').value=bgColor; draw(); saveS();
   });
 });
-document.getElementById('bgCustom').addEventListener('input',function(){
+document.getElementById('bgCustom').addEventListener('input', function(){
   document.getElementById('bgColorRow').querySelectorAll('.sc').forEach(s=>s.classList.remove('on'));
   bgColor=this.value; draw(); saveS();
 });
 
 /* ── 배경 타입 ── */
 document.getElementById('bgGrid').querySelectorAll('.bgs').forEach(el=>{
-  el.addEventListener('click',function(){
+  el.addEventListener('click', function(){
     document.getElementById('bgGrid').querySelectorAll('.bgs').forEach(s=>s.classList.remove('on'));
     this.classList.add('on'); bgType=this.dataset.bg; draw(); saveS();
   });
 });
 
 /* ── 크기 슬라이더 ── */
-document.getElementById('dateSzR').addEventListener('input',function(){
+document.getElementById('dateSzR').addEventListener('input', function(){
   dateSz=+this.value; document.getElementById('dateSzV').textContent=this.value; draw(); saveS();
 });
-document.getElementById('seqSzR').addEventListener('input',function(){
+document.getElementById('seqSzR').addEventListener('input', function(){
   seqSz=+this.value; document.getElementById('seqSzV').textContent=this.value; draw(); saveS();
 });
 
 /* ── 글꼴 ── */
 document.getElementById('fontScroll').querySelectorAll('.fc').forEach(el=>{
-  el.addEventListener('click',function(){
+  el.addEventListener('click', function(){
     document.getElementById('fontScroll').querySelectorAll('.fc').forEach(f=>f.classList.remove('on'));
     this.classList.add('on'); curFont=this.dataset.font; curWeight=this.dataset.w;
-    document.fonts.ready.then(()=>{ setTimeout(()=>{ draw(); saveS(); },60); });
+    document.fonts.ready.then(()=>{ setTimeout(()=>{ draw(); saveS(); }, 60); });
   });
 });
 
 /* ── 정렬 ── */
 document.getElementById('alignRow').querySelectorAll('.abtn').forEach(el=>{
-  el.addEventListener('click',function(){
+  el.addEventListener('click', function(){
     document.getElementById('alignRow').querySelectorAll('.abtn').forEach(b=>b.classList.remove('on'));
     this.classList.add('on'); align=this.dataset.a; draw(); saveS();
   });
@@ -375,19 +415,19 @@ document.getElementById('alignRow').querySelectorAll('.abtn').forEach(el=>{
 
 /* ── 글자색 ── */
 document.getElementById('txtColorRow').querySelectorAll('.tc').forEach(el=>{
-  el.addEventListener('click',function(){
+  el.addEventListener('click', function(){
     document.getElementById('txtColorRow').querySelectorAll('.tc').forEach(s=>s.classList.remove('on'));
     this.classList.add('on'); txtColor=this.dataset.c;
     document.getElementById('txtCustom').value=txtColor; draw(); saveS();
   });
 });
-document.getElementById('txtCustom').addEventListener('input',function(){
+document.getElementById('txtCustom').addEventListener('input', function(){
   document.getElementById('txtColorRow').querySelectorAll('.tc').forEach(s=>s.classList.remove('on'));
   txtColor=this.value; draw(); saveS();
 });
 
 /* ── 저장 ── */
-document.getElementById('saveBtn').addEventListener('click',()=>{
+document.getElementById('saveBtn').addEventListener('click', ()=>{
   document.getElementById('dateInput').blur();
   document.getElementById('seqInput').blur();
   document.fonts.ready.then(()=>{
@@ -400,9 +440,9 @@ document.getElementById('saveBtn').addEventListener('click',()=>{
         a.click();
         const btn=document.getElementById('saveBtn');
         btn.textContent='완료 ✓';
-        setTimeout(()=>{ btn.textContent='💾 저장'; },1600);
-      },80);
-    },80);
+        setTimeout(()=>{ btn.textContent='💾 저장'; }, 1600);
+      }, 80);
+    }, 80);
   });
 });
 
