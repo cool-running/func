@@ -28,21 +28,15 @@ body{font-family:-apple-system,'Noto Sans KR',sans-serif;color:var(--text);font-
 
 #map{position:fixed;top:var(--top-h);left:0;right:0;bottom:calc(var(--panel-h) + var(--nav-h) + env(safe-area-inset-bottom,0px));z-index:1;}
 
-/* 지도 위 버튼들 */
 .map-btns{position:fixed;left:14px;right:14px;bottom:calc(var(--panel-h) + var(--nav-h) + env(safe-area-inset-bottom,0px) + 12px);display:flex;justify-content:space-between;z-index:50;pointer-events:none;}
 .map-btn-left{display:flex;gap:8px;pointer-events:all;}
 .map-btn-right{pointer-events:all;}
-
 .maptype-btn{height:36px;padding:0 14px;border-radius:18px;background:#fff;border:0.5px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,0.2);font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:4px;font-family:-apple-system,'Noto Sans KR',sans-serif;}
 .maptype-btn:active{opacity:.7;}
-
 .myloc-btn{width:44px;height:44px;border-radius:50%;background:#fff;border:0.5px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,0.2);font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
 .myloc-btn:active{opacity:.7;}
 
-/* 하단 패널 */
 .panel{position:fixed;left:0;right:0;bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px));height:var(--panel-h);background:#fff;border-top:0.5px solid var(--border);padding:10px 14px 10px;z-index:50;}
-
-/* 탭 */
 .tab-row{display:flex;gap:6px;margin-bottom:10px;}
 .tab{flex:1;height:30px;border-radius:8px;border:1.5px solid var(--border);background:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:-apple-system,'Noto Sans KR',sans-serif;color:var(--hint);}
 .tab.on{background:var(--blue);border-color:var(--blue);color:#fff;}
@@ -52,16 +46,13 @@ body{font-family:-apple-system,'Noto Sans KR',sans-serif;color:var(--text);font-
 .info-lbl{font-size:11px;font-weight:700;color:var(--hint);line-height:1.9;}
 .info-val{font-size:12px;font-weight:600;color:var(--text);line-height:1.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .info-val.highlight{color:var(--blue);}
-
 .btn-row{display:flex;gap:8px;}
 .btn{flex:1;height:42px;border-radius:10px;border:none;cursor:pointer;font-size:13px;font-weight:700;font-family:-apple-system,'Noto Sans KR',sans-serif;display:flex;align-items:center;justify-content:center;gap:5px;}
 .btn:active{opacity:.8;transform:scale(.97);}
 .btn-loc{background:var(--blue);color:#fff;}
 .btn-copy{background:var(--bg);color:var(--text);border:0.5px solid var(--border);}
 .btn-save{background:#FEE500;color:#3C1E1E;}
-
-/* 탭 클릭 안내 */
-.tap-hint{font-size:12px;color:var(--hint);text-align:center;padding:4px 0 8px;}
+.tap-hint{font-size:12px;color:var(--hint);text-align:center;padding:8px 0 10px;line-height:1.6;}
 
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;height:calc(var(--nav-h) + env(safe-area-inset-bottom,0px));padding-bottom:env(safe-area-inset-bottom,0px);background:var(--card);border-top:0.5px solid var(--border);display:flex;align-items:stretch;z-index:200;}
 .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;border:none;background:none;color:var(--hint);font-size:10px;font-weight:600;letter-spacing:-0.01em;padding-bottom:2px;}
@@ -69,7 +60,6 @@ body{font-family:-apple-system,'Noto Sans KR',sans-serif;color:var(--text);font-
 .nav-item.on{color:var(--blue)}
 .nav-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;}
 .nav-item.on .nav-icon{background:rgba(24,95,165,.1)}
-
 .toast{display:none;position:fixed;bottom:calc(var(--nav-h) + 16px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:rgba(20,20,30,0.92);color:#fff;font-size:13px;font-weight:600;font-family:-apple-system,'Noto Sans KR',sans-serif;padding:10px 20px;border-radius:20px;white-space:nowrap;z-index:999;}
 #captureCanvas{display:none;}
 </style>
@@ -93,13 +83,11 @@ body{font-family:-apple-system,'Noto Sans KR',sans-serif;color:var(--text);font-
 </div>
 
 <div class="panel">
-  <!-- 탭: 내위치 / 선택위치 -->
   <div class="tab-row">
     <button class="tab on" id="tabMe" onclick="switchTab('me')">📍 내 위치</button>
     <button class="tab" id="tabSel" onclick="switchTab('sel')">🌾 선택 위치</button>
   </div>
 
-  <!-- 내 위치 패널 -->
   <div id="panelMe">
     <div class="info-grid">
       <span class="info-lbl">위도</span><span class="info-val" id="latVal">—</span>
@@ -114,9 +102,8 @@ body{font-family:-apple-system,'Noto Sans KR',sans-serif;color:var(--text);font-
     </div>
   </div>
 
-  <!-- 선택 위치 패널 -->
   <div id="panelSel" style="display:none;">
-    <div class="tap-hint" id="tapHint">🗺 지도에서 농지를 탭하세요</div>
+    <div class="tap-hint" id="tapHint">🌾 지도에서 원하는 위치를 탭하세요<br><span style="font-size:11px;color:#bbb">손가락으로 원하는 곳을 꾹 누르세요</span></div>
     <div class="info-grid" id="selInfo" style="display:none;">
       <span class="info-lbl">위도</span><span class="info-val" id="selLat">—</span>
       <span class="info-lbl">경도</span><span class="info-val" id="selLng">—</span>
@@ -146,8 +133,7 @@ body{font-family:-apple-system,'Noto Sans KR',sans-serif;color:var(--text);font-
 let map=null, myMarker=null, selMarker=null, geocoder=null;
 let curLat=null, curLng=null, curAcc=null, curAddr='—';
 let selLat=null, selLng=null, selJibun='—', selRoad='—';
-let isHybrid=false;
-let curTab='me';
+let isHybrid=false, curTab='me';
 
 kakao.maps.load(function(){
   geocoder = new kakao.maps.services.Geocoder();
@@ -157,17 +143,15 @@ kakao.maps.load(function(){
     level: 4
   });
 
-  // 내 위치 마커 (파란 원형)
   myMarker = new kakao.maps.Marker({
     position: new kakao.maps.LatLng(37.5665, 126.9780),
     map: map
   });
 
-  // 선택 위치 마커 (빨간 핀 - 농지용)
   const selImg = new kakao.maps.MarkerImage(
     'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png',
-    new kakao.maps.Size(36, 37),
-    { offset: new kakao.maps.Point(13, 37) }
+    new kakao.maps.Size(36,37),
+    { offset: new kakao.maps.Point(13,37) }
   );
   selMarker = new kakao.maps.Marker({
     position: new kakao.maps.LatLng(37.5665, 126.9780),
@@ -176,80 +160,39 @@ kakao.maps.load(function(){
 
   map.addControl(new kakao.maps.ZoomControl(), kakao.maps.ControlPosition.RIGHT);
 
-  // 지도 클릭 → 선택 위치
-  // 클릭/터치 통합 이벤트
+  // ★ 카카오맵 공식 click 이벤트 — PC/모바일 모두 동작
   kakao.maps.event.addListener(map, 'click', function(mouseEvent){
     const latlng = mouseEvent.latLng;
     setSelMarker(latlng.getLat(), latlng.getLng());
     switchTab('sel');
   });
 
-  // 모바일 터치 직접 처리
-  const mapDiv = document.getElementById('map');
-  let touchStartTime = 0;
-  let touchStartX = 0, touchStartY = 0;
-
-  mapDiv.addEventListener('touchstart', function(e){
-    touchStartTime = Date.now();
-    touchStartX = e.touches[0].clientX;
-    touchStartY = e.touches[0].clientY;
-  }, {passive:true});
-
-  mapDiv.addEventListener('touchend', function(e){
-    const dt = Date.now() - touchStartTime;
-    const dx = Math.abs(e.changedTouches[0].clientX - touchStartX);
-    const dy = Math.abs(e.changedTouches[0].clientY - touchStartY);
-    // 탭 판정: 300ms 이내, 10px 이내 이동
-    if(dt < 300 && dx < 10 && dy < 10){
-      const touch = e.changedTouches[0];
-      const rect = mapDiv.getBoundingClientRect();
-      const proj = map.getProjection();
-      const point = new kakao.maps.Point(
-        touch.clientX - rect.left,
-        touch.clientY - rect.top
-      );
-      const latlng = proj.coordsFromContainerPoint(point);
-      setSelMarker(latlng.getLat(), latlng.getLng());
-      switchTab('sel');
-    }
-  }, {passive:true});
-
   getLocation();
 });
 
-/* ── 탭 전환 ── */
 function switchTab(tab){
-  curTab = tab;
+  curTab=tab;
   document.getElementById('tabMe').classList.toggle('on', tab==='me');
   document.getElementById('tabSel').classList.toggle('on', tab==='sel');
   document.getElementById('panelMe').style.display = tab==='me' ? '' : 'none';
   document.getElementById('panelSel').style.display = tab==='sel' ? '' : 'none';
 }
 
-/* ── 지도 타입 ── */
 function toggleMapType(){
   if(!map) return;
   isHybrid=!isHybrid;
   const btn=document.getElementById('maptypeBtn');
-  if(isHybrid){
-    map.setMapTypeId(kakao.maps.MapTypeId.HYBRID);
-    btn.textContent='🗺 일반';
-  } else {
-    map.setMapTypeId(kakao.maps.MapTypeId.ROADMAP);
-    btn.textContent='🛰 위성';
-  }
+  if(isHybrid){ map.setMapTypeId(kakao.maps.MapTypeId.HYBRID); btn.textContent='🗺 일반'; }
+  else { map.setMapTypeId(kakao.maps.MapTypeId.ROADMAP); btn.textContent='🛰 위성'; }
 }
 
-/* ── 내 위치 GPS ── */
 function getLocation(){
   document.getElementById('gpsBadge').className='gps-badge';
   document.getElementById('gpsBadge').textContent='위치 확인 중...';
   if(!navigator.geolocation){ setErr('GPS 미지원'); return; }
   navigator.geolocation.getCurrentPosition(
     pos=>{
-      curLat=pos.coords.latitude;
-      curLng=pos.coords.longitude;
-      curAcc=Math.round(pos.coords.accuracy);
+      curLat=pos.coords.latitude; curLng=pos.coords.longitude; curAcc=Math.round(pos.coords.accuracy);
       document.getElementById('latVal').textContent=curLat.toFixed(6);
       document.getElementById('lngVal').textContent=curLng.toFixed(6);
       document.getElementById('accVal').textContent='약 '+curAcc+'m';
@@ -259,10 +202,7 @@ function getLocation(){
       map.setCenter(p); myMarker.setPosition(p);
       reverseGeocode(curLat,curLng,'me');
     },
-    err=>{
-      const m=err.code===1?'위치 권한 거부':err.code===2?'GPS 없음':'시간 초과';
-      setErr(m);
-    },
+    err=>{ setErr(err.code===1?'위치 권한 거부':err.code===2?'GPS 없음':'시간 초과'); },
     {enableHighAccuracy:true,timeout:15000,maximumAge:0}
   );
 }
@@ -273,12 +213,10 @@ function setErr(msg){
   document.getElementById('addrVal').textContent=msg;
 }
 
-/* ── 선택 위치 마커 설정 ── */
-function setSelMarker(lat, lng){
+function setSelMarker(lat,lng){
   selLat=lat; selLng=lng;
   const p=new kakao.maps.LatLng(lat,lng);
-  selMarker.setPosition(p);
-  selMarker.setMap(map);
+  selMarker.setPosition(p); selMarker.setMap(map);
   document.getElementById('selLat').textContent=lat.toFixed(6);
   document.getElementById('selLng').textContent=lng.toFixed(6);
   document.getElementById('selJibun').textContent='주소 확인 중...';
@@ -287,95 +225,59 @@ function setSelMarker(lat, lng){
   document.getElementById('selInfo').style.display='grid';
   document.getElementById('selBtns').style.display='flex';
   reverseGeocode(lat,lng,'sel');
+  showToast('📍 위치 선택됨');
 }
 
-/* ── 역지오코딩 ── */
 function reverseGeocode(lat,lng,target){
   geocoder.coord2Address(lng,lat,(result,status)=>{
     if(status===kakao.maps.services.Status.OK){
-      const road = result[0].road_address ? result[0].road_address.address_name : '—';
-      const jibun = result[0].address ? result[0].address.address_name : '—';
-      if(target==='me'){
-        curAddr=jibun;
-        document.getElementById('addrVal').textContent=jibun;
-      } else {
-        selJibun=jibun; selRoad=road;
-        document.getElementById('selJibun').textContent=jibun;
-        document.getElementById('selRoad').textContent=road;
-      }
+      const road=result[0].road_address?result[0].road_address.address_name:'—';
+      const jibun=result[0].address?result[0].address.address_name:'—';
+      if(target==='me'){ curAddr=jibun; document.getElementById('addrVal').textContent=jibun; }
+      else { selJibun=jibun; selRoad=road; document.getElementById('selJibun').textContent=jibun; document.getElementById('selRoad').textContent=road; }
     } else {
-      if(target==='me'){
-        curAddr=lat.toFixed(5)+', '+lng.toFixed(5);
-        document.getElementById('addrVal').textContent='주소 변환 실패';
-      } else {
-        document.getElementById('selJibun').textContent='주소 변환 실패';
-      }
+      if(target==='me') document.getElementById('addrVal').textContent='주소 변환 실패';
+      else document.getElementById('selJibun').textContent='주소 변환 실패';
     }
   });
 }
 
-/* ── 내 위치로 이동 ── */
 function moveToMyLoc(){
   if(!map) return;
   if(curLat===null){ getLocation(); return; }
-  map.setCenter(new kakao.maps.LatLng(curLat,curLng));
-  map.setLevel(4);
+  map.setCenter(new kakao.maps.LatLng(curLat,curLng)); map.setLevel(4);
 }
 
-/* ── 좌표 복사 ── */
 function copyCoord(target){
-  const lat = target==='me' ? curLat : selLat;
-  const lng = target==='me' ? curLng : selLng;
+  const lat=target==='me'?curLat:selLat, lng=target==='me'?curLng:selLng;
   if(lat===null){ showToast('먼저 위치를 확인해주세요'); return; }
-  const t=lat.toFixed(6)+', '+lng.toFixed(6);
-  navigator.clipboard.writeText(t).then(()=>showToast('📋 복사됨: '+t)).catch(()=>showToast('복사 실패'));
+  navigator.clipboard.writeText(lat.toFixed(6)+', '+lng.toFixed(6))
+    .then(()=>showToast('📋 복사됨')).catch(()=>showToast('복사 실패'));
 }
 
-/* ── 위치 카드 저장 ── */
 function saveCard(target){
-  const lat = target==='me' ? curLat : selLat;
-  const lng = target==='me' ? curLng : selLng;
-  const addr = target==='me' ? curAddr : selJibun;
-  const acc = target==='me' ? '약 '+curAcc+'m' : '지도 선택';
-  const label = target==='me' ? '내 위치' : '🌾 농지 선택 위치';
+  const lat=target==='me'?curLat:selLat, lng=target==='me'?curLng:selLng;
+  const addr=target==='me'?curAddr:selJibun, acc=target==='me'?'약 '+curAcc+'m':'지도 선택';
+  const label=target==='me'?'내 위치':'농지 선택 위치';
   if(lat===null){ showToast('먼저 위치를 확인해주세요'); return; }
-
-  const canvas=document.getElementById('captureCanvas');
-  const ctx=canvas.getContext('2d');
+  const canvas=document.getElementById('captureCanvas'), ctx=canvas.getContext('2d');
   const W=800,H=340; canvas.width=W; canvas.height=H;
   const now=new Date();
-  const ts=now.getFullYear()+'.'+String(now.getMonth()+1).padStart(2,'0')+'.'+String(now.getDate()).padStart(2,'0')
-    +' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')+':'+String(now.getSeconds()).padStart(2,'0');
-
+  const ts=now.getFullYear()+'.'+String(now.getMonth()+1).padStart(2,'0')+'.'+String(now.getDate()).padStart(2,'0')+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')+':'+String(now.getSeconds()).padStart(2,'0');
   ctx.fillStyle='#F5F4F0'; ctx.fillRect(0,0,W,H);
   ctx.fillStyle='#185FA5'; ctx.fillRect(0,0,W,56);
-  ctx.fillStyle='#fff'; ctx.font='bold 20px sans-serif';
-  ctx.textAlign='left'; ctx.textBaseline='middle';
-  ctx.fillText('📍 현장 위치 확인 — '+label, 20, 28);
-  ctx.font='13px sans-serif'; ctx.textAlign='right';
-  ctx.fillText(ts, W-20, 28);
-
-  ctx.fillStyle='#fff';
-  ctx.beginPath(); ctx.roundRect(16,72,W-32,248,10); ctx.fill();
-
-  const rows = target==='me'
-    ? [['위도',lat.toFixed(6)],['경도',lng.toFixed(6)],['주소',addr],['정확도',acc]]
-    : [['위도',lat.toFixed(6)],['경도',lng.toFixed(6)],['지번',addr],['도로명',selRoad]];
-
+  ctx.fillStyle='#fff'; ctx.font='bold 20px sans-serif'; ctx.textAlign='left'; ctx.textBaseline='middle';
+  ctx.fillText('📍 현장 위치 확인 — '+label,20,28);
+  ctx.font='13px sans-serif'; ctx.textAlign='right'; ctx.fillText(ts,W-20,28);
+  ctx.fillStyle='#fff'; ctx.beginPath(); ctx.roundRect(16,72,W-32,248,10); ctx.fill();
+  const rows=target==='me'?[['위도',lat.toFixed(6)],['경도',lng.toFixed(6)],['주소',addr],['정확도',acc]]:[['위도',lat.toFixed(6)],['경도',lng.toFixed(6)],['지번',addr],['도로명',selRoad]];
   let y=104;
   rows.forEach(([l,v])=>{
-    ctx.fillStyle='#aaa'; ctx.font='bold 12px sans-serif'; ctx.textAlign='left';
-    ctx.fillText(l,32,y);
-    ctx.fillStyle='#1a1a1a'; ctx.font='600 14px sans-serif';
-    ctx.fillText(v.length>42?v.substring(0,42)+'...':v, 90, y);
-    y+=56;
+    ctx.fillStyle='#aaa'; ctx.font='bold 12px sans-serif'; ctx.textAlign='left'; ctx.fillText(l,32,y);
+    ctx.fillStyle='#1a1a1a'; ctx.font='600 14px sans-serif'; ctx.fillText(v.length>42?v.substring(0,42)+'...':v,90,y); y+=56;
   });
-
-  const fname='위치_'+now.getFullYear()+String(now.getMonth()+1).padStart(2,'0')+String(now.getDate()).padStart(2,'0')
-    +'_'+String(now.getHours()).padStart(2,'0')+String(now.getMinutes()).padStart(2,'0')+'.jpg';
-  const a=document.createElement('a');
-  a.href=canvas.toDataURL('image/jpeg',0.95);
-  a.download=fname; a.click();
+  const fname='위치_'+now.getFullYear()+String(now.getMonth()+1).padStart(2,'0')+String(now.getDate()).padStart(2,'0')+'_'+String(now.getHours()).padStart(2,'0')+String(now.getMinutes()).padStart(2,'0')+'.jpg';
+  const a=document.createElement('a'); a.href=canvas.toDataURL('image/jpeg',0.95); a.download=fname; a.click();
   showToast('💾 위치 카드 저장됐어요');
 }
 
