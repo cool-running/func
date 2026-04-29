@@ -213,35 +213,104 @@ function onMapTap(lat, lng){
   fetchParcel(lat, lng);
 }
 
-/* ── vworld 필지 타일 레이어 토글 ── */
-let parcelLayer = null;
+/* ── vworld WMS 필지 경계 오버레이 ── */
+let parcelOverlay = null;
 let parcelLayerOn = false;
 
 function toggleParcelLayer(){
   if(!map) return;
   if(parcelLayerOn){
-    if(parcelLayer) parcelLayer.setMap(null);
+    if(parcelOverlay) parcelOverlay.setMap(null);
+    parcelOverlay = null;
     parcelLayerOn = false;
     document.getElementById('parcelBtn').textContent = '🗺 필지경계 ON';
     document.getElementById('parcelBtn').style.background = '#fff';
     document.getElementById('parcelBtn').style.color = '#185FA5';
-    showToast('필지 경계 레이어 OFF');
+    showToast('필지 경계 OFF');
   } else {
-    // vworld WMS 타일을 카카오맵 위에 오버레이
-    parcelLayer = new kakao.maps.TileLayer(
-      `https://api.vworld.kr/req/wmts/1.0.0/${VWORLD_KEY}/lt_c_ufprd/{z}/{y}/{x}.png`
-    );
-    parcelLayer.setMap(map);
+    addParcelOverlay();
     parcelLayerOn = true;
     document.getElementById('parcelBtn').textContent = '🗺 필지경계 OFF';
     document.getElementById('parcelBtn').style.background = '#185FA5';
     document.getElementById('parcelBtn').style.color = '#fff';
-    showToast('필지 경계 레이어 ON');
+    showToast('필지 경계 ON');
+  }
+}
+
+function addParcelOverlay(){
+  // 카카오맵 CustomTileLayer 방식
+  const vtileUrl = (x, y, z) =>
+    `https://api.vworld.kr/req/wmts/1.0.0/${VWORLD_KEY}/lt_c_ufprd/${z}/${y}/${x}.png`;
+
+  const mapNode = document.getElementById('map');
+  const canvas = document.createElement('canvas');
+  canvas.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:2;';
+  canvas.width = mapNode.offsetWidth;
+  canvas.height = mapNode.offsetHeight;
+  mapNode.appendChild(canvas);
+  parcelOverlay = { canvas, setMap: (m) => { if(!m) canvas.remove(); } };
+
+  drawParcelTiles(canvas);
+
+  // 지도 이동시 재렌더
+  kakao.maps.event.addListener(map, 'idle', () => {
+    if(parcelLayerOn) drawParcelTiles(canvas);
+  });
+}
+
+function drawParcelTiles(canvas){
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const mapNode = document.getElementById('map');
+  canvas.width = mapNode.offsetWidth;
+  canvas.height = mapNode.offsetHeight;
+
+  const level = map.getLevel();
+  // 카카오맵 level → wmts zoom 변환
+  const zoomMap = {1:19,2:18,3:17,4:16,5:15,6:14,7:13,8:12,9:11,10:10,11:9,12:8,13:7,14:6};
+  const z = zoomMap[level] || 15;
+
+  const bounds = map.getBounds();
+  const sw = bounds.getSouthWest();
+  const ne = bounds.getNorthEast();
+
+  // 위경도 → 타일 좌표
+  function lngToTileX(lng, z){ return Math.floor((lng+180)/360 * Math.pow(2,z)); }
+  function latToTileY(lat, z){
+    const r = lat*Math.PI/180;
+    return Math.floor((1-Math.log(Math.tan(r)+1/Math.cos(r))/Math.PI)/2 * Math.pow(2,z));
+  }
+
+  const tx0 = lngToTileX(sw.getLng(), z);
+  const ty0 = latToTileY(ne.getLat(), z);
+  const tx1 = lngToTileX(ne.getLng(), z);
+  const ty1 = latToTileY(sw.getLat(), z);
+
+  const proj = map.getProjection();
+  const tileSize = 256;
+
+  for(let tx=tx0; tx<=tx1; tx++){
+    for(let ty=ty0; ty<=ty1; ty++){
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      const capTx=tx, capTy=ty;
+      img.onload = () => {
+        // 타일 NW 모서리 위경도
+        const n = Math.pow(2, z);
+        const tileLng = capTx/n*360-180;
+        const tileLatR = Math.atan(Math.sinh(Math.PI*(1-2*capTy/n)));
+        const tileLat = tileLatR*180/Math.PI;
+        const cp = proj.containerPointFromCoords(new kakao.maps.LatLng(tileLat, tileLng));
+        ctx.globalAlpha = 0.7;
+        ctx.drawImage(img, cp.x, cp.y, tileSize*(canvas.width/(tx1-tx0+1)/tileSize), tileSize*(canvas.height/(ty1-ty0+1)/tileSize));
+      };
+      img.onerror = ()=>{};
+      img.src = `https://api.vworld.kr/req/wmts/1.0.0/${VWORLD_KEY}/lt_c_ufprd/${z}/${capTy}/${capTx}.png`;
+    }
   }
 }
 
 function fetchParcel(lat, lng){
-  // 필지 경계 레이어가 꺼져있으면 자동으로 켜기
   if(!parcelLayerOn) toggleParcelLayer();
 }
 
