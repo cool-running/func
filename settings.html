@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ko" translate="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#185FA5">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>설정</title>
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<style>
+:root{--blue:#185FA5;--blue-l:#EBF4FF;--border:#D8D6CE;--bg:#F5F4F0;--card:#fff;--text:#1a1a1a;--sub:#666;--hint:#aaa;--nav-h:62px;}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;}
+body{font-family:-apple-system,'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);font-size:14px;-webkit-user-select:none;user-select:none;padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px));}
+
+.topbar{height:56px;padding:0 16px;padding-top:env(safe-area-inset-top,0px);display:flex;align-items:center;background:#fff;border-bottom:0.5px solid var(--border);}
+.topbar-title{font-size:17px;font-weight:700;}
+
+.section{margin:16px 14px 0;}
+.section-title{font-size:11px;font-weight:700;color:var(--hint);letter-spacing:0.05em;margin-bottom:8px;padding:0 4px;}
+.card{background:var(--card);border-radius:14px;border:0.5px solid var(--border);overflow:hidden;}
+.row{display:flex;align-items:center;padding:14px 16px;border-bottom:0.5px solid var(--border);}
+.row:last-child{border-bottom:none;}
+.row-icon{font-size:20px;width:32px;flex-shrink:0;}
+.row-body{flex:1;margin-left:10px;}
+.row-title{font-size:14px;font-weight:600;color:var(--text);}
+.row-desc{font-size:12px;color:var(--hint);margin-top:2px;}
+.row-val{font-size:13px;color:var(--hint);flex-shrink:0;}
+
+.app-info{text-align:center;padding:24px;color:var(--hint);font-size:12px;line-height:1.8;}
+
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;height:calc(var(--nav-h) + env(safe-area-inset-bottom,0px));padding-bottom:env(safe-area-inset-bottom,0px);background:var(--card);border-top:0.5px solid rgba(0,0,0,0.08);box-shadow:0 -2px 12px rgba(0,0,0,0.06);display:flex;align-items:stretch;z-index:200;}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;border:none;background:none;color:#bbb;font-size:10px;font-weight:700;letter-spacing:-0.02em;padding:6px 0 4px;border-radius:12px;}
+.nav-item:active{opacity:.6;transform:scale(.93);}
+.nav-item.on{color:#185FA5;}
+.nav-icon{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;transition:background .15s,transform .15s;}
+.nav-item.on .nav-icon{background:linear-gradient(135deg,#185FA5,#378ADD);box-shadow:0 3px 10px rgba(24,95,165,0.28);transform:translateY(-2px);}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="topbar-title">⚙️ 설정</span>
+</div>
+
+<div class="section">
+  <div class="section-title">앱 정보</div>
+  <div class="card">
+    <div class="row">
+      <span class="row-icon">📋</span>
+      <div class="row-body">
+        <div class="row-title">손해평가</div>
+        <div class="row-desc">농업재해보험 손해평가사 전용</div>
+      </div>
+      <span class="row-val">v1.0</span>
+    </div>
+    <div class="row">
+      <span class="row-icon">🗺</span>
+      <div class="row-body">
+        <div class="row-title">지도 API</div>
+        <div class="row-desc">카카오맵 JavaScript SDK</div>
+      </div>
+    </div>
+    <div class="row">
+      <span class="row-icon">🌾</span>
+      <div class="row-body">
+        <div class="row-title">필지 경계 API</div>
+        <div class="row-desc">국토부 V-World WMS</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">기능</div>
+  <div class="card">
+    <div class="row">
+      <span class="row-icon">📋</span>
+      <div class="row-body">
+        <div class="row-title">표지 카드</div>
+        <div class="row-desc">조사 날짜·번호 카드 생성</div>
+      </div>
+    </div>
+    <div class="row">
+      <span class="row-icon">📷</span>
+      <div class="row-body">
+        <div class="row-title">원장 촬영</div>
+        <div class="row-desc">현장 사진 촬영 및 저장</div>
+      </div>
+    </div>
+    <div class="row">
+      <span class="row-icon">📍</span>
+      <div class="row-body">
+        <div class="row-title">위치</div>
+        <div class="row-desc">GPS 위치 및 필지 경계 확인</div>
+      </div>
+    </div>
+    <div class="row">
+      <span class="row-icon">📐</span>
+      <div class="row-body">
+        <div class="row-title">면적</div>
+        <div class="row-desc">농지 면적 측정 (준비 중)</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="app-info">
+  손해평가 앱 v1.0<br>
+  농업재해보험 손해평가사 전용
+</div>
+
+<nav class="bottom-nav">
+  <button class="nav-item" onclick="location.href='./cover_card.html'"><div class="nav-icon">📋</div><span>표지카드</span></button>
+  <button class="nav-item" onclick="location.href='./camera.html'"><div class="nav-icon">📷</div><span>카메라</span></button>
+  <button class="nav-item" onclick="location.href='./location.html'"><div class="nav-icon">📍</div><span>위치</span></button>
+  <button class="nav-item" onclick="location.href='./area.html'"><div class="nav-icon">📐</div><span>면적</span></button>
+  <button class="nav-item on"><div class="nav-icon">⚙️</div><span>설정</span></button>
+</nav>
+
+</body>
+</html>

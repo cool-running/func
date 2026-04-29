@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ko" translate="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#185FA5">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>면적</title>
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<style>
+:root{--blue:#185FA5;--blue-l:#EBF4FF;--border:#D8D6CE;--bg:#F5F4F0;--card:#fff;--text:#1a1a1a;--sub:#666;--hint:#aaa;--nav-h:62px;}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;}
+body{font-family:-apple-system,'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);font-size:14px;-webkit-user-select:none;user-select:none;padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px));}
+
+.topbar{height:56px;padding:0 16px;padding-top:env(safe-area-inset-top,0px);display:flex;align-items:center;background:#fff;border-bottom:0.5px solid var(--border);}
+.topbar-title{font-size:17px;font-weight:700;}
+
+.content{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 56px - var(--nav-h) - env(safe-area-inset-bottom,0px));padding:40px 20px;text-align:center;color:var(--hint);}
+.content-icon{font-size:52px;margin-bottom:16px;}
+.content-title{font-size:16px;font-weight:700;color:var(--sub);margin-bottom:8px;}
+.content-desc{font-size:13px;line-height:1.7;}
+
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;height:calc(var(--nav-h) + env(safe-area-inset-bottom,0px));padding-bottom:env(safe-area-inset-bottom,0px);background:var(--card);border-top:0.5px solid rgba(0,0,0,0.08);box-shadow:0 -2px 12px rgba(0,0,0,0.06);display:flex;align-items:stretch;z-index:200;}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;border:none;background:none;color:#bbb;font-size:10px;font-weight:700;letter-spacing:-0.02em;padding:6px 0 4px;border-radius:12px;}
+.nav-item:active{opacity:.6;transform:scale(.93);}
+.nav-item.on{color:#185FA5;}
+.nav-icon{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;transition:background .15s,transform .15s;}
+.nav-item.on .nav-icon{background:linear-gradient(135deg,#185FA5,#378ADD);box-shadow:0 3px 10px rgba(24,95,165,0.28);transform:translateY(-2px);}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="topbar-title">📐 면적</span>
+</div>
+
+<div class="content">
+  <div class="content-icon">📐</div>
+  <div class="content-title">면적 계산 준비 중</div>
+  <div class="content-desc">위성 지도에서 농지를 선택하여<br>면적을 측정하는 기능이에요.<br><br>곧 업데이트될 예정이에요!</div>
+</div>
+
+<nav class="bottom-nav">
+  <button class="nav-item" onclick="location.href='./cover_card.html'"><div class="nav-icon">📋</div><span>표지카드</span></button>
+  <button class="nav-item" onclick="location.href='./camera.html'"><div class="nav-icon">📷</div><span>카메라</span></button>
+  <button class="nav-item" onclick="location.href='./location.html'"><div class="nav-icon">📍</div><span>위치</span></button>
+  <button class="nav-item on"><div class="nav-icon">📐</div><span>면적</span></button>
+  <button class="nav-item" onclick="location.href='./settings.html'"><div class="nav-icon">⚙️</div><span>설정</span></button>
+</nav>
+
+</body>
+</html>

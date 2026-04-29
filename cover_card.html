@@ -12,15 +12,15 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@700;900&family=Noto+Serif+KR:wght@900&family=Nanum+Gothic:wght@800&family=Black+Han+Sans&family=Jua&family=Nanum+Myeongjo:wght@800&display=swap" rel="stylesheet">
 <style>
+:root{--nav-h:62px;}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{width:100%;height:100%;overflow:hidden;}
-body{font-family:'Noto Sans KR',sans-serif;background:#1a1a2e;color:#fff;display:flex;flex-direction:column;-webkit-user-select:none;user-select:none;}
+body{font-family:'Noto Sans KR',sans-serif;background:#1a1a2e;color:#fff;display:flex;flex-direction:column;-webkit-user-select:none;user-select:none;padding-bottom:calc(62px + env(safe-area-inset-bottom,0px));}
 
 .topbar{height:56px;padding:0 16px;padding-top:env(safe-area-inset-top,0px);display:flex;align-items:center;justify-content:space-between;background:#1a1a2e;flex-shrink:0;z-index:10;}
 .back-btn{color:#fff;font-size:15px;font-weight:600;background:none;border:none;cursor:pointer;padding:8px 0;display:flex;align-items:center;gap:4px;}
 .save-btn{background:#E05A2B;color:#fff;border:none;border-radius:8px;padding:9px 22px;font-size:14px;font-weight:700;font-family:'Noto Sans KR',sans-serif;cursor:pointer;}
 .save-btn:active{opacity:.85;}
-.topbar-title{font-size:17px;font-weight:700;color:#fff;}
 
 .canvas-wrap{flex:1;display:flex;align-items:center;justify-content:center;background:#2a2a3e;overflow:hidden;position:relative;}
 canvas{display:block;max-width:100%;max-height:100%;}
@@ -97,7 +97,7 @@ input[type=range]{flex:1;accent-color:#E05A2B;}
 <body>
 
 <div class="topbar">
-  <span class="topbar-title">📋 표지 카드</span>
+  <button class="back-btn" onclick="location.href='./index.html'">← 뒤로</button>
   <button class="save-btn" id="saveBtn">💾 저장</button>
 </div>
 
