@@ -14,34 +14,27 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{width:100%;height:100%;overflow:hidden;}
-body{font-family:'Noto Sans KR',sans-serif;background:#1a1a2e;color:#fff;display:flex;flex-direction:column;-webkit-user-select:none;user-select:none;}
-
-.topbar{height:56px;padding:0 16px;padding-top:env(safe-area-inset-top,0px);display:flex;align-items:center;justify-content:space-between;background:#1a1a2e;flex-shrink:0;z-index:10;}
+body{
+  font-family:'Noto Sans KR',sans-serif;
+  background:#1a1a2e;color:#fff;
+  display:flex;flex-direction:column;
+  -webkit-user-select:none;user-select:none;
+}
+.topbar{
+  height:56px;padding:0 16px;
+  padding-top:env(safe-area-inset-top,0px);
+  display:flex;align-items:center;justify-content:space-between;
+  background:#1a1a2e;flex-shrink:0;z-index:10;
+}
 .back-btn{color:#fff;font-size:15px;font-weight:600;background:none;border:none;cursor:pointer;padding:8px 0;display:flex;align-items:center;gap:4px;}
 .save-btn{background:#E05A2B;color:#fff;border:none;border-radius:8px;padding:9px 22px;font-size:14px;font-weight:700;font-family:'Noto Sans KR',sans-serif;cursor:pointer;}
 .save-btn:active{opacity:.85;}
-
 .canvas-wrap{flex:1;display:flex;align-items:center;justify-content:center;background:#2a2a3e;position:relative;overflow:hidden;}
 canvas{display:block;max-width:100%;max-height:100%;}
-
 .bottom-area{flex-shrink:0;background:#1a1a2e;padding-bottom:env(safe-area-inset-bottom,0px);}
 
-.circle-menu{display:flex;justify-content:center;gap:24px;padding:14px 0 10px;}
-.cbtn{width:68px;height:68px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.07);color:#fff;font-size:11px;font-weight:600;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;}
-.cbtn.on{background:rgba(255,255,255,0.2);border-color:rgba(255,255,255,0.6);}
-.cbtn:active{transform:scale(.93);}
-.cbtn-icon{font-size:18px;line-height:1;}
-
-.panel{display:none;background:#fff;border-radius:16px 16px 0 0;padding:14px 16px 10px;position:relative;}
-.panel.show{display:block;}
-.pcls{position:absolute;right:12px;top:12px;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,0.08);border:none;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#555;}
-
-/* 입력 바 */
-.input-bar{
-  display:flex;gap:10px;padding:10px 16px 6px;
-  background:#1a1a2e;
-  border-top:0.5px solid rgba(255,255,255,0.1);
-}
+/* 입력바 */
+.input-bar{display:flex;gap:10px;padding:10px 16px 6px;border-top:0.5px solid rgba(255,255,255,0.1);}
 .input-group{flex:1;display:flex;flex-direction:column;gap:4px;}
 .input-lbl{font-size:10px;font-weight:700;color:rgba(255,255,255,0.5);letter-spacing:0.05em;}
 .input-field{
@@ -50,13 +43,23 @@ canvas{display:block;max-width:100%;max-height:100%;}
   background:rgba(255,255,255,0.1);
   color:#fff;font-size:18px;font-weight:700;
   font-family:'Noto Sans KR',sans-serif;
-  padding:0 12px;
-  -webkit-user-select:text;user-select:text;
-  outline:none;
-  transition:border-color .15s;
+  padding:0 12px;-webkit-user-select:text;user-select:text;
+  outline:none;transition:border-color .15s;
 }
 .input-field:focus{border-color:#E05A2B;background:rgba(255,255,255,0.15);}
 .input-field::placeholder{color:rgba(255,255,255,0.3);font-weight:400;font-size:13px;}
+
+/* 원형 메뉴 */
+.circle-menu{display:flex;justify-content:center;gap:24px;padding:10px 0;}
+.cbtn{width:68px;height:68px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.07);color:#fff;font-size:11px;font-weight:600;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;}
+.cbtn.on{background:rgba(255,255,255,0.2);border-color:rgba(255,255,255,0.6);}
+.cbtn:active{transform:scale(.93);}
+.cbtn-icon{font-size:18px;line-height:1;}
+
+/* 패널 */
+.panel{display:none;background:#fff;border-radius:16px 16px 0 0;padding:14px 16px 10px;position:relative;}
+.panel.show{display:block;}
+.pcls{position:absolute;right:12px;top:12px;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,0.08);border:none;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#555;}
 
 /* 스타일 패널 */
 .color-row{display:flex;gap:7px;align-items:center;margin-bottom:12px;flex-wrap:wrap;}
@@ -65,7 +68,6 @@ canvas{display:block;max-width:100%;max-height:100%;}
 .sc-custom{width:32px;height:32px;border-radius:50%;border:2px dashed #ccc;overflow:hidden;cursor:pointer;flex-shrink:0;position:relative;}
 .sc-custom input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;}
 .sc-custom-inner{width:100%;height:100%;background:conic-gradient(red,yellow,lime,cyan,blue,magenta,red);}
-
 .bg-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
 .bgs{aspect-ratio:1;border-radius:8px;cursor:pointer;border:2.5px solid transparent;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:rgba(255,255,255,0.85);text-shadow:0 1px 2px rgba(0,0,0,0.5);}
 .bgs.on{border-color:#E05A2B;}
@@ -102,25 +104,25 @@ input[type=range]{flex:1;accent-color:#E05A2B;}
   <button class="save-btn" id="saveBtn">💾 저장</button>
 </div>
 
-<div class="canvas-wrap" id="canvasWrap">
+<div class="canvas-wrap">
   <canvas id="cv"></canvas>
 </div>
 
 <div class="bottom-area">
 
-  <!-- 입력 필드 (항상 표시) -->
   <div class="input-bar">
     <div class="input-group">
       <label class="input-lbl">📅 날짜</label>
-      <input type="text" id="dateInput" class="input-field" placeholder="예) 4월29일" inputmode="text" autocomplete="off" autocorrect="off" spellcheck="false"/>
+      <input type="text" id="dateInput" class="input-field" placeholder="예) 4월29일"
+        inputmode="text" autocomplete="off" autocorrect="off" spellcheck="false"/>
     </div>
     <div class="input-group">
       <label class="input-lbl">🔢 번호</label>
-      <input type="text" id="seqInput" class="input-field" placeholder="예) 3번" inputmode="text" autocomplete="off" autocorrect="off" spellcheck="false"/>
+      <input type="text" id="seqInput" class="input-field" placeholder="예) 3번"
+        inputmode="text" autocomplete="off" autocorrect="off" spellcheck="false"/>
     </div>
   </div>
 
-  <!-- 스타일 패널 -->
   <div class="panel" id="panelStyle">
     <button class="pcls" onclick="closePanel()">✕</button>
     <div class="color-row" id="bgColorRow">
@@ -146,35 +148,45 @@ input[type=range]{flex:1;accent-color:#E05A2B;}
     </div>
   </div>
 
-  <!-- 글꼴 패널 -->
   <div class="panel" id="panelFont">
     <button class="pcls" onclick="closePanel()">✕</button>
     <div class="sz-row">
       <span class="sz-lbl">날짜 크기</span>
-      <input type="range" id="dateSzR" min="20" max="160" value="60" step="2"/>
-      <span class="sz-val" id="dateSzV">60</span>
+      <input type="range" id="dateSzR" min="20" max="200" value="100" step="2"/>
+      <span class="sz-val" id="dateSzV">100</span>
     </div>
     <div class="sz-row">
       <span class="sz-lbl">번호 크기</span>
-      <input type="range" id="seqSzR" min="40" max="300" value="160" step="4"/>
-      <span class="sz-val" id="seqSzV">160</span>
+      <input type="range" id="seqSzR" min="40" max="400" value="200" step="4"/>
+      <span class="sz-val" id="seqSzV">200</span>
     </div>
     <div class="font-scroll" id="fontScroll">
-      <div class="fc on" data-font="'Noto Sans KR',sans-serif" data-w="900"><div class="fc-nm">맑은고딕</div><div class="fc-sp" style="font-family:'Noto Sans KR';font-weight:900;">4월29일<br>3번</div></div>
-      <div class="fc" data-font="'Nanum Gothic',sans-serif" data-w="800"><div class="fc-nm">굴림</div><div class="fc-sp" style="font-family:'Nanum Gothic';font-weight:800;">4월29일<br>3번</div></div>
-      <div class="fc" data-font="'Noto Serif KR',serif" data-w="900"><div class="fc-nm">바탕</div><div class="fc-sp" style="font-family:'Noto Serif KR';font-weight:900;">4월29일<br>3번</div></div>
-      <div class="fc" data-font="'Nanum Myeongjo',serif" data-w="800"><div class="fc-nm">명조</div><div class="fc-sp" style="font-family:'Nanum Myeongjo';font-weight:800;">4월29일<br>3번</div></div>
-      <div class="fc" data-font="'Black Han Sans',sans-serif" data-w="400"><div class="fc-nm">HY헤드라인</div><div class="fc-sp" style="font-family:'Black Han Sans';">4월29일<br>3번</div></div>
-      <div class="fc" data-font="'Jua',sans-serif" data-w="400"><div class="fc-nm">HY강B</div><div class="fc-sp" style="font-family:'Jua';">4월29일<br>3번</div></div>
+      <div class="fc on" data-font="'Noto Sans KR',sans-serif" data-w="900">
+        <div class="fc-nm">맑은고딕</div><div class="fc-sp" style="font-family:'Noto Sans KR';font-weight:900;">4월29일<br>3번</div>
+      </div>
+      <div class="fc" data-font="'Nanum Gothic',sans-serif" data-w="800">
+        <div class="fc-nm">굴림</div><div class="fc-sp" style="font-family:'Nanum Gothic';font-weight:800;">4월29일<br>3번</div>
+      </div>
+      <div class="fc" data-font="'Noto Serif KR',serif" data-w="900">
+        <div class="fc-nm">바탕</div><div class="fc-sp" style="font-family:'Noto Serif KR';font-weight:900;">4월29일<br>3번</div>
+      </div>
+      <div class="fc" data-font="'Nanum Myeongjo',serif" data-w="800">
+        <div class="fc-nm">명조</div><div class="fc-sp" style="font-family:'Nanum Myeongjo';font-weight:800;">4월29일<br>3번</div>
+      </div>
+      <div class="fc" data-font="'Black Han Sans',sans-serif" data-w="400">
+        <div class="fc-nm">HY헤드라인</div><div class="fc-sp" style="font-family:'Black Han Sans';">4월29일<br>3번</div>
+      </div>
+      <div class="fc" data-font="'Jua',sans-serif" data-w="400">
+        <div class="fc-nm">HY강B</div><div class="fc-sp" style="font-family:'Jua';">4월29일<br>3번</div>
+      </div>
     </div>
   </div>
 
-  <!-- 글자색/정렬 패널 -->
   <div class="panel" id="panelColor">
     <button class="pcls" onclick="closePanel()">✕</button>
     <div class="align-row" id="alignRow">
-      <button class="abtn on" data-a="left">☰</button>
-      <button class="abtn" data-a="center">≡</button>
+      <button class="abtn" data-a="left">☰</button>
+      <button class="abtn on" data-a="center">≡</button>
       <button class="abtn" data-a="right">↦</button>
     </div>
     <div class="color-row" id="txtColorRow">
@@ -189,7 +201,6 @@ input[type=range]{flex:1;accent-color:#E05A2B;}
     </div>
   </div>
 
-  <!-- 원형 메뉴 -->
   <div class="circle-menu">
     <div class="cbtn" id="cbtnStyle" onclick="togglePanel('panelStyle','cbtnStyle')">
       <span class="cbtn-icon">🎨</span><span>스타일</span>
@@ -205,58 +216,55 @@ input[type=range]{flex:1;accent-color:#E05A2B;}
 </div>
 
 <script>
-/* ── 상태 ── */
-const LS='ccv3';
-function load(){try{return JSON.parse(localStorage.getItem(LS))||{};}catch(e){return {};}}
-function save(){try{localStorage.setItem(LS,JSON.stringify({bgColor,bgType,txtColor,dateSz,seqSz,curFont,curWeight,align,tx,ty}));}catch(e){}}
+/* ── 저장소 (버전 v4 — 이전 캐시 무효화) ── */
+const LS = 'ccv4';
+function loadS(){ try{ return JSON.parse(localStorage.getItem(LS))||{}; }catch(e){ return {}; } }
+function saveS(){
+  try{
+    localStorage.setItem(LS, JSON.stringify({bgColor,bgType,txtColor,dateSz,seqSz,curFont,curWeight,align}));
+  }catch(e){}
+}
 
-const _s=load();
-let bgColor  = _s.bgColor  ||'#4DB6AC';
-let bgType   = _s.bgType   ||'solid';
-let txtColor = _s.txtColor ||'#ffffff';
-let dateSz   = _s.dateSz   ||60;
-let seqSz    = _s.seqSz    ||160;
-let curFont  = _s.curFont  ||"'Noto Sans KR',sans-serif";
-let curWeight= _s.curWeight||'900';
-let align    = _s.align    ||'center';
-let tx, ty;  /* 캔버스 좌표로 초기화는 draw 후 */
+const _s      = loadS();
+let bgColor   = _s.bgColor   || '#4DB6AC';
+let bgType    = _s.bgType    || 'solid';
+let txtColor  = _s.txtColor  || '#ffffff';
+let dateSz    = _s.dateSz    || 100;
+let seqSz     = _s.seqSz     || 200;
+let curFont   = _s.curFont   || "'Noto Sans KR',sans-serif";
+let curWeight = _s.curWeight || '900';
+let align     = _s.align     || 'center';
 
 /* ── 캔버스 ── */
-const cv=document.getElementById('cv');
-const ctx=cv.getContext('2d');
-const W=900,H=900;
-cv.width=W;cv.height=H;
+const cv  = document.getElementById('cv');
+const ctx = cv.getContext('2d');
+const W = 900, H = 900;
+cv.width = W; cv.height = H;
 
-function todayLabel(){const d=new Date();return(d.getMonth()+1)+'월'+d.getDate()+'일';}
-let dateText=todayLabel();
-let seqText='1번';
+function todayLabel(){
+  const d = new Date();
+  return (d.getMonth()+1)+'월'+d.getDate()+'일';
+}
+let dateText = todayLabel();
+let seqText  = '1번';
 
-/* 드래그 상태 */
-let dragging=false;
-let dragOffX=0,dragOffY=0;
-
-/* 텍스트 박스 크기 (draw 후 채움) */
-let boxW=0,boxH=0;
-
-function getGrad(type,w,h){
-  const presets={
-    g1:['#667eea','#764ba2'],
-    g2:['#f093fb','#f5576c'],
-    g3:['#4facfe','#00f2fe'],
-    g4:['#43e97b','#38f9d7'],
-    g5:['#fa709a','#fee140'],
-    g6:['#30cfd0','#330867'],
+/* ── 그라디언트 ── */
+function getGrad(type){
+  const p={
+    g1:['#667eea','#764ba2'],g2:['#f093fb','#f5576c'],
+    g3:['#4facfe','#00f2fe'],g4:['#43e97b','#38f9d7'],
+    g5:['#fa709a','#fee140'],g6:['#30cfd0','#330867'],
   };
-  if(!presets[type]) return null;
-  const g=ctx.createLinearGradient(0,0,w,h);
-  g.addColorStop(0,presets[type][0]);
-  g.addColorStop(1,presets[type][1]);
+  if(!p[type]) return null;
+  const g=ctx.createLinearGradient(0,0,W,H);
+  g.addColorStop(0,p[type][0]); g.addColorStop(1,p[type][1]);
   return g;
 }
 
+/* ── 그리기 — 상단 50%: 날짜 / 하단 50%: 번호 ── */
 function draw(){
   /* 배경 */
-  const grad=getGrad(bgType,W,H);
+  const grad=getGrad(bgType);
   if(grad){
     ctx.fillStyle=grad; ctx.fillRect(0,0,W,H);
   } else if(bgType==='grid'){
@@ -269,147 +277,94 @@ function draw(){
     ctx.fillStyle=bgColor; ctx.fillRect(0,0,W,H);
   }
 
-  /* 50:50 레이아웃 — 상단 절반: 날짜, 하단 절반: 번호 */
-  if(tx===undefined) tx = _s.tx!==undefined ? _s.tx : W/2;
-  if(ty===undefined) ty = W/2;
+  /* 중간 구분선 */
+  ctx.save();
+  ctx.strokeStyle='rgba(255,255,255,0.2)';
+  ctx.lineWidth=2;
+  ctx.setLineDash([12,10]);
+  ctx.beginPath(); ctx.moveTo(40,H/2); ctx.lineTo(W-40,H/2); ctx.stroke();
+  ctx.restore();
 
-  ctx.textAlign=align==='left'?'left':align==='right'?'right':'center';
-  ctx.textBaseline='middle';
-  ctx.fillStyle=txtColor;
+  /* 텍스트 */
+  const ax = align==='left' ? 60 : align==='right' ? W-60 : W/2;
+  ctx.textAlign    = align;
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle    = txtColor;
 
-  let ax=tx;
+  /* 날짜 — 상단 절반 중앙 (H/4) */
+  ctx.font = curWeight+' '+dateSz+'px '+curFont;
+  ctx.fillText(dateText, ax, H/4);
 
-  /* 날짜 — 상단 절반 중앙 */
-  ctx.font=curWeight+' '+dateSz+'px '+curFont;
-  const dateY = H/4;
-  ctx.fillText(dateText, ax, dateY);
-
-  /* 번호 — 하단 절반 중앙 */
-  ctx.font=curWeight+' '+seqSz+'px '+curFont;
-  const seqY = H*3/4;
-  ctx.fillText(seqText, ax, seqY);
-
-  /* 박스 크기 계산 (히트테스트용) */
-  ctx.font=curWeight+' '+dateSz+'px '+curFont;
-  const dw=ctx.measureText(dateText).width;
-  ctx.font=curWeight+' '+seqSz+'px '+curFont;
-  const sw=ctx.measureText(seqText).width;
-  boxW=Math.max(dw,sw)+40;
-  boxH=H+40;
+  /* 번호 — 하단 절반 중앙 (H*3/4) */
+  ctx.font = curWeight+' '+seqSz+'px '+curFont;
+  ctx.fillText(seqText, ax, H*3/4);
 }
 
+/* ── 초기 렌더 ── */
 document.fonts.ready.then(()=>{
   setTimeout(()=>{
     draw();
-    /* 입력창 초기값 */
     document.getElementById('dateInput').value=dateText;
     document.getElementById('seqInput').value=seqText;
   },100);
 });
 
-/* ── 입력 필드 → 실시간 캔버스 업데이트 ── */
+/* ── 입력 → 실시간 반영 ── */
 document.getElementById('dateInput').addEventListener('input',function(){
-  dateText=this.value||todayLabel(); draw(); save();
+  dateText=this.value||todayLabel(); draw(); saveS();
 });
 document.getElementById('seqInput').addEventListener('input',function(){
-  seqText=this.value||'1번'; draw(); save();
-});
-/* 패널 클릭 시 키보드 숨기기 */
-document.querySelectorAll('.cbtn').forEach(b=>{
-  b.addEventListener('click',()=>{
-    document.getElementById('dateInput').blur();
-    document.getElementById('seqInput').blur();
-  });
+  seqText=this.value||'1번'; draw(); saveS();
 });
 
-/* ── 드래그 이동 ── */
-function toCV(cx,cy){
-  const r=cv.getBoundingClientRect();
-  return {x:(cx-r.left)*(W/r.width), y:(cy-r.top)*(H/r.height)};
-}
-function hitBox(x,y){
-  const hx=align==='center'?tx:align==='left'?tx:tx;
-  return Math.abs(x-tx)<boxW/2+10 && Math.abs(y-ty)<boxH/2+10;
-}
-
-cv.addEventListener('touchstart',e=>{
-  const t=e.touches[0],p=toCV(t.clientX,t.clientY);
-  if(hitBox(p.x,p.y)){dragging=true;dragOffX=p.x-tx;dragOffY=p.y-ty;e.preventDefault();}
-},{passive:false});
-cv.addEventListener('touchmove',e=>{
-  if(!dragging)return;
-  e.preventDefault();
-  const t=e.touches[0],p=toCV(t.clientX,t.clientY);
-  tx=Math.max(50,Math.min(W-50,p.x-dragOffX));
-  ty=Math.max(50,Math.min(H-50,p.y-dragOffY));
-  draw();
-},{passive:false});
-cv.addEventListener('touchend',()=>{if(dragging){dragging=false;save();}});
-
-cv.addEventListener('mousedown',e=>{
-  const p=toCV(e.clientX,e.clientY);
-  if(hitBox(p.x,p.y)){dragging=true;dragOffX=p.x-tx;dragOffY=p.y-ty;cv.style.cursor='grabbing';}
-});
-cv.addEventListener('mousemove',e=>{
-  const p=toCV(e.clientX,e.clientY);
-  if(dragging){tx=Math.max(50,Math.min(W-50,p.x-dragOffX));ty=Math.max(50,Math.min(H-50,p.y-dragOffY));draw();}
-  else{cv.style.cursor=hitBox(p.x,p.y)?'grab':'default';}
-});
-cv.addEventListener('mouseup',()=>{if(dragging){dragging=false;cv.style.cursor='default';save();}});
-
-/* ── 패널 토글 ── */
+/* ── 패널 ── */
 function togglePanel(pid,bid){
-  const showing=document.getElementById(pid).classList.contains('show');
+  const show=document.getElementById(pid).classList.contains('show');
   closePanel();
-  if(!showing){
-    document.getElementById(pid).classList.add('show');
-    document.getElementById(bid).classList.add('on');
-  }
+  if(!show){ document.getElementById(pid).classList.add('show'); document.getElementById(bid).classList.add('on'); }
+  document.getElementById('dateInput').blur();
+  document.getElementById('seqInput').blur();
 }
 function closePanel(){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('show'));
   document.querySelectorAll('.cbtn').forEach(b=>b.classList.remove('on'));
 }
 
-/* ── 배경색 스와치 ── */
+/* ── 배경색 ── */
 document.getElementById('bgColorRow').querySelectorAll('.sc').forEach(el=>{
   el.addEventListener('click',function(){
     document.getElementById('bgColorRow').querySelectorAll('.sc').forEach(s=>s.classList.remove('on'));
-    this.classList.add('on');
-    bgColor=this.dataset.c;
-    document.getElementById('bgCustom').value=bgColor;
-    draw();save();
+    this.classList.add('on'); bgColor=this.dataset.c;
+    document.getElementById('bgCustom').value=bgColor; draw(); saveS();
   });
 });
 document.getElementById('bgCustom').addEventListener('input',function(){
   document.getElementById('bgColorRow').querySelectorAll('.sc').forEach(s=>s.classList.remove('on'));
-  bgColor=this.value; draw(); save();
+  bgColor=this.value; draw(); saveS();
 });
 
 /* ── 배경 타입 ── */
 document.getElementById('bgGrid').querySelectorAll('.bgs').forEach(el=>{
   el.addEventListener('click',function(){
     document.getElementById('bgGrid').querySelectorAll('.bgs').forEach(s=>s.classList.remove('on'));
-    this.classList.add('on');
-    bgType=this.dataset.bg; draw(); save();
+    this.classList.add('on'); bgType=this.dataset.bg; draw(); saveS();
   });
 });
 
-/* ── 글꼴 슬라이더 ── */
+/* ── 크기 슬라이더 ── */
 document.getElementById('dateSzR').addEventListener('input',function(){
-  dateSz=+this.value; document.getElementById('dateSzV').textContent=this.value; draw(); save();
+  dateSz=+this.value; document.getElementById('dateSzV').textContent=this.value; draw(); saveS();
 });
 document.getElementById('seqSzR').addEventListener('input',function(){
-  seqSz=+this.value; document.getElementById('seqSzV').textContent=this.value; draw(); save();
+  seqSz=+this.value; document.getElementById('seqSzV').textContent=this.value; draw(); saveS();
 });
 
-/* ── 글꼴 선택 ── */
+/* ── 글꼴 ── */
 document.getElementById('fontScroll').querySelectorAll('.fc').forEach(el=>{
   el.addEventListener('click',function(){
     document.getElementById('fontScroll').querySelectorAll('.fc').forEach(f=>f.classList.remove('on'));
-    this.classList.add('on');
-    curFont=this.dataset.font; curWeight=this.dataset.w;
-    document.fonts.ready.then(()=>{setTimeout(()=>{draw();save();},60);});
+    this.classList.add('on'); curFont=this.dataset.font; curWeight=this.dataset.w;
+    document.fonts.ready.then(()=>{ setTimeout(()=>{ draw(); saveS(); },60); });
   });
 });
 
@@ -417,7 +372,7 @@ document.getElementById('fontScroll').querySelectorAll('.fc').forEach(el=>{
 document.getElementById('alignRow').querySelectorAll('.abtn').forEach(el=>{
   el.addEventListener('click',function(){
     document.getElementById('alignRow').querySelectorAll('.abtn').forEach(b=>b.classList.remove('on'));
-    this.classList.add('on'); align=this.dataset.a; draw(); save();
+    this.classList.add('on'); align=this.dataset.a; draw(); saveS();
   });
 });
 
@@ -426,18 +381,16 @@ document.getElementById('txtColorRow').querySelectorAll('.tc').forEach(el=>{
   el.addEventListener('click',function(){
     document.getElementById('txtColorRow').querySelectorAll('.tc').forEach(s=>s.classList.remove('on'));
     this.classList.add('on'); txtColor=this.dataset.c;
-    document.getElementById('txtCustom').value=txtColor;
-    draw(); save();
+    document.getElementById('txtCustom').value=txtColor; draw(); saveS();
   });
 });
 document.getElementById('txtCustom').addEventListener('input',function(){
   document.getElementById('txtColorRow').querySelectorAll('.tc').forEach(s=>s.classList.remove('on'));
-  txtColor=this.value; draw(); save();
+  txtColor=this.value; draw(); saveS();
 });
 
 /* ── 저장 ── */
 document.getElementById('saveBtn').addEventListener('click',()=>{
-  dragging=false;
   document.getElementById('dateInput').blur();
   document.getElementById('seqInput').blur();
   document.fonts.ready.then(()=>{
@@ -446,41 +399,32 @@ document.getElementById('saveBtn').addEventListener('click',()=>{
       setTimeout(()=>{
         const a=document.createElement('a');
         a.href=cv.toDataURL('image/jpeg',0.96);
-        const dl=dateText.replace(/\s/g,'')+'_'+seqText.replace(/\s/g,'')+'.jpg';
-        a.download=dl; a.click();
-        document.getElementById('saveBtn').textContent='완료 ✓';
-        setTimeout(()=>{document.getElementById('saveBtn').textContent='💾 저장';},1600);
+        a.download=dateText.replace(/\s/g,'')+'_'+seqText.replace(/\s/g,'')+'.jpg';
+        a.click();
+        const btn=document.getElementById('saveBtn');
+        btn.textContent='완료 ✓';
+        setTimeout(()=>{ btn.textContent='💾 저장'; },1600);
       },80);
     },80);
   });
 });
 
-/* ── 저장값으로 UI 복원 ── */
-(function restoreUI(){
-  const r=document.getElementById('dateSzR');
-  r.value=dateSz; document.getElementById('dateSzV').textContent=dateSz;
-  const r2=document.getElementById('seqSzR');
-  r2.value=seqSz; document.getElementById('seqSzV').textContent=seqSz;
+/* ── UI 복원 ── */
+(function(){
+  document.getElementById('dateSzR').value=dateSz;
+  document.getElementById('dateSzV').textContent=dateSz;
+  document.getElementById('seqSzR').value=seqSz;
+  document.getElementById('seqSzV').textContent=seqSz;
   document.getElementById('bgCustom').value=bgColor;
   document.getElementById('txtCustom').value=txtColor;
-  document.getElementById('bgColorRow').querySelectorAll('.sc').forEach(s=>{
-    s.classList.toggle('on',s.dataset.c===bgColor);
-  });
-  document.getElementById('bgGrid').querySelectorAll('.bgs').forEach(s=>{
-    s.classList.toggle('on',s.dataset.bg===bgType);
-  });
-  document.getElementById('fontScroll').querySelectorAll('.fc').forEach(f=>{
-    f.classList.toggle('on',f.dataset.font===curFont);
-  });
-  document.getElementById('alignRow').querySelectorAll('.abtn').forEach(b=>{
-    b.classList.toggle('on',b.dataset.a===align);
-  });
-  document.getElementById('txtColorRow').querySelectorAll('.tc').forEach(s=>{
-    s.classList.toggle('on',s.dataset.c===txtColor);
-  });
+  document.getElementById('bgColorRow').querySelectorAll('.sc').forEach(s=>s.classList.toggle('on',s.dataset.c===bgColor));
+  document.getElementById('bgGrid').querySelectorAll('.bgs').forEach(s=>s.classList.toggle('on',s.dataset.bg===bgType));
+  document.getElementById('fontScroll').querySelectorAll('.fc').forEach(f=>f.classList.toggle('on',f.dataset.font===curFont));
+  document.getElementById('alignRow').querySelectorAll('.abtn').forEach(b=>b.classList.toggle('on',b.dataset.a===align));
+  document.getElementById('txtColorRow').querySelectorAll('.tc').forEach(s=>s.classList.toggle('on',s.dataset.c===txtColor));
 })();
 
-if('serviceWorker' in navigator && (location.hostname.endsWith('github.io') || location.hostname==='localhost')){
+if('serviceWorker' in navigator&&(location.hostname.endsWith('github.io')||location.hostname==='localhost')){
   navigator.serviceWorker.register('./sw.js').catch(()=>{});
 }
 </script>
