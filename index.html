@@ -30,15 +30,6 @@ body{
   padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px));
 }
 
-/* 본문 */
-.content{
-  display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
-  min-height:calc(100vh - var(--nav-h) - env(safe-area-inset-bottom,0px));
-  gap:12px;padding:20px;
-  color:var(--hint);font-size:13px;text-align:center;
-}
-
 /* 설치 배너 */
 .install-banner{
   display:none;
@@ -132,46 +123,53 @@ body{
   <strong>홈 화면에 추가</strong> 선택 → <strong>추가</strong>
 </div>
 
-<!-- 본문 -->
-<div class="content"></div>
-
 <!-- 하단 네비 -->
 <nav class="bottom-nav">
-  <button class="nav-item on" onclick="location.href='./cover_card.html'">
+  <button class="nav-item on" onclick="location.href='./index.html'">
+    <div class="nav-icon">🏠</div>
+    <span>홈</span>
+  </button>
+  <button class="nav-item" onclick="location.href='./cover_card.html'">
     <div class="nav-icon">📋</div>
     <span>표지카드</span>
+  </button>
+  <button class="nav-item" onclick="location.href='./camera.html'">
+    <div class="nav-icon">📷</div>
+    <span>카메라</span>
+  </button>
+  <button class="nav-item" onclick="location.href='./location.html'">
+    <div class="nav-icon">📍</div>
+    <span>위치</span>
+  </button>
+  <button class="nav-item" onclick="location.href='./settings.html'">
+    <div class="nav-icon">⚙️</div>
+    <span>설정</span>
   </button>
 </nav>
 
 <script>
 /* ── PWA 설치 ── */
 let deferredPrompt = null;
-const banner   = document.getElementById('installBanner');
-const installBtn = document.getElementById('installBtn');
+const banner    = document.getElementById('installBanner');
+const installBtn  = document.getElementById('installBtn');
 const bannerClose = document.getElementById('bannerClose');
-const iosGuide = document.getElementById('iosGuide');
+const iosGuide  = document.getElementById('iosGuide');
 
-/* 이미 설치됐으면 아무것도 안 함 */
 const isStandalone =
   window.matchMedia('(display-mode: standalone)').matches ||
   window.navigator.standalone === true;
 
 if (!isStandalone) {
-  /* iOS Safari 감지 */
   const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) &&
                 !/crios|fxios/i.test(navigator.userAgent);
-
   if (isIOS) {
     iosGuide.classList.add('show');
   }
-
-  /* Android / Chrome - beforeinstallprompt 이벤트 */
   window.addEventListener('beforeinstallprompt', e => {
     e.preventDefault();
     deferredPrompt = e;
     banner.classList.add('show');
   });
-
   installBtn.addEventListener('click', async () => {
     if (!deferredPrompt) return;
     deferredPrompt.prompt();
@@ -179,13 +177,11 @@ if (!isStandalone) {
     deferredPrompt = null;
     banner.classList.remove('show');
   });
-
   bannerClose.addEventListener('click', () => {
     banner.classList.remove('show');
   });
 }
 
-/* ── 서비스워커 등록 (GitHub Pages / localhost 전용) ── */
 if ('serviceWorker' in navigator && (location.hostname.endsWith('github.io') || location.hostname === 'localhost')) {
   navigator.serviceWorker.register('./sw.js').catch(()=>{});
 }
