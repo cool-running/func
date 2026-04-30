@@ -10,12 +10,7 @@
 <link rel="manifest" href="./manifest.json">
 <link rel="apple-touch-icon" href="./icon-192.png">
 <style>
-:root{
-  --blue:#185FA5;--blue-l:#EBF4FF;
-  --border:#D8D6CE;--bg:#F5F4F0;--card:#fff;
-  --text:#1a1a1a;--sub:#666;--hint:#aaa;
-  --nav-h:62px;--top-h:56px;--panel-h:230px;
-}
+:root{--blue:#185FA5;--border:#D8D6CE;--bg:#F5F4F0;--card:#fff;--text:#1a1a1a;--sub:#666;--hint:#aaa;--nav-h:62px;--top-h:56px;--panel-h:240px;}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{width:100%;height:100%;overflow:hidden;}
 body{font-family:-apple-system,'Noto Sans KR',sans-serif;color:var(--text);font-size:14px;-webkit-user-select:none;user-select:none;}
@@ -28,23 +23,27 @@ body{font-family:-apple-system,'Noto Sans KR',sans-serif;color:var(--text);font-
 
 #map{position:fixed;top:var(--top-h);left:0;right:0;bottom:calc(var(--panel-h) + var(--nav-h) + env(safe-area-inset-bottom,0px));z-index:1;}
 
-.map-btns{position:fixed;left:14px;right:14px;bottom:calc(var(--panel-h) + var(--nav-h) + env(safe-area-inset-bottom,0px) + 12px);display:flex;justify-content:space-between;z-index:50;pointer-events:none;}
-.map-btn-left{display:flex;gap:8px;pointer-events:all;}
+/* 지도 위 버튼 */
+.map-btns{position:fixed;left:10px;right:10px;bottom:calc(var(--panel-h) + var(--nav-h) + env(safe-area-inset-bottom,0px) + 10px);display:flex;justify-content:space-between;align-items:flex-end;z-index:50;pointer-events:none;}
+.map-btn-left{display:flex;flex-direction:column;gap:6px;pointer-events:all;}
 .map-btn-right{pointer-events:all;}
-.maptype-btn{height:36px;padding:0 14px;border-radius:18px;background:#fff;border:0.5px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,0.2);font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:4px;font-family:-apple-system,'Noto Sans KR',sans-serif;}
-.maptype-btn:active{opacity:.7;}
+.map-fbtn{height:34px;padding:0 12px;border-radius:17px;background:#fff;border:0.5px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,0.15);font-size:12px;font-weight:700;cursor:pointer;font-family:-apple-system,'Noto Sans KR',sans-serif;white-space:nowrap;}
+.map-fbtn.on{background:#185FA5;color:#fff;border-color:#185FA5;}
+.map-fbtn:active{opacity:.7;}
 .myloc-btn{width:44px;height:44px;border-radius:50%;background:#fff;border:0.5px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,0.2);font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
 .myloc-btn:active{opacity:.7;}
 
-.panel{position:fixed;left:0;right:0;bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px));height:var(--panel-h);background:#fff;border-top:0.5px solid var(--border);padding:10px 14px;z-index:50;}
-.tab-row{display:flex;gap:6px;margin-bottom:10px;}
+/* 하단 패널 */
+.panel{position:fixed;left:0;right:0;bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px));height:var(--panel-h);background:#fff;border-top:0.5px solid var(--border);padding:10px 14px;z-index:50;overflow:hidden;}
+.tab-row{display:flex;gap:6px;margin-bottom:8px;}
 .tab{flex:1;height:32px;border-radius:8px;border:1.5px solid var(--border);background:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:-apple-system,'Noto Sans KR',sans-serif;color:var(--hint);}
 .tab.on{background:var(--blue);border-color:var(--blue);color:#fff;}
 
-.info-grid{display:grid;grid-template-columns:44px 1fr;gap:2px 8px;margin-bottom:10px;}
-.info-lbl{font-size:11px;font-weight:700;color:var(--hint);line-height:1.9;}
-.info-val{font-size:12px;font-weight:600;color:var(--text);line-height:1.9;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.info-grid{display:grid;grid-template-columns:44px 1fr;gap:1px 8px;margin-bottom:8px;}
+.info-lbl{font-size:11px;font-weight:700;color:var(--hint);line-height:2;}
+.info-val{font-size:12px;font-weight:600;color:var(--text);line-height:2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .info-val.blue{color:var(--blue);font-weight:700;}
+.info-val.green{color:#2E7D32;font-weight:700;}
 
 .btn-row{display:flex;gap:8px;}
 .btn{flex:1;height:42px;border-radius:10px;border:none;cursor:pointer;font-size:13px;font-weight:700;font-family:-apple-system,'Noto Sans KR',sans-serif;display:flex;align-items:center;justify-content:center;gap:5px;}
@@ -52,16 +51,14 @@ body{font-family:-apple-system,'Noto Sans KR',sans-serif;color:var(--text);font-
 .btn-loc{background:var(--blue);color:#fff;}
 .btn-copy{background:var(--bg);color:var(--text);border:0.5px solid var(--border);}
 .btn-save{background:#FEE500;color:#3C1E1E;}
-.btn-kakao{background:#3A1D1D;color:#FEE500;flex:1.2;}
+.tap-hint{font-size:12px;color:var(--hint);text-align:center;padding:20px 0 8px;line-height:1.7;}
 
-.tap-hint{font-size:12px;color:var(--hint);text-align:center;padding:14px 0;line-height:1.7;}
-
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;height:calc(var(--nav-h) + env(safe-area-inset-bottom,0px));padding-bottom:env(safe-area-inset-bottom,0px);background:var(--card);border-top:0.5px solid var(--border);display:flex;align-items:stretch;z-index:200;}
-.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;border:none;background:none;color:var(--hint);font-size:10px;font-weight:600;letter-spacing:-0.01em;padding-bottom:2px;}
-.nav-item:active{opacity:.55}
-.nav-item.on{color:var(--blue)}
-.nav-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;}
-.nav-item.on .nav-icon{background:rgba(24,95,165,.1)}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;height:calc(var(--nav-h) + env(safe-area-inset-bottom,0px));padding-bottom:env(safe-area-inset-bottom,0px);background:var(--card);border-top:0.5px solid rgba(0,0,0,0.08);box-shadow:0 -2px 12px rgba(0,0,0,0.06);display:flex;align-items:stretch;z-index:200;}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;border:none;background:none;color:#bbb;font-size:10px;font-weight:700;letter-spacing:-0.02em;padding:6px 0 4px;border-radius:12px;}
+.nav-item:active{opacity:.6;transform:scale(.93);}
+.nav-item.on{color:var(--blue);}
+.nav-icon{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;transition:background .15s,transform .15s;}
+.nav-item.on .nav-icon{background:linear-gradient(135deg,#185FA5,#378ADD);box-shadow:0 3px 10px rgba(24,95,165,0.28);transform:translateY(-2px);}
 
 .toast{display:none;position:fixed;bottom:calc(var(--nav-h) + 16px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:rgba(20,20,30,0.92);color:#fff;font-size:13px;font-weight:600;font-family:-apple-system,'Noto Sans KR',sans-serif;padding:10px 20px;border-radius:20px;white-space:nowrap;z-index:999;}
 #captureCanvas{display:none;}
@@ -78,8 +75,8 @@ body{font-family:-apple-system,'Noto Sans KR',sans-serif;color:var(--text);font-
 
 <div class="map-btns">
   <div class="map-btn-left">
-    <button class="maptype-btn" id="maptypeBtn" onclick="toggleMapType()">🛰 위성</button>
-    <button class="maptype-btn" id="parcelBtn" onclick="toggleParcelLayer()" style="color:#185FA5;">🗺 필지경계 ON</button>
+    <button class="map-fbtn" id="btnSat" onclick="toggleSat()">🛰 위성</button>
+    <button class="map-fbtn" id="btnJijuk" onclick="toggleJijuk()">🏘 지적도</button>
   </div>
   <div class="map-btn-right">
     <button class="myloc-btn" onclick="moveToMyLoc()">📍</button>
@@ -97,7 +94,7 @@ body{font-family:-apple-system,'Noto Sans KR',sans-serif;color:var(--text);font-
     <div class="info-grid">
       <span class="info-lbl">위도</span><span class="info-val" id="latVal">—</span>
       <span class="info-lbl">경도</span><span class="info-val" id="lngVal">—</span>
-      <span class="info-lbl">주소</span><span class="info-val" id="addrVal">위치를 가져오는 중...</span>
+      <span class="info-lbl">주소</span><span class="info-val" id="addrVal">가져오는 중...</span>
       <span class="info-lbl">정확도</span><span class="info-val" id="accVal">—</span>
     </div>
     <div class="btn-row">
@@ -109,13 +106,13 @@ body{font-family:-apple-system,'Noto Sans KR',sans-serif;color:var(--text);font-
 
   <!-- 선택 위치 -->
   <div id="panelSel" style="display:none;">
-    <div class="tap-hint" id="tapHint">🌾 지도에서 농지를 탭하세요<br><small style="color:#ccc">탭하면 필지 경계가 표시됩니다</small></div>
+    <div class="tap-hint" id="tapHint">🌾 지도에서 농지를 탭하세요</div>
     <div id="selInfo" style="display:none;">
       <div class="info-grid">
         <span class="info-lbl">지번</span><span class="info-val blue" id="selJibun">—</span>
         <span class="info-lbl">도로명</span><span class="info-val" id="selRoad">—</span>
-        <span class="info-lbl">위도</span><span class="info-val" id="selLat">—</span>
-        <span class="info-lbl">경도</span><span class="info-val" id="selLng">—</span>
+        <span class="info-lbl">면적</span><span class="info-val green" id="selArea">조회 중...</span>
+        <span class="info-lbl">지목</span><span class="info-val" id="selJimok">—</span>
       </div>
       <div class="btn-row">
         <button class="btn btn-copy" onclick="copyCoord('sel')">📋 복사</button>
@@ -139,204 +136,69 @@ body{font-family:-apple-system,'Noto Sans KR',sans-serif;color:var(--text);font-
 <script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=4e37fe9df4f59f95a43e3210327db09b&libraries=services&autoload=false"></script>
 <script>
 const VWORLD_KEY = '11A78BAB-C75E-3C35-A0D1-172138B3A5EA';
-
 let map=null, myMarker=null, selMarker=null, geocoder=null;
 let curLat=null, curLng=null, curAcc=null, curAddr='—';
 let selLat=null, selLng=null, selJibun='—', selRoad='—';
-let isHybrid=false, curTab='me';
+let isSat=false, isJijuk=false, curTab='me';
+let highlightPolygon=null;
 
 kakao.maps.load(function(){
   geocoder = new kakao.maps.services.Geocoder();
 
   map = new kakao.maps.Map(document.getElementById('map'), {
-    center: new kakao.maps.LatLng(37.5665, 126.9780),
-    level: 4
+    center: new kakao.maps.LatLng(37.5665, 126.9780), level: 4
   });
 
-  // 내 위치 — 빨간 동그라미 커스텀 마커
-  const myOverlay = new kakao.maps.CustomOverlay({
+  // 내 위치 마커 — 빨간 동그라미
+  myMarker = new kakao.maps.CustomOverlay({
     position: new kakao.maps.LatLng(37.5665, 126.9780),
     content: '<div style="width:18px;height:18px;border-radius:50%;background:#E53935;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.4);"></div>',
-    zIndex: 3
+    zIndex:3
   });
-  myOverlay.setMap(map);
-  myMarker = myOverlay;
+  myMarker.setMap(map);
 
-  // 선택 위치 — 빨간 핀 마커
-  const selImg = new kakao.maps.MarkerImage(
-    'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png',
-    new kakao.maps.Size(36,37),
-    { offset: new kakao.maps.Point(13,37) }
-  );
+  // 선택 마커 — 빨간 핀
   selMarker = new kakao.maps.Marker({
     position: new kakao.maps.LatLng(37.5665, 126.9780),
-    image: selImg
+    image: new kakao.maps.MarkerImage(
+      'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png',
+      new kakao.maps.Size(36,37), {offset:new kakao.maps.Point(13,37)}
+    )
   });
 
   map.addControl(new kakao.maps.ZoomControl(), kakao.maps.ControlPosition.RIGHT);
 
-  // 지적도 레이어 기본 ON
-  map.addOverlayMapTypeId(kakao.maps.MapTypeId.USE_DISTRICT);
-  parcelLayerOn = true;
-  document.getElementById('parcelBtn').textContent = '🏘 지적도 OFF';
-  document.getElementById('parcelBtn').style.background = '#185FA5';
-  document.getElementById('parcelBtn').style.color = '#fff';
-
   // 지도 클릭 → 필지 선택
-  kakao.maps.event.addListener(map, 'idle', onMapChanged);
-  kakao.maps.event.addListener(map, 'click', function(mouseEvent){
-    const latlng = mouseEvent.latLng;
-    onMapTap(latlng.getLat(), latlng.getLng());
+  kakao.maps.event.addListener(map, 'click', function(e){
+    onMapTap(e.latLng.getLat(), e.latLng.getLng());
   });
 
   getLocation();
 });
 
-/* ── 지도 탭 처리 ── */
-function onMapTap(lat, lng){
-  selLat=lat; selLng=lng;
-  const p = new kakao.maps.LatLng(lat, lng);
-  selMarker.setPosition(p);
-  selMarker.setMap(map);
-  switchTab('sel');
-  document.getElementById('tapHint').style.display='none';
-  document.getElementById('selInfo').style.display='block';
-  document.getElementById('selLat').textContent=lat.toFixed(6);
-  document.getElementById('selLng').textContent=lng.toFixed(6);
-  document.getElementById('selJibun').textContent='주소 확인 중...';
-  document.getElementById('selRoad').textContent='—';
-  showToast('📍 필지 확인 중...');
-
-  // 카카오 역지오코딩
-  geocoder.coord2Address(lng, lat, (result, status)=>{
-    if(status===kakao.maps.services.Status.OK){
-      const road = result[0].road_address ? result[0].road_address.address_name : '—';
-      const jibun = result[0].address ? result[0].address.address_name : '—';
-      selJibun=jibun; selRoad=road;
-      document.getElementById('selJibun').textContent=jibun;
-      document.getElementById('selRoad').textContent=road;
-    }
-  });
-
-  // 국토부 vworld 필지 경계 조회
-  fetchParcel(lat, lng);
-}
-
-/* ── 필지 WMS 오버레이 (핑크색) ── */
-let parcelLayerOn = false;
-let wmsOverlay = null;
-let highlightPolygon = null;
-
-// SLD 스타일 - 핑크색 반투명 필지
-const SLD = encodeURIComponent(`<?xml version="1.0" encoding="UTF-8"?>
-<StyledLayerDescriptor version="1.0.0">
-  <NamedLayer><Name>lt_c_ufprd</Name>
-  <UserStyle><FeatureTypeStyle><Rule>
-    <PolygonSymbolizer>
-      <Fill><CssParameter name="fill">#FF69B4</CssParameter><CssParameter name="fill-opacity">0.35</CssParameter></Fill>
-      <Stroke><CssParameter name="stroke">#C2185B</CssParameter><CssParameter name="stroke-width">1.5</CssParameter></Stroke>
-    </PolygonSymbolizer>
-  </Rule></FeatureTypeStyle></UserStyle></NamedLayer>
-</StyledLayerDescriptor>`);
-
-function toggleParcelLayer(){
-  if(!map) return;
-  if(parcelLayerOn){
-    map.removeOverlayMapTypeId(kakao.maps.MapTypeId.USE_DISTRICT);
-    if(wmsOverlay){ wmsOverlay.setMap(null); wmsOverlay=null; }
-    parcelLayerOn = false;
-    document.getElementById('parcelBtn').textContent = '🏘 지적도 ON';
-    document.getElementById('parcelBtn').style.background = '#fff';
-    document.getElementById('parcelBtn').style.color = '#185FA5';
-    showToast('지적도 OFF');
+/* ── 위성/지적도 토글 ── */
+function toggleSat(){
+  isSat = !isSat;
+  const btn = document.getElementById('btnSat');
+  if(isSat){
+    map.setMapTypeId(kakao.maps.MapTypeId.HYBRID);
+    btn.classList.add('on'); btn.textContent='🗺 일반';
   } else {
-    drawWMSOverlay();
-    parcelLayerOn = true;
-    document.getElementById('parcelBtn').textContent = '🏘 지적도 OFF';
-    document.getElementById('parcelBtn').style.background = '#C2185B';
-    document.getElementById('parcelBtn').style.color = '#fff';
-    showToast('🌸 핑크 지적도 ON');
+    map.setMapTypeId(kakao.maps.MapTypeId.ROADMAP);
+    btn.classList.remove('on'); btn.textContent='🛰 위성';
   }
 }
 
-function drawWMSOverlay(){
-  if(wmsOverlay){ wmsOverlay.setMap(null); wmsOverlay=null; }
-  const bounds = map.getBounds();
-  const sw = bounds.getSouthWest();
-  const ne = bounds.getNorthEast();
-  const W = document.getElementById('map').offsetWidth * 2;
-  const H = document.getElementById('map').offsetHeight * 2;
-
-  const url = `https://api.vworld.kr/req/wms?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap`
-    + `&LAYERS=lt_c_ufprd&STYLES=`
-    + `&CRS=EPSG:4326`
-    + `&BBOX=${sw.getLat()},${sw.getLng()},${ne.getLat()},${ne.getLng()}`
-    + `&WIDTH=${W}&HEIGHT=${H}&FORMAT=image/png&TRANSPARENT=true`
-    + `&KEY=${VWORLD_KEY}&DOMAIN=https://cool-running.github.io/func`;
-
-  const img = new Image();
-  img.crossOrigin = 'anonymous';
-  img.onload = () => {
-    const canvas = document.createElement('canvas');
-    canvas.width = img.width; canvas.height = img.height;
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(img, 0, 0);
-    // 색상을 핑크로 변환
-    const id = ctx.getImageData(0,0,canvas.width,canvas.height);
-    const d = id.data;
-    for(let i=0;i<d.length;i+=4){
-      if(d[i+3]>10){ // 투명하지 않은 픽셀
-        d[i]=220; d[i+1]=50; d[i+2]=120; // 핑크색
-        d[i+3]=Math.min(d[i+3]*2, 180);
-      }
-    }
-    ctx.putImageData(id,0,0);
-    const dataUrl = canvas.toDataURL('image/png');
-    const kakaoSW = new kakao.maps.LatLng(sw.getLat(), sw.getLng());
-    const kakaoNE = new kakao.maps.LatLng(ne.getLat(), ne.getLng());
-    wmsOverlay = new kakao.maps.CustomOverlay({
-      position: new kakao.maps.LatLng((sw.getLat()+ne.getLat())/2, (sw.getLng()+ne.getLng())/2),
-      content: `<img src="${dataUrl}" style="width:${document.getElementById('map').offsetWidth}px;height:${document.getElementById('map').offsetHeight}px;opacity:0.75;pointer-events:none;">`,
-      zIndex: 2,
-      xAnchor: 0.5, yAnchor: 0.5
-    });
-    wmsOverlay.setMap(map);
-  };
-  img.onerror = () => {
-    // WMS 실패시 카카오 기본 지적도 사용
+function toggleJijuk(){
+  isJijuk = !isJijuk;
+  const btn = document.getElementById('btnJijuk');
+  if(isJijuk){
     map.addOverlayMapTypeId(kakao.maps.MapTypeId.USE_DISTRICT);
-    showToast('기본 지적도로 표시됩니다');
-  };
-  img.src = url;
-}
-
-// 지도 이동/줌 시 WMS 다시 그리기
-function onMapChanged(){
-  if(parcelLayerOn) drawWMSOverlay();
-}
-
-function fetchParcel(lat, lng){
-  if(!parcelLayerOn) toggleParcelLayer();
-}
-
-
-
-/* ── 탭 전환 ── */
-function switchTab(tab){
-  curTab=tab;
-  document.getElementById('tabMe').classList.toggle('on', tab==='me');
-  document.getElementById('tabSel').classList.toggle('on', tab==='sel');
-  document.getElementById('panelMe').style.display = tab==='me' ? '' : 'none';
-  document.getElementById('panelSel').style.display = tab==='sel' ? '' : 'none';
-}
-
-/* ── 지도 타입 ── */
-function toggleMapType(){
-  if(!map) return;
-  isHybrid=!isHybrid;
-  const btn=document.getElementById('maptypeBtn');
-  if(isHybrid){ map.setMapTypeId(kakao.maps.MapTypeId.HYBRID); btn.textContent='🗺 일반'; }
-  else { map.setMapTypeId(kakao.maps.MapTypeId.ROADMAP); btn.textContent='🛰 위성'; }
+    btn.classList.add('on'); btn.textContent='🏘 지적도 ON';
+  } else {
+    map.removeOverlayMapTypeId(kakao.maps.MapTypeId.USE_DISTRICT);
+    btn.classList.remove('on'); btn.textContent='🏘 지적도';
+  }
 }
 
 /* ── GPS ── */
@@ -353,44 +215,131 @@ function getLocation(){
       document.getElementById('gpsBadge').className='gps-badge ok';
       document.getElementById('gpsBadge').textContent='GPS 확인됨';
       const p=new kakao.maps.LatLng(curLat,curLng);
-      map.setCenter(p);
-      myMarker.setPosition(p);
+      map.setCenter(p); myMarker.setPosition(p);
       reverseGeocode(curLat,curLng,'me');
     },
-    err=>{ setErr(err.code===1?'위치 권한 거부':err.code===2?'GPS 없음':'시간 초과'); },
+    err=>setErr(err.code===1?'위치 권한 거부':err.code===2?'GPS 없음':'시간 초과'),
     {enableHighAccuracy:true,timeout:15000,maximumAge:0}
   );
 }
-
 function setErr(msg){
   document.getElementById('gpsBadge').className='gps-badge err';
   document.getElementById('gpsBadge').textContent=msg;
   document.getElementById('addrVal').textContent=msg;
 }
 
+/* ── 역지오코딩 ── */
 function reverseGeocode(lat,lng,target){
   geocoder.coord2Address(lng,lat,(result,status)=>{
     if(status===kakao.maps.services.Status.OK){
+      const road=result[0].road_address?result[0].road_address.address_name:'—';
       const jibun=result[0].address?result[0].address.address_name:'—';
       if(target==='me'){ curAddr=jibun; document.getElementById('addrVal').textContent=jibun; }
+      else { selJibun=jibun; selRoad=road; document.getElementById('selJibun').textContent=jibun; document.getElementById('selRoad').textContent=road; }
     } else {
       if(target==='me') document.getElementById('addrVal').textContent='주소 변환 실패';
     }
   });
 }
 
+/* ── 지도 탭 → 필지 선택 ── */
+function onMapTap(lat,lng){
+  selLat=lat; selLng=lng;
+  const p=new kakao.maps.LatLng(lat,lng);
+  selMarker.setPosition(p); selMarker.setMap(map);
+  switchTab('sel');
+  document.getElementById('tapHint').style.display='none';
+  document.getElementById('selInfo').style.display='block';
+  document.getElementById('selJibun').textContent='조회 중...';
+  document.getElementById('selRoad').textContent='—';
+  document.getElementById('selArea').textContent='조회 중...';
+  document.getElementById('selJimok').textContent='—';
+  showToast('📍 필지 확인 중...');
+
+  // 주소 조회
+  reverseGeocode(lat,lng,'sel');
+
+  // vworld 면적+지목 조회 (JSONP)
+  fetchParcelInfo(lat,lng);
+
+  // 필지 폴리곤 강조
+  fetchParcelPolygon(lat,lng);
+}
+
+/* ── vworld 필지 속성 조회 (JSONP) ── */
+function fetchParcelInfo(lat,lng){
+  const cb='cb_'+Date.now();
+  const s=document.createElement('script');
+  window[cb]=function(data){
+    delete window[cb]; s.remove();
+    try{
+      const f=data.response.result.featureCollection.features;
+      if(!f||!f.length){ document.getElementById('selArea').textContent='정보 없음'; return; }
+      const props=f[0].properties;
+      // 면적 (pnu, area, jimok 등 속성명)
+      const area = props.area||props.shape_area||props.AREA||'—';
+      const jimok = props.jimok||props.JIMOK||props.lndcgr_smbol||'—';
+      document.getElementById('selArea').textContent = area!=='—' ? Math.round(area)+'㎡' : '정보 없음';
+      document.getElementById('selJimok').textContent = jimok;
+    }catch(e){ document.getElementById('selArea').textContent='조회 실패'; }
+  };
+  s.onerror=()=>{ delete window[cb]; s.remove(); document.getElementById('selArea').textContent='조회 실패'; };
+  s.src=`https://api.vworld.kr/req/data?service=data&request=GetFeature&data=LT_C_UFPRD`
+    +`&key=${VWORLD_KEY}&domain=https://cool-running.github.io/func`
+    +`&geometry=false&attribute=true&crs=EPSG:4326`
+    +`&geomFilter=POINT(${lng}%20${lat})&size=1&format=json&callback=${cb}`;
+  document.head.appendChild(s);
+}
+
+/* ── vworld 필지 폴리곤 (JSONP) ── */
+function fetchParcelPolygon(lat,lng){
+  if(highlightPolygon){ highlightPolygon.setMap(null); highlightPolygon=null; }
+  const cb='cbp_'+Date.now();
+  const s=document.createElement('script');
+  window[cb]=function(data){
+    delete window[cb]; s.remove();
+    try{
+      const f=data.response.result.featureCollection.features;
+      if(!f||!f.length) return;
+      const geom=f[0].geometry;
+      let coords=geom.type==='Polygon'?geom.coordinates[0]:geom.type==='MultiPolygon'?geom.coordinates[0][0]:[];
+      if(!coords.length) return;
+      highlightPolygon=new kakao.maps.Polygon({
+        map:map,
+        path:coords.map(c=>new kakao.maps.LatLng(c[1],c[0])),
+        strokeWeight:3,strokeColor:'#C62828',strokeOpacity:1,
+        fillColor:'#FF1744',fillOpacity:0.3
+      });
+      showToast('🌾 필지 경계 표시됨');
+    }catch(e){}
+  };
+  s.onerror=()=>{ delete window[cb]; s.remove(); };
+  s.src=`https://api.vworld.kr/req/data?service=data&request=GetFeature&data=LT_C_UFPRD`
+    +`&key=${VWORLD_KEY}&domain=https://cool-running.github.io/func`
+    +`&geometry=true&attribute=false&crs=EPSG:4326`
+    +`&geomFilter=POINT(${lng}%20${lat})&size=1&format=json&callback=${cb}`;
+  document.head.appendChild(s);
+}
+
+function switchTab(tab){
+  curTab=tab;
+  document.getElementById('tabMe').classList.toggle('on',tab==='me');
+  document.getElementById('tabSel').classList.toggle('on',tab==='sel');
+  document.getElementById('panelMe').style.display=tab==='me'?'':'none';
+  document.getElementById('panelSel').style.display=tab==='sel'?'':'none';
+}
+
 function moveToMyLoc(){
   if(!map) return;
   if(curLat===null){ getLocation(); return; }
-  map.setCenter(new kakao.maps.LatLng(curLat,curLng));
-  map.setLevel(4);
+  map.setCenter(new kakao.maps.LatLng(curLat,curLng)); map.setLevel(4);
 }
 
 function copyCoord(target){
   const lat=target==='me'?curLat:selLat, lng=target==='me'?curLng:selLng;
   if(lat===null){ showToast('먼저 위치를 확인해주세요'); return; }
   const addr=target==='sel'?selJibun:'';
-  const text=addr && addr!=='—' ? addr+'\n'+lat.toFixed(6)+', '+lng.toFixed(6) : lat.toFixed(6)+', '+lng.toFixed(6);
+  const text=addr&&addr!=='—'?addr+'\n'+lat.toFixed(6)+', '+lng.toFixed(6):lat.toFixed(6)+', '+lng.toFixed(6);
   navigator.clipboard.writeText(text).then(()=>showToast('📋 복사됨')).catch(()=>showToast('복사 실패'));
 }
 
@@ -398,38 +347,26 @@ function saveCard(target){
   const lat=target==='me'?curLat:selLat, lng=target==='me'?curLng:selLng;
   if(lat===null){ showToast('먼저 위치를 확인해주세요'); return; }
   const canvas=document.getElementById('captureCanvas'), ctx=canvas.getContext('2d');
-  const W=800,H=340; canvas.width=W; canvas.height=H;
+  const W=800,H=360; canvas.width=W; canvas.height=H;
   const now=new Date();
   const ts=now.getFullYear()+'.'+String(now.getMonth()+1).padStart(2,'0')+'.'+String(now.getDate()).padStart(2,'0')+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')+':'+String(now.getSeconds()).padStart(2,'0');
   ctx.fillStyle='#F5F4F0'; ctx.fillRect(0,0,W,H);
   ctx.fillStyle='#185FA5'; ctx.fillRect(0,0,W,56);
   ctx.fillStyle='#fff'; ctx.font='bold 20px sans-serif'; ctx.textAlign='left'; ctx.textBaseline='middle';
-  ctx.fillText('📍 현장 위치 확인 — '+(target==='me'?'내 위치':'🌾 농지 선택'), 20, 28);
+  ctx.fillText('📍 현장 위치 — '+(target==='me'?'내 위치':'🌾 농지 선택'),20,28);
   ctx.font='13px sans-serif'; ctx.textAlign='right'; ctx.fillText(ts,W-20,28);
-  ctx.fillStyle='#fff'; ctx.beginPath(); ctx.roundRect(16,72,W-32,248,10); ctx.fill();
-  const rows = target==='me'
-    ? [['위도',lat.toFixed(6)],['경도',lng.toFixed(6)],['주소',curAddr],['정확도','약 '+curAcc+'m']]
-    : [['지번',selJibun],['도로명',selRoad],['위도',lat.toFixed(6)],['경도',lng.toFixed(6)]];
-  let y=108;
+  ctx.fillStyle='#fff'; ctx.beginPath(); ctx.roundRect(16,68,W-32,272,10); ctx.fill();
+  const rows=target==='me'
+    ?[['위도',lat.toFixed(6)],['경도',lng.toFixed(6)],['주소',curAddr],['정확도','약 '+curAcc+'m']]
+    :[['지번',selJibun],['도로명',selRoad],['면적',document.getElementById('selArea').textContent],['지목',document.getElementById('selJimok').textContent]];
+  let y=104;
   rows.forEach(([l,v])=>{
     ctx.fillStyle='#aaa'; ctx.font='bold 12px sans-serif'; ctx.textAlign='left'; ctx.fillText(l,32,y);
-    ctx.fillStyle='#1a1a1a'; ctx.font='600 14px sans-serif';
-    ctx.fillText(v&&v.length>40?v.substring(0,40)+'...':v||'—', 96, y); y+=54;
+    ctx.fillStyle='#1a1a1a'; ctx.font='600 14px sans-serif'; ctx.fillText(v&&v.length>38?v.substring(0,38)+'...':v||'—',96,y); y+=58;
   });
   const fname='위치_'+now.getFullYear()+String(now.getMonth()+1).padStart(2,'0')+String(now.getDate()).padStart(2,'0')+'_'+String(now.getHours()).padStart(2,'0')+String(now.getMinutes()).padStart(2,'0')+'.jpg';
   const a=document.createElement('a'); a.href=canvas.toDataURL('image/jpeg',0.95); a.download=fname; a.click();
-  showToast('💾 위치 카드 저장됐어요');
-}
-
-/* ── 카카오맵 앱 열기 ── */
-function openKakao(){
-  if(selLat===null){ showToast('먼저 위치를 선택해주세요'); return; }
-  // 카카오맵 앱 딥링크 - 해당 좌표로 바로 이동
-  const appUrl = `kakaomap://look?p=${selLat},${selLng}`;
-  const webUrl = `https://map.kakao.com/link/map/${encodeURIComponent(selJibun||'선택위치')},${selLat},${selLng}`;
-  // 앱 열기 시도, 300ms 후 앱이 없으면 웹으로
-  window.location.href = appUrl;
-  setTimeout(()=>{ window.open(webUrl, '_blank'); }, 300);
+  showToast('💾 저장됐어요');
 }
 
 function showToast(msg){
