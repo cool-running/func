@@ -10,7 +10,7 @@
 <link rel="manifest" href="./manifest.json">
 <link rel="apple-touch-icon" href="./icon-192.png">
 <style>
-:root{--blue:#185FA5;--border:#D8D6CE;--bg:#F5F4F0;--card:#fff;--text:#1a1a1a;--sub:#666;--hint:#aaa;--nav-h:62px;--top-h:56px;--panel-h:240px;}
+:root{--blue:#185FA5;--border:#D8D6CE;--bg:#F5F4F0;--card:#fff;--text:#1a1a1a;--sub:#666;--hint:#aaa;--nav-h:62px;--top-h:56px;--panel-h:260px;}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{width:100%;height:100%;overflow:hidden;}
 body{font-family:-apple-system,'Noto Sans KR',sans-serif;color:var(--text);font-size:14px;-webkit-user-select:none;user-select:none;}
@@ -23,15 +23,14 @@ body{font-family:-apple-system,'Noto Sans KR',sans-serif;color:var(--text);font-
 
 #map{position:fixed;top:var(--top-h);left:0;right:0;bottom:calc(var(--panel-h) + var(--nav-h) + env(safe-area-inset-bottom,0px));z-index:1;}
 
-/* 지도 위 버튼 */
-.map-btns{position:fixed;left:10px;right:10px;bottom:calc(var(--panel-h) + var(--nav-h) + env(safe-area-inset-bottom,0px) + 10px);display:flex;justify-content:space-between;align-items:flex-end;z-index:150;pointer-events:none;}
-.map-btn-left{display:flex;flex-direction:column;gap:6px;pointer-events:all;}
-.map-btn-right{pointer-events:all;}
-.map-fbtn{height:34px;padding:0 12px;border-radius:17px;background:#fff;border:0.5px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,0.15);font-size:12px;font-weight:700;cursor:pointer;font-family:-apple-system,'Noto Sans KR',sans-serif;white-space:nowrap;}
-.map-fbtn.on{background:#185FA5;color:#fff;border-color:#185FA5;}
-.map-fbtn:active{opacity:.7;}
-.myloc-btn{width:44px;height:44px;border-radius:50%;background:#fff;border:0.5px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,0.2);font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+/* 지도 위 내위치 버튼만 */
+.myloc-btn{position:fixed;right:14px;bottom:calc(var(--panel-h) + var(--nav-h) + env(safe-area-inset-bottom,0px) + 12px);width:44px;height:44px;border-radius:50%;background:#fff;border:0.5px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,0.2);font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:150;}
 .myloc-btn:active{opacity:.7;}
+/* 패널 내 맵 컨트롤 버튼 */
+.map-ctrl-row{display:flex;gap:6px;margin-bottom:8px;}
+.map-fbtn{height:32px;padding:0 12px;border-radius:16px;background:#f0f0f0;border:none;font-size:12px;font-weight:700;cursor:pointer;font-family:-apple-system,'Noto Sans KR',sans-serif;white-space:nowrap;color:var(--text);}
+.map-fbtn.on{background:#185FA5;color:#fff;}
+.map-fbtn:active{opacity:.7;}
 
 /* 하단 패널 */
 .panel{position:fixed;left:0;right:0;bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px));height:var(--panel-h);background:#fff;border-top:0.5px solid var(--border);padding:10px 14px;z-index:50;overflow:hidden;}
@@ -73,17 +72,13 @@ body{font-family:-apple-system,'Noto Sans KR',sans-serif;color:var(--text);font-
 
 <div id="map"></div>
 
-<div class="map-btns">
-  <div class="map-btn-left">
-    <button class="map-fbtn" id="btnSat" onclick="toggleSat()">🛰 위성</button>
-    <button class="map-fbtn" id="btnJijuk" onclick="toggleJijuk()">🏘 지적도</button>
-  </div>
-  <div class="map-btn-right">
-    <button class="myloc-btn" onclick="moveToMyLoc()">📍</button>
-  </div>
-</div>
+<button class="myloc-btn" onclick="moveToMyLoc()">📍</button>
 
 <div class="panel">
+  <div class="map-ctrl-row">
+    <button class="map-fbtn" id="btnSat" onclick="toggleSat()">🛰 위성</button>
+    <button class="map-fbtn on" id="btnJijuk" onclick="toggleJijuk()">🏘 지적도 ON</button>
+  </div>
   <div class="tab-row">
     <button class="tab on" id="tabMe" onclick="switchTab('me')">📍 내 위치</button>
     <button class="tab" id="tabSel" onclick="switchTab('sel')">🌾 선택 위치</button>
