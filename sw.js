@@ -1,12 +1,12 @@
-const CACHE = 'sonhae-202604300656';
+const CACHE = 'sonhae-202604300705';
 const ASSETS = [
   './',
   './index.html',
   './cover_card.html',
-  './settings.html',
-  './area.html',
-  './location.html',
   './camera.html',
+  './location.html',
+  './area.html',
+  './settings.html',
   './manifest.json',
   './icon-192.png',
   './icon-512.png',
