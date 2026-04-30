@@ -192,11 +192,6 @@ kakao.maps.load(function(){
   getLocation();
 });
 
-/* ── 폴리곤 하이라이트 ── */
-let highlightPolygon = null;
-
-// highlightParcel - 제거됨
-
 /* ── 지도 탭 처리 ── */
 function onMapTap(lat, lng){
   selLat=lat; selLng=lng;
@@ -226,9 +221,6 @@ function onMapTap(lat, lng){
   // 국토부 vworld 필지 경계 조회
   fetchParcel(lat, lng);
 }
-
-/* ── vworld WMS 필지 경계 오버레이 ── */
-let parcelLayerOn = false;
 
 /* ── 필지 WMS 오버레이 (핑크색) ── */
 let parcelLayerOn = false;
