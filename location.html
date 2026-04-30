@@ -24,7 +24,7 @@ body{font-family:-apple-system,'Noto Sans KR',sans-serif;color:var(--text);font-
 #map{position:fixed;top:var(--top-h);left:0;right:0;bottom:calc(var(--panel-h) + var(--nav-h) + env(safe-area-inset-bottom,0px));z-index:1;}
 
 /* 지도 위 버튼 */
-.map-btns{position:fixed;left:10px;right:10px;bottom:calc(var(--panel-h) + var(--nav-h) + env(safe-area-inset-bottom,0px) + 10px);display:flex;justify-content:space-between;align-items:flex-end;z-index:50;pointer-events:none;}
+.map-btns{position:fixed;left:10px;right:10px;bottom:calc(var(--panel-h) + var(--nav-h) + env(safe-area-inset-bottom,0px) + 10px);display:flex;justify-content:space-between;align-items:flex-end;z-index:150;pointer-events:none;}
 .map-btn-left{display:flex;flex-direction:column;gap:6px;pointer-events:all;}
 .map-btn-right{pointer-events:all;}
 .map-fbtn{height:34px;padding:0 12px;border-radius:17px;background:#fff;border:0.5px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,0.15);font-size:12px;font-weight:700;cursor:pointer;font-family:-apple-system,'Noto Sans KR',sans-serif;white-space:nowrap;}
@@ -168,6 +168,12 @@ kakao.maps.load(function(){
 
   map.addControl(new kakao.maps.ZoomControl(), kakao.maps.ControlPosition.RIGHT);
 
+  // 지적도 기본 ON
+  map.addOverlayMapTypeId(kakao.maps.MapTypeId.USE_DISTRICT);
+  isJijuk = true;
+  document.getElementById('btnJijuk').classList.add('on');
+  document.getElementById('btnJijuk').textContent = '🏘 지적도 ON';
+
   // 지도 클릭 → 필지 선택
   kakao.maps.event.addListener(map, 'click', function(e){
     onMapTap(e.latLng.getLat(), e.latLng.getLng());
@@ -186,6 +192,12 @@ function toggleSat(){
   } else {
     map.setMapTypeId(kakao.maps.MapTypeId.ROADMAP);
     btn.classList.remove('on'); btn.textContent='🛰 위성';
+  }
+  // 위성 전환 후 지적도 레이어 유지
+  if(isJijuk){
+    setTimeout(()=>{
+      map.addOverlayMapTypeId(kakao.maps.MapTypeId.USE_DISTRICT);
+    }, 100);
   }
 }
 
