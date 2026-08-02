@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#185FA5">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>위치</title>
+<title>주소검색</title>
 <link rel="manifest" href="./manifest.json">
 <link rel="apple-touch-icon" href="./icon-192.png">
 <link rel="preconnect" href="https://dapi.kakao.com">
@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://t1.daumcdn.net">
 <link rel="dns-prefetch" href="https://t1.daumcdn.net">
 <style>
-:root{--blue:#185FA5;--border:#D8D6CE;--bg:#F5F4F0;--card:#fff;--text:#1a1a1a;--sub:#666;--hint:#aaa;--nav-h:62px;--top-h:56px;--search-h:52px;--panel-h:132px;}
+:root{--blue:#185FA5;--border:#D8D6CE;--bg:#F5F4F0;--card:#fff;--text:#1a1a1a;--sub:#666;--hint:#aaa;--nav-h:62px;--top-h:56px;--search-h:52px;--panel-h:146px;}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{width:100%;height:100%;overflow:hidden;}
 body{font-family:-apple-system,'Noto Sans KR',sans-serif;color:var(--text);font-size:14px;-webkit-user-select:none;user-select:none;}
@@ -29,6 +29,17 @@ body{font-family:-apple-system,'Noto Sans KR',sans-serif;color:var(--text);font-
 
 .icon-btn{width:32px;height:32px;border-radius:50%;border:none;background:var(--bg);color:var(--text);font-size:15px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
 .icon-btn:active{opacity:.7;}
+
+/* 캡처 모드: 앱 자체 UI + (안드로이드) OS 상태바까지 숨기고 지도+결과만 남긴다 */
+.capture-exit-btn{display:none;position:fixed;top:calc(env(safe-area-inset-top,0px) + 10px);right:14px;width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,0.55);color:#fff;font-size:16px;align-items:center;justify-content:center;z-index:300;border:none;cursor:pointer;}
+body.capture-mode .capture-exit-btn{display:flex;}
+body.capture-mode .topbar,
+body.capture-mode .search-row,
+body.capture-mode .myloc-btn,
+body.capture-mode .bottom-nav,
+body.capture-mode .map-ctrl-row{display:none !important;}
+body.capture-mode #map{top:0 !important;bottom:calc(var(--panel-h) + env(safe-area-inset-bottom,0px)) !important;}
+body.capture-mode .panel{bottom:env(safe-area-inset-bottom,0px) !important;}
 
 .search-row{position:fixed;top:var(--top-h);left:0;right:0;height:var(--search-h);padding:8px 16px;display:none;gap:8px;align-items:center;background:#fff;border-bottom:0.5px solid var(--border);z-index:120;}
 .search-row.show{display:flex;}
@@ -54,7 +65,7 @@ body{font-family:-apple-system,'Noto Sans KR',sans-serif;color:var(--text);font-
 
 .info-grid{display:grid;grid-template-columns:44px 1fr;gap:1px 8px;margin-bottom:8px;}
 .info-lbl{font-size:11px;font-weight:700;color:var(--hint);line-height:2;}
-.info-val{font-size:12px;font-weight:600;color:var(--text);line-height:2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.info-val{font-size:15px;font-weight:800;color:var(--text);line-height:1.9;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .info-val.blue{color:var(--blue);font-weight:700;}
 .info-val.green{color:#2E7D32;font-weight:700;}
 
@@ -80,13 +91,20 @@ body{font-family:-apple-system,'Noto Sans KR',sans-serif;color:var(--text);font-
 <body>
 
 <div class="topbar">
-  <span class="topbar-title">📍 위치</span>
+  <span class="topbar-title">📍 주소검색</span>
   <div style="display:flex;align-items:center;gap:8px;">
+    <button class="icon-btn" onclick="toggleCapture()" title="위치저장">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 21s-7-7.58-7-12a7 7 0 0 1 14 0c0 4.42-7 12-7 12z"/>
+        <circle cx="12" cy="9" r="2.5"/>
+      </svg>
+    </button>
     <button class="icon-btn" onclick="toggleSearch()">🔍</button>
     <span id="gpsBadge" class="gps-badge">위치 확인 중...</span>
   </div>
 </div>
 
+<button class="capture-exit-btn" onclick="toggleCapture()">✕</button>
 <div class="search-row" id="searchRow">
   <input type="text" id="searchInput" class="search-input" placeholder="주소 또는 지번 검색" autocomplete="off" autocorrect="off" spellcheck="false"/>
   <button class="search-btn" onclick="searchAddress()">🔍</button>
@@ -268,6 +286,27 @@ function toggleSearch(){
   el.classList.toggle('show');
   if(el.classList.contains('show')) setTimeout(()=>document.getElementById('searchInput').focus(),50);
 }
+
+/* ── 캡처 모드: 화면 정리 + (지원 시) 상태바까지 숨겨서 스크린샷 바로 쓸 수 있게 ── */
+let captureMode=false;
+async function toggleCapture(){
+  captureMode=!captureMode;
+  document.body.classList.toggle('capture-mode', captureMode);
+  try{
+    if(captureMode){
+      if(document.documentElement.requestFullscreen) await document.documentElement.requestFullscreen();
+    } else if(document.fullscreenElement && document.exitFullscreen){
+      await document.exitFullscreen();
+    }
+  }catch(e){ /* 풀스크린 미지원/거부 — 앱 UI는 이미 정리됐으니 그대로 진행 */ }
+  if(captureMode) showToast('📍 위치저장 모드 — 다시 눌러서 종료');
+}
+document.addEventListener('fullscreenchange',()=>{
+  if(!document.fullscreenElement && captureMode){
+    captureMode=false;
+    document.body.classList.remove('capture-mode');
+  }
+});
 
 /* ── 지도 탭 → 주소 + 필지 경계 한 번에 ── */
 function onMapTap(lat,lng){
