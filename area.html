@@ -75,8 +75,8 @@ body{font-family:-apple-system,'Noto Sans KR',sans-serif;color:var(--text);font-
 </div>
 
 <div class="mode-row">
-  <button class="mbtn on" id="modeParcelBtn" onclick="setAreaMode('parcel')">🌾 필지 전체</button>
-  <button class="mbtn" id="modeManualBtn" onclick="setAreaMode('manual')">✏️ 직접 측정</button>
+  <button class="mbtn on" id="modeParcelBtn" onclick="setAreaMode('parcel')">🌾 자동측정</button>
+  <button class="mbtn" id="modeManualBtn" onclick="setAreaMode('manual')">✏️ 수동측정</button>
 </div>
 
 <div id="map">
@@ -130,7 +130,7 @@ if(typeof kakao==='undefined'){
 } else {
 
 let map=null, geocoder=null, myMarker=null;
-let mode='parcel'; // 'parcel' = 필지 전체 탭 한 번, 'manual' = 점 찍어서 직접 측정
+let mode='parcel'; // 'parcel' = 자동측정(탭 한 번), 'manual' = 수동측정(점 찍기)
 const VWORLD_KEY='11A78BAB-C75E-3C35-A0D1-172138B3A5EA';
 let points=[];          // [{lat,lng}]
 let vertexOverlays=[];  // CustomOverlay dots
@@ -314,20 +314,24 @@ function updateSegmentLabel(){
   segLabelOverlay.setMap(map);
 }
 
+function fmtNum(n, decimals){
+  return Number(n).toLocaleString('ko-KR', {minimumFractionDigits:decimals, maximumFractionDigits:decimals});
+}
+
 function updateInfoPanel(){
   const n=points.length;
   document.getElementById('ptCount').textContent=n+'개';
   if(n<3){
     document.getElementById('areaVal').textContent='—';
     document.getElementById('pyeongVal').textContent='';
-    document.getElementById('periVal').textContent = n===2 ? haversine(points[0],points[1]).toFixed(1)+'m' : '0m';
+    document.getElementById('periVal').textContent = n===2 ? fmtNum(haversine(points[0],points[1]),1)+'m' : '0m';
     return;
   }
   const areaM2=calcArea(points);
   const pyeong=areaM2/3.305785;
-  document.getElementById('areaVal').textContent=areaM2.toFixed(1)+' ㎡';
-  document.getElementById('pyeongVal').textContent='('+pyeong.toFixed(1)+'평)';
-  document.getElementById('periVal').textContent=calcPerimeter(points).toFixed(1)+'m';
+  document.getElementById('areaVal').textContent=fmtNum(areaM2,1)+' ㎡';
+  document.getElementById('pyeongVal').textContent='('+fmtNum(pyeong,1)+'평)';
+  document.getElementById('periVal').textContent=fmtNum(calcPerimeter(points),1)+'m';
 }
 
 function updateAddress(lat,lng){
