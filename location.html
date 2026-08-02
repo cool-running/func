@@ -83,7 +83,15 @@ body{font-family:-apple-system,'Noto Sans KR',sans-serif;color:var(--text);font-
 
 <div id="map"></div>
 
-<button class="myloc-btn" onclick="moveToMyLoc()">📍</button>
+<button class="myloc-btn" onclick="moveToMyLoc()">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#185FA5" stroke-width="2" stroke-linecap="round">
+    <circle cx="12" cy="12" r="6"/>
+    <line x1="12" y1="1" x2="12" y2="4"/>
+    <line x1="12" y1="20" x2="12" y2="23"/>
+    <line x1="1" y1="12" x2="4" y2="12"/>
+    <line x1="20" y1="12" x2="23" y2="12"/>
+  </svg>
+</button>
 
 <div class="panel">
   <div class="map-ctrl-row">
@@ -116,7 +124,6 @@ body{font-family:-apple-system,'Noto Sans KR',sans-serif;color:var(--text);font-
       <div class="info-grid">
         <span class="info-lbl">지번</span><span class="info-val blue" id="selJibun">—</span>
         <span class="info-lbl">도로명</span><span class="info-val" id="selRoad">—</span>
-        <span class="info-lbl" style="display:none;">면적</span><span class="info-val green" id="selArea" style="display:none;">조회 중...</span>
         <span class="info-lbl" style="display:none;">지목</span><span class="info-val" id="selJimok" style="display:none;">—</span>
       </div>
       <div class="btn-row">
@@ -157,18 +164,6 @@ let curLat=null, curLng=null, curAcc=null, curAddr='—';
 let selLat=null, selLng=null, selJibun='—', selRoad='—';
 let isSat=false, curTab='me';
 let highlightPolygon=null;
-let areaLabelOverlay=null;
-
-function showAreaLabel(lat,lng,text){
-  if(areaLabelOverlay){ areaLabelOverlay.setMap(null); areaLabelOverlay=null; }
-  const pos=new kakao.maps.LatLng(lat,lng);
-  areaLabelOverlay=new kakao.maps.CustomOverlay({
-    position:pos,
-    content:`<div style="background:rgba(20,20,30,0.88);color:#fff;font-size:12px;font-weight:700;padding:5px 10px;border-radius:12px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.3);">${text}</div>`,
-    zIndex:7, yAnchor:2.0
-  });
-  areaLabelOverlay.setMap(map);
-}
 
 kakao.maps.load(function(){
   geocoder = new kakao.maps.services.Geocoder();
@@ -179,13 +174,10 @@ kakao.maps.load(function(){
   });
   map.setMapTypeId(kakao.maps.MapTypeId.HYBRID);
 
-  // 내 위치 마커 — 빨간 핀
-  myMarker = new kakao.maps.Marker({
+  // 내 위치 마커 — 빨간 동그라미
+  myMarker = new kakao.maps.CustomOverlay({
     position: new kakao.maps.LatLng(37.5665, 126.9780),
-    image: new kakao.maps.MarkerImage(
-      'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png',
-      new kakao.maps.Size(36,37), {offset:new kakao.maps.Point(13,37)}
-    ),
+    content: '<div style="width:18px;height:18px;border-radius:50%;background:#E53935;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.4);"></div>',
     zIndex:3
   });
   myMarker.setMap(map);
@@ -346,7 +338,6 @@ function onMapTap(lat,lng){
   document.getElementById('selInfo').style.display='block';
   document.getElementById('selJibun').textContent='조회 중...';
   document.getElementById('selRoad').textContent='—';
-  document.getElementById('selArea').textContent='조회 중...';
   document.getElementById('selJimok').textContent='—';
   showToast('📍 필지 확인 중...');
 
@@ -357,24 +348,7 @@ function onMapTap(lat,lng){
   fetchParcelInfo(lat,lng);
 }
 
-/* ── 폴리곤 좌표로 면적 직접 계산 (구면 근사, 소규모 필지에 충분히 정확) ── */
-function calcAreaFromPoints(pts){
-  if(pts.length<3) return 0;
-  const R=6378137;
-  const refLat=pts[0].lat;
-  const xy=pts.map(p=>({
-    x:R*(p.lng*Math.PI/180)*Math.cos(refLat*Math.PI/180),
-    y:R*(p.lat*Math.PI/180)
-  }));
-  let a=0;
-  for(let i=0;i<xy.length;i++){
-    const j=(i+1)%xy.length;
-    a+=xy[i].x*xy[j].y-xy[j].x*xy[i].y;
-  }
-  return Math.abs(a/2);
-}
-
-/* ── vworld 필지 속성 조회 (JSONP) — 지목 등 부가정보만, 면적은 폴리곤 좌표로 직접 계산함 ── */
+/* ── vworld 필지 속성 조회 (JSONP) — 지목 등 부가정보만 ── */
 function fetchParcelInfo(lat,lng){
   const cb='cb_'+Date.now();
   const s=document.createElement('script');
@@ -396,18 +370,22 @@ function fetchParcelInfo(lat,lng){
   document.head.appendChild(s);
 }
 
-/* ── vworld 필지 폴리곤 (JSONP) — 경계 표시 + 좌표 기반 면적 계산/표시 ── */
+/* ── vworld 필지 폴리곤 (JSONP) — 경계 표시만 (면적은 area.html에서 다룸) ──
+   요청마다 순번(reqId)을 매겨서, 나중에 시작된 요청의 응답만 실제로 그리게 한다.
+   (GPS 위치와 검색/꾹누르기가 거의 동시에 실행되면 응답 순서가 뒤바뀔 수 있는데,
+    이걸 그냥 두면 오래된 응답이 나중에 도착해서 폴리곤이 2개 동시에 남는 버그가 생긴다.) */
+let _polygonReqId=0;
 function fetchParcelPolygon(lat,lng){
-  if(highlightPolygon){ highlightPolygon.setMap(null); highlightPolygon=null; }
-  if(areaLabelOverlay){ areaLabelOverlay.setMap(null); areaLabelOverlay=null; }
+  const myReqId = ++_polygonReqId;
   const cb='cbp_'+Date.now();
   const s=document.createElement('script');
   window[cb]=function(data){
     delete window[cb]; s.remove();
+    if(myReqId!==_polygonReqId) return; // 더 최신 요청이 있으면 이 응답은 무시
     try{
       const f=data.response.result.featureCollection.features;
+      if(highlightPolygon){ highlightPolygon.setMap(null); highlightPolygon=null; }
       if(!f||!f.length){
-        document.getElementById('selArea').textContent='정보 없음';
         showToast('🌾 해당 위치의 필지 정보를 찾지 못했어요');
         return;
       }
@@ -421,17 +399,10 @@ function fetchParcelPolygon(lat,lng){
         fillColor:'#FF1744',fillOpacity:0.3
       });
 
-      const pts=coords.map(c=>({lat:c[1],lng:c[0]}));
-      const areaM2=calcAreaFromPoints(pts);
-      const pyeong=areaM2/3.305785;
-      const areaText=Math.round(areaM2)+'㎡ ('+pyeong.toFixed(1)+'평)';
-      document.getElementById('selArea').textContent=areaText;
-      showAreaLabel(lat,lng,'면적 '+areaText);
-
       showToast('🌾 필지 경계 표시됨');
     }catch(e){ showToast('🌾 필지 경계 조회 실패'); }
   };
-  s.onerror=()=>{ delete window[cb]; s.remove(); showToast('🌾 필지 경계 조회 실패(네트워크)'); };
+  s.onerror=()=>{ delete window[cb]; s.remove(); if(myReqId===_polygonReqId) showToast('🌾 필지 경계 조회 실패(네트워크)'); };
   s.src=`https://api.vworld.kr/req/data?service=data&request=GetFeature&data=LP_PA_CBND_BUBUN`
     +`&key=${VWORLD_KEY}&domain=https://cool-running.github.io/func`
     +`&geometry=true&attribute=false&crs=EPSG:4326`
@@ -476,7 +447,7 @@ function saveCard(target){
   ctx.fillStyle='#fff'; ctx.beginPath(); ctx.roundRect(16,68,W-32,272,10); ctx.fill();
   const rows=target==='me'
     ?[['위도',lat.toFixed(6)],['경도',lng.toFixed(6)],['주소',curAddr],['정확도','약 '+curAcc+'m']]
-    :[['지번',selJibun],['도로명',selRoad],['면적',document.getElementById('selArea').textContent],['지목',document.getElementById('selJimok').textContent]];
+    :[['지번',selJibun],['도로명',selRoad],['지목',document.getElementById('selJimok').textContent]];
   let y=104;
   rows.forEach(([l,v])=>{
     ctx.fillStyle='#aaa'; ctx.font='bold 12px sans-serif'; ctx.textAlign='left'; ctx.fillText(l,32,y);
