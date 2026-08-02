@@ -155,6 +155,7 @@ kakao.maps.load(function(){
     center: new kakao.maps.LatLng(37.5665, 126.9780), level: 4,
     mapTypeId: kakao.maps.MapTypeId.HYBRID
   });
+  map.setMapTypeId(kakao.maps.MapTypeId.HYBRID);
 
   // 내 위치 마커 — 빨간 동그라미
   myMarker = new kakao.maps.CustomOverlay({
