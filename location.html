@@ -325,7 +325,24 @@ function onMapTap(lat,lng){
   fetchParcelInfo(lat,lng);
 }
 
-/* ── vworld 필지 속성 조회 (JSONP) ── */
+/* ── 폴리곤 좌표로 면적 직접 계산 (구면 근사, 소규모 필지에 충분히 정확) ── */
+function calcAreaFromPoints(pts){
+  if(pts.length<3) return 0;
+  const R=6378137;
+  const refLat=pts[0].lat;
+  const xy=pts.map(p=>({
+    x:R*(p.lng*Math.PI/180)*Math.cos(refLat*Math.PI/180),
+    y:R*(p.lat*Math.PI/180)
+  }));
+  let a=0;
+  for(let i=0;i<xy.length;i++){
+    const j=(i+1)%xy.length;
+    a+=xy[i].x*xy[j].y-xy[j].x*xy[i].y;
+  }
+  return Math.abs(a/2);
+}
+
+/* ── vworld 필지 속성 조회 (JSONP) — 지목 등 부가정보만, 면적은 폴리곤 좌표로 직접 계산함 ── */
 function fetchParcelInfo(lat,lng){
   const cb='cb_'+Date.now();
   const s=document.createElement('script');
@@ -333,26 +350,21 @@ function fetchParcelInfo(lat,lng){
     delete window[cb]; s.remove();
     try{
       const f=data.response.result.featureCollection.features;
-      if(!f||!f.length){ document.getElementById('selArea').textContent='정보 없음'; showAreaLabel(lat,lng,'면적 정보 없음'); return; }
+      if(!f||!f.length) return;
       const props=f[0].properties;
-      // 면적 (pnu, area, jimok 등 속성명)
-      const area = props.area||props.shape_area||props.AREA||'—';
       const jimok = props.jimok||props.JIMOK||props.lndcgr_smbol||'—';
-      const areaText = area!=='—' ? Math.round(area)+'㎡' : '정보 없음';
-      document.getElementById('selArea').textContent = areaText;
       document.getElementById('selJimok').textContent = jimok;
-      showAreaLabel(lat,lng, '면적 '+areaText);
-    }catch(e){ document.getElementById('selArea').textContent='조회 실패'; }
+    }catch(e){}
   };
-  s.onerror=()=>{ delete window[cb]; s.remove(); document.getElementById('selArea').textContent='조회 실패'; };
-  s.src=`https://api.vworld.kr/req/data?service=data&request=GetFeature&data=LT_C_UFPRD`
+  s.onerror=()=>{ delete window[cb]; s.remove(); };
+  s.src=`https://api.vworld.kr/req/data?service=data&request=GetFeature&data=LP_PA_CBND_BUBUN`
     +`&key=${VWORLD_KEY}&domain=https://cool-running.github.io/func`
     +`&geometry=false&attribute=true&crs=EPSG:4326`
     +`&geomFilter=POINT(${lng}%20${lat})&size=1&format=json&callback=${cb}`;
   document.head.appendChild(s);
 }
 
-/* ── vworld 필지 폴리곤 (JSONP) ── */
+/* ── vworld 필지 폴리곤 (JSONP) — 경계 표시 + 좌표 기반 면적 계산/표시 ── */
 function fetchParcelPolygon(lat,lng){
   if(highlightPolygon){ highlightPolygon.setMap(null); highlightPolygon=null; }
   if(areaLabelOverlay){ areaLabelOverlay.setMap(null); areaLabelOverlay=null; }
@@ -362,7 +374,11 @@ function fetchParcelPolygon(lat,lng){
     delete window[cb]; s.remove();
     try{
       const f=data.response.result.featureCollection.features;
-      if(!f||!f.length) return;
+      if(!f||!f.length){
+        document.getElementById('selArea').textContent='정보 없음';
+        showToast('🌾 해당 위치의 필지 정보를 찾지 못했어요');
+        return;
+      }
       const geom=f[0].geometry;
       let coords=geom.type==='Polygon'?geom.coordinates[0]:geom.type==='MultiPolygon'?geom.coordinates[0][0]:[];
       if(!coords.length) return;
@@ -372,11 +388,19 @@ function fetchParcelPolygon(lat,lng){
         strokeWeight:3,strokeColor:'#C62828',strokeOpacity:1,
         fillColor:'#FF1744',fillOpacity:0.3
       });
+
+      const pts=coords.map(c=>({lat:c[1],lng:c[0]}));
+      const areaM2=calcAreaFromPoints(pts);
+      const pyeong=areaM2/3.305785;
+      const areaText=Math.round(areaM2)+'㎡ ('+pyeong.toFixed(1)+'평)';
+      document.getElementById('selArea').textContent=areaText;
+      showAreaLabel(lat,lng,'면적 '+areaText);
+
       showToast('🌾 필지 경계 표시됨');
-    }catch(e){}
+    }catch(e){ showToast('🌾 필지 경계 조회 실패'); }
   };
-  s.onerror=()=>{ delete window[cb]; s.remove(); };
-  s.src=`https://api.vworld.kr/req/data?service=data&request=GetFeature&data=LT_C_UFPRD`
+  s.onerror=()=>{ delete window[cb]; s.remove(); showToast('🌾 필지 경계 조회 실패(네트워크)'); };
+  s.src=`https://api.vworld.kr/req/data?service=data&request=GetFeature&data=LP_PA_CBND_BUBUN`
     +`&key=${VWORLD_KEY}&domain=https://cool-running.github.io/func`
     +`&geometry=true&attribute=false&crs=EPSG:4326`
     +`&geomFilter=POINT(${lng}%20${lat})&size=1&format=json&callback=${cb}`;
