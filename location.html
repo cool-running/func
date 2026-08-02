@@ -10,7 +10,7 @@
 <link rel="manifest" href="./manifest.json">
 <link rel="apple-touch-icon" href="./icon-192.png">
 <style>
-:root{--blue:#185FA5;--border:#D8D6CE;--bg:#F5F4F0;--card:#fff;--text:#1a1a1a;--sub:#666;--hint:#aaa;--nav-h:62px;--top-h:56px;--panel-h:260px;}
+:root{--blue:#185FA5;--border:#D8D6CE;--bg:#F5F4F0;--card:#fff;--text:#1a1a1a;--sub:#666;--hint:#aaa;--nav-h:62px;--top-h:56px;--search-h:52px;--panel-h:260px;}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{width:100%;height:100%;overflow:hidden;}
 body{font-family:-apple-system,'Noto Sans KR',sans-serif;color:var(--text);font-size:14px;-webkit-user-select:none;user-select:none;}
@@ -21,7 +21,13 @@ body{font-family:-apple-system,'Noto Sans KR',sans-serif;color:var(--text);font-
 .gps-badge.ok{background:#E8F5E9;color:#2E7D32;}
 .gps-badge.err{background:#FFEBEE;color:#C62828;}
 
-#map{position:fixed;top:var(--top-h);left:0;right:0;bottom:calc(var(--panel-h) + var(--nav-h) + env(safe-area-inset-bottom,0px));z-index:1;}
+.search-row{position:fixed;top:var(--top-h);left:0;right:0;height:var(--search-h);padding:8px 16px;display:flex;gap:8px;align-items:center;background:#fff;border-bottom:0.5px solid var(--border);z-index:99;}
+.search-input{flex:1;height:36px;border-radius:18px;border:1px solid var(--border);background:var(--bg);padding:0 14px;font-size:13px;color:var(--text);outline:none;font-family:-apple-system,'Noto Sans KR',sans-serif;}
+.search-input:focus{border-color:var(--blue);background:#fff;}
+.search-btn{width:36px;height:36px;border-radius:50%;border:none;background:var(--blue);color:#fff;font-size:15px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
+.search-btn:active{opacity:.8;}
+
+#map{position:fixed;top:calc(var(--top-h) + var(--search-h));left:0;right:0;bottom:calc(var(--panel-h) + var(--nav-h) + env(safe-area-inset-bottom,0px));z-index:1;}
 
 /* 지도 위 내위치 버튼만 */
 .myloc-btn{position:fixed;right:14px;bottom:calc(var(--panel-h) + var(--nav-h) + env(safe-area-inset-bottom,0px) + 12px);width:44px;height:44px;border-radius:50%;background:#fff;border:0.5px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,0.2);font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:150;}
@@ -70,6 +76,11 @@ body{font-family:-apple-system,'Noto Sans KR',sans-serif;color:var(--text);font-
   <span id="gpsBadge" class="gps-badge">위치 확인 중...</span>
 </div>
 
+<div class="search-row">
+  <input type="text" id="searchInput" class="search-input" placeholder="주소 또는 지번 검색" autocomplete="off" autocorrect="off" spellcheck="false"/>
+  <button class="search-btn" onclick="searchAddress()">🔍</button>
+</div>
+
 <div id="map"></div>
 
 <button class="myloc-btn" onclick="moveToMyLoc()">📍</button>
@@ -105,8 +116,8 @@ body{font-family:-apple-system,'Noto Sans KR',sans-serif;color:var(--text);font-
       <div class="info-grid">
         <span class="info-lbl">지번</span><span class="info-val blue" id="selJibun">—</span>
         <span class="info-lbl">도로명</span><span class="info-val" id="selRoad">—</span>
-        <span class="info-lbl">면적</span><span class="info-val green" id="selArea">조회 중...</span>
-        <span class="info-lbl">지목</span><span class="info-val" id="selJimok">—</span>
+        <span class="info-lbl" style="display:none;">면적</span><span class="info-val green" id="selArea" style="display:none;">조회 중...</span>
+        <span class="info-lbl" style="display:none;">지목</span><span class="info-val" id="selJimok" style="display:none;">—</span>
       </div>
       <div class="btn-row">
         <button class="btn btn-copy" onclick="copyCoord('sel')">📋 복사</button>
@@ -168,10 +179,13 @@ kakao.maps.load(function(){
   });
   map.setMapTypeId(kakao.maps.MapTypeId.HYBRID);
 
-  // 내 위치 마커 — 빨간 동그라미
-  myMarker = new kakao.maps.CustomOverlay({
+  // 내 위치 마커 — 빨간 핀
+  myMarker = new kakao.maps.Marker({
     position: new kakao.maps.LatLng(37.5665, 126.9780),
-    content: '<div style="width:18px;height:18px;border-radius:50%;background:#E53935;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.4);"></div>',
+    image: new kakao.maps.MarkerImage(
+      'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png',
+      new kakao.maps.Size(36,37), {offset:new kakao.maps.Point(13,37)}
+    ),
     zIndex:3
   });
   myMarker.setMap(map);
@@ -303,6 +317,24 @@ function reverseGeocode(lat,lng,target){
     }
   });
 }
+
+/* ── 주소/지번 검색 ── */
+function searchAddress(){
+  const q=document.getElementById('searchInput').value.trim();
+  if(!q){ showToast('주소나 지번을 입력해주세요'); return; }
+  geocoder.addressSearch(q,(result,status)=>{
+    if(status===kakao.maps.services.Status.OK && result.length){
+      const lat=parseFloat(result[0].y), lng=parseFloat(result[0].x);
+      const p=new kakao.maps.LatLng(lat,lng);
+      map.setCenter(p); map.setLevel(3);
+      onMapTap(lat,lng);
+    } else {
+      showToast('❌ 주소를 찾을 수 없어요');
+    }
+  });
+}
+const _searchInput=document.getElementById('searchInput');
+if(_searchInput) _searchInput.addEventListener('keydown',e=>{ if(e.key==='Enter') searchAddress(); });
 
 /* ── 지도 탭 → 필지 선택 ── */
 function onMapTap(lat,lng){
