@@ -178,12 +178,29 @@ kakao.maps.load(function(){
   // 위성 기본 ON (실제 항공사진이 기본으로 보이도록)
   isSat = true;
   document.getElementById('btnSat').classList.add('on');
-  document.getElementById('btnSat').textContent = '🗺 일반';
+  document.getElementById('btnSat').textContent = '🛰 위성';
 
-  // 지도 클릭 → 필지 선택
+  // 지도 클릭 → 필지 선택 (짧게 탭: 위치/주소만)
   kakao.maps.event.addListener(map, 'click', function(e){
     onMapTap(e.latLng.getLat(), e.latLng.getLng());
   });
+
+  // 꾹 누르기(길게 누르기) → 필지 경계 빨간색 강조
+  let pressTimer=null, pressLatLng=null, pressMoved=false;
+  const LONG_PRESS_MS = 550;
+  kakao.maps.event.addListener(map, 'mousedown', function(e){
+    pressMoved=false;
+    pressLatLng=e.latLng;
+    clearTimeout(pressTimer);
+    pressTimer=setTimeout(()=>{
+      if(!pressMoved && pressLatLng){
+        showToast('🌾 필지 경계 조회 중...');
+        fetchParcelPolygon(pressLatLng.getLat(), pressLatLng.getLng());
+      }
+    }, LONG_PRESS_MS);
+  });
+  kakao.maps.event.addListener(map, 'mouseup', function(){ clearTimeout(pressTimer); });
+  kakao.maps.event.addListener(map, 'dragstart', function(){ pressMoved=true; clearTimeout(pressTimer); });
 
   getLocation();
 });
@@ -194,10 +211,10 @@ function toggleSat(){
   const btn = document.getElementById('btnSat');
   if(isSat){
     map.setMapTypeId(kakao.maps.MapTypeId.HYBRID);
-    btn.classList.add('on'); btn.textContent='🗺 일반';
+    btn.classList.add('on'); btn.textContent='🛰 위성';
   } else {
     map.setMapTypeId(kakao.maps.MapTypeId.ROADMAP);
-    btn.classList.remove('on'); btn.textContent='🛰 위성';
+    btn.classList.remove('on'); btn.textContent='🗺 일반';
   }
 }
 
@@ -262,9 +279,6 @@ function onMapTap(lat,lng){
 
   // vworld 면적+지목 조회 (JSONP)
   fetchParcelInfo(lat,lng);
-
-  // 필지 폴리곤 강조
-  fetchParcelPolygon(lat,lng);
 }
 
 /* ── vworld 필지 속성 조회 (JSONP) ── */
