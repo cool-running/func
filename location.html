@@ -128,8 +128,19 @@ body{font-family:-apple-system,'Noto Sans KR',sans-serif;color:var(--text);font-
   <button class="nav-item" onclick="location.href='./settings.html'"><div class="nav-icon">⚙️</div><span>설정</span></button>
 </nav>
 
-<script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=4e37fe9df4f59f95a43e3210327db09b&libraries=services&autoload=false"></script>
 <script>
+function mapSdkFailed(){
+  const m=document.getElementById('map');
+  if(m) m.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;padding:24px;text-align:center;color:#C62828;font-size:13px;line-height:1.6;">지도를 불러오지 못했어요.<br>인터넷 연결 상태와<br>카카오 개발자센터의 도메인 등록을 확인해주세요.</div>';
+  const b=document.getElementById('gpsBadge');
+  if(b){ b.className='gps-badge err'; b.textContent='지도 로드 실패'; }
+}
+</script>
+<script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=4e37fe9df4f59f95a43e3210327db09b&libraries=services&autoload=false" onerror="mapSdkFailed()"></script>
+<script>
+if(typeof kakao==='undefined'){
+  mapSdkFailed();
+} else {
 const VWORLD_KEY = '11A78BAB-C75E-3C35-A0D1-172138B3A5EA';
 let map=null, myMarker=null, selMarker=null, geocoder=null;
 let curLat=null, curLng=null, curAcc=null, curAddr='—';
@@ -141,7 +152,8 @@ kakao.maps.load(function(){
   geocoder = new kakao.maps.services.Geocoder();
 
   map = new kakao.maps.Map(document.getElementById('map'), {
-    center: new kakao.maps.LatLng(37.5665, 126.9780), level: 4
+    center: new kakao.maps.LatLng(37.5665, 126.9780), level: 4,
+    mapTypeId: kakao.maps.MapTypeId.HYBRID
   });
 
   // 내 위치 마커 — 빨간 동그라미
@@ -168,6 +180,11 @@ kakao.maps.load(function(){
   isJijuk = true;
   document.getElementById('btnJijuk').classList.add('on');
   document.getElementById('btnJijuk').textContent = '🏘 지적도 ON';
+
+  // 위성 기본 ON (실제 항공사진이 기본으로 보이도록)
+  isSat = true;
+  document.getElementById('btnSat').classList.add('on');
+  document.getElementById('btnSat').textContent = '🗺 일반';
 
   // 지도 클릭 → 필지 선택
   kakao.maps.event.addListener(map, 'click', function(e){
@@ -224,6 +241,7 @@ function getLocation(){
       const p=new kakao.maps.LatLng(curLat,curLng);
       map.setCenter(p); myMarker.setPosition(p);
       reverseGeocode(curLat,curLng,'me');
+      fetchParcelPolygon(curLat,curLng);
     },
     err=>setErr(err.code===1?'위치 권한 거부':err.code===2?'GPS 없음':'시간 초과'),
     {enableHighAccuracy:true,timeout:15000,maximumAge:0}
@@ -381,6 +399,7 @@ function showToast(msg){
   t.textContent=msg; t.style.display='block';
   clearTimeout(t._t); t._t=setTimeout(()=>t.style.display='none',2500);
 }
+} // end kakao-defined guard
 </script>
 </body>
 </html>
