@@ -53,7 +53,8 @@ canvas{display:block;max-width:100%;max-height:100%;}
   height:var(--btm-h);
   background:#1a1a2e;
   border-top:0.5px solid rgba(255,255,255,0.1);
-  overflow:hidden;
+  overflow-y:auto;
+  transition:height .18s ease;
 }
 
 /* 모드 토글 (1차 현장 / 2차 조사서) */
@@ -96,7 +97,7 @@ canvas{display:block;max-width:100%;max-height:100%;}
 .cbtn-icon{font-size:16px;line-height:1;flex-shrink:0;}
 
 /* ── 패널 (white) ── */
-.panel{display:none;background:#fff;border-radius:16px 16px 0 0;padding:14px 16px 10px;position:relative;}
+.panel{display:none;background:#fff;border-radius:16px 16px 0 0;padding:44px 16px 10px;position:relative;}
 .panel.show{display:block;}
 .pcls{position:absolute;right:12px;top:12px;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,0.08);border:none;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#555;}
 
@@ -480,8 +481,8 @@ cv.addEventListener('mousemove',e=>{const p=toCV(e.clientX,e.clientY);if(draggin
 cv.addEventListener('mouseup',()=>{if(dragging){dragging=false;cv.style.cursor='default';saveS();}});
 cv.addEventListener('dblclick',e=>{const p=toCV(e.clientX,e.clientY);if(!hitBox(p.x,p.y))return;const lg=Math.round(seqSz*0.25),th=dateSz+lg+seqSz,dy=ty-th/2+dateSz/2;openEdit(p.y<(dy+seqSz*0.3)?'date':'seq');});
 
-function togglePanel(pid,bid){const show=document.getElementById(pid).classList.contains('show');closePanel();if(!show){document.getElementById(pid).classList.add('show');document.getElementById(bid).classList.add('on');}document.getElementById('dateInput').blur();document.getElementById('seqNumInput').blur();}
-function closePanel(){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('show'));document.querySelectorAll('.cbtn').forEach(b=>b.classList.remove('on'));}
+function togglePanel(pid,bid){const show=document.getElementById(pid).classList.contains('show');closePanel();if(!show){document.getElementById(pid).classList.add('show');document.getElementById(bid).classList.add('on');document.documentElement.style.setProperty('--btm-h','450px');}document.getElementById('dateInput').blur();document.getElementById('seqNumInput').blur();}
+function closePanel(){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('show'));document.querySelectorAll('.cbtn').forEach(b=>b.classList.remove('on'));document.documentElement.style.setProperty('--btm-h','218px');}
 
 document.getElementById('bgColorRow').querySelectorAll('.sc').forEach(el=>{el.addEventListener('click',function(){document.getElementById('bgColorRow').querySelectorAll('.sc').forEach(s=>s.classList.remove('on'));this.classList.add('on');bgColor=this.dataset.c;document.getElementById('bgCustom').value=bgColor;draw();saveS();});});
 document.getElementById('bgCustom').addEventListener('input',function(){document.getElementById('bgColorRow').querySelectorAll('.sc').forEach(s=>s.classList.remove('on'));bgColor=this.value;draw();saveS();});
