@@ -286,7 +286,7 @@ function fetchParcelInfo(lat,lng){
   };
   s.onerror=()=>{ delete window[cb]; s.remove(); document.getElementById('selArea').textContent='조회 실패'; };
   s.src=`https://api.vworld.kr/req/data?service=data&request=GetFeature&data=LT_C_UFPRD`
-    +`&key=${VWORLD_KEY}&domain=${encodeURIComponent(location.origin)}`
+    +`&key=${VWORLD_KEY}&domain=https://cool-running.github.io/func`
     +`&geometry=false&attribute=true&crs=EPSG:4326`
     +`&geomFilter=POINT(${lng}%20${lat})&size=1&format=json&callback=${cb}`;
   document.head.appendChild(s);
@@ -316,7 +316,7 @@ function fetchParcelPolygon(lat,lng){
   };
   s.onerror=()=>{ delete window[cb]; s.remove(); };
   s.src=`https://api.vworld.kr/req/data?service=data&request=GetFeature&data=LT_C_UFPRD`
-    +`&key=${VWORLD_KEY}&domain=${encodeURIComponent(location.origin)}`
+    +`&key=${VWORLD_KEY}&domain=https://cool-running.github.io/func`
     +`&geometry=true&attribute=false&crs=EPSG:4326`
     +`&geomFilter=POINT(${lng}%20${lat})&size=1&format=json&callback=${cb}`;
   document.head.appendChild(s);
