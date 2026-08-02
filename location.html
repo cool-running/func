@@ -22,7 +22,8 @@ html,body{width:100%;height:100%;overflow:hidden;}
 body{font-family:-apple-system,'Noto Sans KR',sans-serif;color:var(--text);font-size:14px;-webkit-user-select:none;user-select:none;}
 
 .topbar{position:fixed;top:0;left:0;right:0;height:var(--top-h);padding:0 16px;padding-top:env(safe-area-inset-top,0px);display:flex;align-items:center;justify-content:space-between;background:#fff;border-bottom:0.5px solid var(--border);z-index:100;}
-.topbar-title{font-size:17px;font-weight:700;}
+.search-trigger{flex:1;height:36px;border-radius:18px;border:none;background:var(--bg);color:var(--sub);font-size:14px;font-weight:600;font-family:-apple-system,'Noto Sans KR',sans-serif;text-align:left;padding:0 14px;cursor:pointer;margin-right:8px;}
+.search-trigger:active{opacity:.8;}
 .gps-badge{font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;background:#FFF8E1;color:#F57F17;}
 .gps-badge.ok{background:#E8F5E9;color:#2E7D32;}
 .gps-badge.err{background:#FFEBEE;color:#C62828;}
@@ -31,15 +32,7 @@ body{font-family:-apple-system,'Noto Sans KR',sans-serif;color:var(--text);font-
 .icon-btn:active{opacity:.7;}
 
 /* 캡처 모드: 앱 자체 UI + (안드로이드) OS 상태바까지 숨기고 지도+결과만 남긴다 */
-.capture-exit-btn{display:none;position:fixed;top:calc(env(safe-area-inset-top,0px) + 10px);right:14px;width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,0.55);color:#fff;font-size:16px;align-items:center;justify-content:center;z-index:300;border:none;cursor:pointer;}
-body.capture-mode .capture-exit-btn{display:flex;}
-body.capture-mode .topbar,
-body.capture-mode .search-row,
-body.capture-mode .myloc-btn,
-body.capture-mode .bottom-nav,
-body.capture-mode .map-ctrl-row{display:none !important;}
-body.capture-mode #map{top:0 !important;bottom:calc(var(--panel-h) + env(safe-area-inset-bottom,0px)) !important;}
-body.capture-mode .panel{bottom:env(safe-area-inset-bottom,0px) !important;}
+
 
 .search-row{position:fixed;top:var(--top-h);left:0;right:0;height:var(--search-h);padding:8px 16px;display:none;gap:8px;align-items:center;background:#fff;border-bottom:0.5px solid var(--border);z-index:120;}
 .search-row.show{display:flex;}
@@ -91,20 +84,10 @@ body.capture-mode .panel{bottom:env(safe-area-inset-bottom,0px) !important;}
 <body>
 
 <div class="topbar">
-  <span class="topbar-title">📍 주소검색</span>
-  <div style="display:flex;align-items:center;gap:8px;">
-    <button class="icon-btn" onclick="toggleCapture()" title="위치저장">
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 21s-7-7.58-7-12a7 7 0 0 1 14 0c0 4.42-7 12-7 12z"/>
-        <circle cx="12" cy="9" r="2.5"/>
-      </svg>
-    </button>
-    <button class="icon-btn" onclick="toggleSearch()">🔍</button>
-    <span id="gpsBadge" class="gps-badge">위치 확인 중...</span>
-  </div>
+  <button class="search-trigger" onclick="toggleSearch()">🔍 주소검색</button>
+  <span id="gpsBadge" class="gps-badge">위치 확인 중...</span>
 </div>
 
-<button class="capture-exit-btn" onclick="toggleCapture()">✕</button>
 <div class="search-row" id="searchRow">
   <input type="text" id="searchInput" class="search-input" placeholder="주소 또는 지번 검색" autocomplete="off" autocorrect="off" spellcheck="false"/>
   <button class="search-btn" onclick="searchAddress()">🔍</button>
@@ -159,7 +142,7 @@ if(typeof kakao==='undefined'){
   mapSdkFailed();
 } else {
 const VWORLD_KEY = '11A78BAB-C75E-3C35-A0D1-172138B3A5EA';
-let map=null, myMarker=null, selMarker=null, geocoder=null;
+let map=null, myMarker=null, geocoder=null;
 let curLat=null, curLng=null, curAcc=null;
 let selLat=null, selLng=null;
 let isSat=false;
@@ -182,15 +165,6 @@ kakao.maps.load(function(){
     zIndex:3
   });
   myMarker.setMap(map);
-
-  // 선택 마커 — 빨간 핀
-  selMarker = new kakao.maps.Marker({
-    position: new kakao.maps.LatLng(37.5665, 126.9780),
-    image: new kakao.maps.MarkerImage(
-      'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png',
-      new kakao.maps.Size(36,37), {offset:new kakao.maps.Point(13,37)}
-    )
-  });
 
   map.addControl(new kakao.maps.ZoomControl(), kakao.maps.ControlPosition.RIGHT);
 
@@ -287,32 +261,9 @@ function toggleSearch(){
   if(el.classList.contains('show')) setTimeout(()=>document.getElementById('searchInput').focus(),50);
 }
 
-/* ── 캡처 모드: 화면 정리 + (지원 시) 상태바까지 숨겨서 스크린샷 바로 쓸 수 있게 ── */
-let captureMode=false;
-async function toggleCapture(){
-  captureMode=!captureMode;
-  document.body.classList.toggle('capture-mode', captureMode);
-  try{
-    if(captureMode){
-      if(document.documentElement.requestFullscreen) await document.documentElement.requestFullscreen();
-    } else if(document.fullscreenElement && document.exitFullscreen){
-      await document.exitFullscreen();
-    }
-  }catch(e){ /* 풀스크린 미지원/거부 — 앱 UI는 이미 정리됐으니 그대로 진행 */ }
-  if(captureMode) showToast('📍 위치저장 모드 — 다시 눌러서 종료');
-}
-document.addEventListener('fullscreenchange',()=>{
-  if(!document.fullscreenElement && captureMode){
-    captureMode=false;
-    document.body.classList.remove('capture-mode');
-  }
-});
-
 /* ── 지도 탭 → 주소 + 필지 경계 한 번에 ── */
 function onMapTap(lat,lng){
   selLat=lat; selLng=lng;
-  const p=new kakao.maps.LatLng(lat,lng);
-  selMarker.setPosition(p); selMarker.setMap(map);
   showToast('📍 필지 확인 중...');
   reverseGeocode(lat,lng);
   fetchParcelPolygon(lat,lng);

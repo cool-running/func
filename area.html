@@ -24,6 +24,11 @@ body{font-family:-apple-system,'Noto Sans KR',sans-serif;color:var(--text);font-
 .gps-badge{font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;background:#FFF8E1;color:#F57F17;}
 .gps-badge.ok{background:#E8F5E9;color:#2E7D32;}
 .gps-badge.err{background:#FFEBEE;color:#C62828;}
+.icon-btn{width:32px;height:32px;border-radius:50%;border:none;background:var(--bg);color:var(--text);font-size:15px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
+.icon-btn:active{opacity:.7;}
+
+/* 캡처 모드: 앱 자체 UI + (안드로이드) OS 상태바까지 숨기고 지도+결과만 남긴다 */
+
 
 .mode-row{position:fixed;top:var(--top-h);left:0;right:0;height:var(--mode-h);padding:8px 16px;display:flex;gap:8px;background:#fff;border-bottom:0.5px solid var(--border);z-index:99;}
 .mbtn{flex:1;height:36px;border-radius:18px;border:1.5px solid var(--border);background:#fff;color:var(--sub);font-size:13px;font-weight:700;font-family:-apple-system,'Noto Sans KR',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;}
