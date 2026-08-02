@@ -146,6 +146,18 @@ let curLat=null, curLng=null, curAcc=null, curAddr='—';
 let selLat=null, selLng=null, selJibun='—', selRoad='—';
 let isSat=false, curTab='me';
 let highlightPolygon=null;
+let areaLabelOverlay=null;
+
+function showAreaLabel(lat,lng,text){
+  if(areaLabelOverlay){ areaLabelOverlay.setMap(null); areaLabelOverlay=null; }
+  const pos=new kakao.maps.LatLng(lat,lng);
+  areaLabelOverlay=new kakao.maps.CustomOverlay({
+    position:pos,
+    content:`<div style="background:rgba(20,20,30,0.88);color:#fff;font-size:12px;font-weight:700;padding:5px 10px;border-radius:12px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.3);">${text}</div>`,
+    zIndex:7, yAnchor:2.0
+  });
+  areaLabelOverlay.setMap(map);
+}
 
 kakao.maps.load(function(){
   geocoder = new kakao.maps.services.Geocoder();
@@ -206,6 +218,7 @@ kakao.maps.load(function(){
         const ll = latLngFromClient(clientX, clientY);
         showToast('🌾 필지 경계 조회 중...');
         fetchParcelPolygon(ll.getLat(), ll.getLng());
+        fetchParcelInfo(ll.getLat(), ll.getLng());
       }, LONG_PRESS_MS);
     }
     function movePress(clientX, clientY){
@@ -265,6 +278,7 @@ function getLocation(){
       map.setCenter(p); myMarker.setPosition(p);
       reverseGeocode(curLat,curLng,'me');
       fetchParcelPolygon(curLat,curLng);
+      fetchParcelInfo(curLat,curLng);
     },
     err=>setErr(err.code===1?'위치 권한 거부':err.code===2?'GPS 없음':'시간 초과'),
     {enableHighAccuracy:true,timeout:15000,maximumAge:0}
@@ -319,13 +333,15 @@ function fetchParcelInfo(lat,lng){
     delete window[cb]; s.remove();
     try{
       const f=data.response.result.featureCollection.features;
-      if(!f||!f.length){ document.getElementById('selArea').textContent='정보 없음'; return; }
+      if(!f||!f.length){ document.getElementById('selArea').textContent='정보 없음'; showAreaLabel(lat,lng,'면적 정보 없음'); return; }
       const props=f[0].properties;
       // 면적 (pnu, area, jimok 등 속성명)
       const area = props.area||props.shape_area||props.AREA||'—';
       const jimok = props.jimok||props.JIMOK||props.lndcgr_smbol||'—';
-      document.getElementById('selArea').textContent = area!=='—' ? Math.round(area)+'㎡' : '정보 없음';
+      const areaText = area!=='—' ? Math.round(area)+'㎡' : '정보 없음';
+      document.getElementById('selArea').textContent = areaText;
       document.getElementById('selJimok').textContent = jimok;
+      showAreaLabel(lat,lng, '면적 '+areaText);
     }catch(e){ document.getElementById('selArea').textContent='조회 실패'; }
   };
   s.onerror=()=>{ delete window[cb]; s.remove(); document.getElementById('selArea').textContent='조회 실패'; };
@@ -339,6 +355,7 @@ function fetchParcelInfo(lat,lng){
 /* ── vworld 필지 폴리곤 (JSONP) ── */
 function fetchParcelPolygon(lat,lng){
   if(highlightPolygon){ highlightPolygon.setMap(null); highlightPolygon=null; }
+  if(areaLabelOverlay){ areaLabelOverlay.setMap(null); areaLabelOverlay=null; }
   const cb='cbp_'+Date.now();
   const s=document.createElement('script');
   window[cb]=function(data){
