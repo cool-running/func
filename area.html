@@ -9,6 +9,10 @@
 <title>면적</title>
 <link rel="manifest" href="./manifest.json">
 <link rel="apple-touch-icon" href="./icon-192.png">
+<link rel="preconnect" href="https://dapi.kakao.com">
+<link rel="dns-prefetch" href="https://dapi.kakao.com">
+<link rel="preconnect" href="https://api.vworld.kr">
+<link rel="dns-prefetch" href="https://api.vworld.kr">
 <style>
 :root{--blue:#185FA5;--border:#D8D6CE;--bg:#F5F4F0;--card:#fff;--text:#1a1a1a;--sub:#666;--hint:#aaa;--nav-h:62px;--top-h:56px;--mode-h:52px;--panel-h:180px;}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -54,7 +58,7 @@ body{font-family:-apple-system,'Noto Sans KR',sans-serif;color:var(--text);font-
 .nav-item.on .nav-icon{background:linear-gradient(135deg,#185FA5,#378ADD);box-shadow:0 3px 10px rgba(24,95,165,0.28);transform:translateY(-2px);}
 
 .toast{display:none;position:fixed;bottom:calc(var(--panel-h) + var(--nav-h) + 16px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:rgba(20,20,30,0.92);color:#fff;font-size:13px;font-weight:600;font-family:-apple-system,'Noto Sans KR',sans-serif;padding:10px 20px;border-radius:20px;white-space:nowrap;z-index:999;}
-#captureCanvas{display:none;}
+
 </style>
 </head>
 <body>
@@ -85,11 +89,8 @@ body{font-family:-apple-system,'Noto Sans KR',sans-serif;color:var(--text);font-
   <div class="btn-row">
     <button class="pbtn pbtn-undo" id="undoBtn" onclick="undoPoint()" style="display:none;">↩ 되돌리기</button>
     <button class="pbtn pbtn-clear" onclick="clearAll()">🗑 초기화</button>
-    <button class="pbtn pbtn-save" onclick="saveCard()">💾 저장</button>
   </div>
 </div>
-
-<canvas id="captureCanvas"></canvas>
 <div class="toast" id="toast"></div>
 
 <nav class="bottom-nav">
@@ -127,7 +128,8 @@ kakao.maps.load(function(){
 
   map = new kakao.maps.Map(document.getElementById('map'), {
     center: new kakao.maps.LatLng(37.5665, 126.9780), level: 3,
-    mapTypeId: kakao.maps.MapTypeId.HYBRID
+    mapTypeId: kakao.maps.MapTypeId.HYBRID,
+    tileAnimation: false
   });
   map.setMapTypeId(kakao.maps.MapTypeId.HYBRID);
   map.addControl(new kakao.maps.ZoomControl(), kakao.maps.ControlPosition.RIGHT);
@@ -351,39 +353,6 @@ function locateMe(){
     },
     {enableHighAccuracy:true,timeout:15000,maximumAge:0}
   );
-}
-
-/* ── 저장 (텍스트 요약 카드; 지도 타일은 CORS 제약으로 캡처 불가) ── */
-function saveCard(){
-  if(points.length<3){ showToast('점을 3개 이상 찍어주세요'); return; }
-  const canvas=document.getElementById('captureCanvas'), ctx=canvas.getContext('2d');
-  const W=800,H=360; canvas.width=W; canvas.height=H;
-  const now=new Date();
-  const ts=now.getFullYear()+'.'+String(now.getMonth()+1).padStart(2,'0')+'.'+String(now.getDate()).padStart(2,'0')+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')+':'+String(now.getSeconds()).padStart(2,'0');
-  ctx.fillStyle='#F5F4F0'; ctx.fillRect(0,0,W,H);
-  ctx.fillStyle='#185FA5'; ctx.fillRect(0,0,W,56);
-  ctx.fillStyle='#fff'; ctx.font='bold 20px sans-serif'; ctx.textAlign='left'; ctx.textBaseline='middle';
-  ctx.fillText('📐 면적측정 결과',20,28);
-  ctx.font='13px sans-serif'; ctx.textAlign='right'; ctx.fillText(ts,W-20,28);
-  ctx.fillStyle='#fff'; ctx.beginPath(); ctx.roundRect(16,68,W-32,272,10); ctx.fill();
-
-  const areaM2=calcArea(points), pyeong=areaM2/3.305785, peri=calcPerimeter(points);
-  const addr=document.getElementById('addrVal').textContent;
-  const rows=[
-    ['면적', areaM2.toFixed(1)+' ㎡ ('+pyeong.toFixed(1)+'평)'],
-    ['둘레', peri.toFixed(1)+' m'],
-    ['점 개수', points.length+'개'],
-    ['주소', addr]
-  ];
-  let y=104;
-  rows.forEach(([l,v])=>{
-    ctx.fillStyle='#aaa'; ctx.font='bold 12px sans-serif'; ctx.textAlign='left'; ctx.fillText(l,32,y);
-    ctx.fillStyle='#1a1a1a'; ctx.font='600 14px sans-serif'; ctx.fillText(v&&v.length>38?v.substring(0,38)+'...':v||'—',96,y); y+=58;
-  });
-
-  const fname='면적_'+now.getFullYear()+String(now.getMonth()+1).padStart(2,'0')+String(now.getDate()).padStart(2,'0')+'_'+String(now.getHours()).padStart(2,'0')+String(now.getMinutes()).padStart(2,'0')+'.jpg';
-  const a=document.createElement('a'); a.href=canvas.toDataURL('image/jpeg',0.95); a.download=fname; a.click();
-  showToast('💾 저장됐어요');
 }
 
 function showToast(msg){
