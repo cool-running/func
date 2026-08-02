@@ -205,7 +205,7 @@ input[type=range]{flex:1;accent-color:#E05A2B;}
       <div class="sc-custom"><div class="sc-custom-inner"></div><input type="color" id="bgCustom" value="#4DB6AC"/></div>
     </div>
     <div class="bg-grid" id="bgGrid">
-      <div class="bgs on" data-bg="solid">단색</div>
+      <div class="bgs on" data-bg="solid" id="soloTile" style="background:#4DB6AC;">단색</div>
       <div class="bgs" data-bg="grid" style="background:#4a7c8a;background-image:linear-gradient(rgba(255,255,255,.18) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.18) 1px,transparent 1px);background-size:18px 18px;">격자</div>
       <div class="bgs" data-bg="g1" style="background:linear-gradient(135deg,#667eea,#764ba2)">보라</div>
       <div class="bgs" data-bg="g2" style="background:linear-gradient(135deg,#f093fb,#f5576c)">핑크</div>
@@ -484,8 +484,8 @@ cv.addEventListener('dblclick',e=>{const p=toCV(e.clientX,e.clientY);if(!hitBox(
 function togglePanel(pid,bid){const show=document.getElementById(pid).classList.contains('show');closePanel();if(!show){document.getElementById(pid).classList.add('show');document.getElementById(bid).classList.add('on');document.documentElement.style.setProperty('--btm-h','450px');}document.getElementById('dateInput').blur();document.getElementById('seqNumInput').blur();}
 function closePanel(){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('show'));document.querySelectorAll('.cbtn').forEach(b=>b.classList.remove('on'));document.documentElement.style.setProperty('--btm-h','218px');}
 
-document.getElementById('bgColorRow').querySelectorAll('.sc').forEach(el=>{el.addEventListener('click',function(){document.getElementById('bgColorRow').querySelectorAll('.sc').forEach(s=>s.classList.remove('on'));this.classList.add('on');bgColor=this.dataset.c;document.getElementById('bgCustom').value=bgColor;draw();saveS();});});
-document.getElementById('bgCustom').addEventListener('input',function(){document.getElementById('bgColorRow').querySelectorAll('.sc').forEach(s=>s.classList.remove('on'));bgColor=this.value;draw();saveS();});
+document.getElementById('bgColorRow').querySelectorAll('.sc').forEach(el=>{el.addEventListener('click',function(){document.getElementById('bgColorRow').querySelectorAll('.sc').forEach(s=>s.classList.remove('on'));this.classList.add('on');bgColor=this.dataset.c;document.getElementById('bgCustom').value=bgColor;document.getElementById('soloTile').style.background=bgColor;draw();saveS();});});
+document.getElementById('bgCustom').addEventListener('input',function(){document.getElementById('bgColorRow').querySelectorAll('.sc').forEach(s=>s.classList.remove('on'));bgColor=this.value;document.getElementById('soloTile').style.background=bgColor;draw();saveS();});
 document.getElementById('bgGrid').querySelectorAll('.bgs').forEach(el=>{el.addEventListener('click',function(){document.getElementById('bgGrid').querySelectorAll('.bgs').forEach(s=>s.classList.remove('on'));this.classList.add('on');bgType=this.dataset.bg;draw();saveS();});});
 document.getElementById('dateSzR').addEventListener('input',function(){dateSz=+this.value;document.getElementById('dateSzV').textContent=this.value;draw();saveS();});
 document.getElementById('seqSzR').addEventListener('input',function(){seqSz=+this.value;document.getElementById('seqSzV').textContent=this.value;draw();saveS();});
@@ -535,6 +535,7 @@ document.getElementById('saveBtn').addEventListener('click',()=>{
   document.getElementById('dateSzR').value=dateSz;document.getElementById('dateSzV').textContent=dateSz;
   document.getElementById('seqSzR').value=seqSz;document.getElementById('seqSzV').textContent=seqSz;
   document.getElementById('bgCustom').value=bgColor;document.getElementById('txtCustom').value=txtColor;
+  document.getElementById('soloTile').style.background=bgColor;
   document.getElementById('bgColorRow').querySelectorAll('.sc').forEach(s=>s.classList.toggle('on',s.dataset.c===bgColor));
   document.getElementById('bgGrid').querySelectorAll('.bgs').forEach(s=>s.classList.toggle('on',s.dataset.bg===bgType));
   document.getElementById('fontScroll').querySelectorAll('.fc').forEach(f=>f.classList.toggle('on',f.dataset.font===curFont));
