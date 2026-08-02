@@ -186,21 +186,51 @@ kakao.maps.load(function(){
   });
 
   // 꾹 누르기(길게 누르기) → 필지 경계 빨간색 강조
-  let pressTimer=null, pressLatLng=null, pressMoved=false;
-  const LONG_PRESS_MS = 550;
-  kakao.maps.event.addListener(map, 'mousedown', function(e){
-    pressMoved=false;
-    pressLatLng=e.latLng;
-    clearTimeout(pressTimer);
-    pressTimer=setTimeout(()=>{
-      if(!pressMoved && pressLatLng){
+  // 카카오맵 Map 객체 자체에는 mousedown/mouseup 이벤트가 없어서,
+  // 지도 컨테이너에 순수 DOM 이벤트를 붙이고 픽셀좌표→지도좌표로 직접 변환한다.
+  (function(){
+    const mapEl = document.getElementById('map');
+    const LONG_PRESS_MS = 550, MOVE_TOL = 12;
+    let pressTimer=null, pressMoved=false, startX=0, startY=0;
+
+    function latLngFromClient(clientX, clientY){
+      const rect = mapEl.getBoundingClientRect();
+      const point = new kakao.maps.Point(clientX - rect.left, clientY - rect.top);
+      return map.getProjection().coordsFromContainerPoint(point);
+    }
+    function startPress(clientX, clientY){
+      pressMoved=false; startX=clientX; startY=clientY;
+      clearTimeout(pressTimer);
+      pressTimer=setTimeout(()=>{
+        if(pressMoved) return;
+        const ll = latLngFromClient(clientX, clientY);
         showToast('🌾 필지 경계 조회 중...');
-        fetchParcelPolygon(pressLatLng.getLat(), pressLatLng.getLng());
+        fetchParcelPolygon(ll.getLat(), ll.getLng());
+      }, LONG_PRESS_MS);
+    }
+    function movePress(clientX, clientY){
+      if(Math.abs(clientX-startX)>MOVE_TOL || Math.abs(clientY-startY)>MOVE_TOL){
+        pressMoved=true; clearTimeout(pressTimer);
       }
-    }, LONG_PRESS_MS);
-  });
-  kakao.maps.event.addListener(map, 'mouseup', function(){ clearTimeout(pressTimer); });
-  kakao.maps.event.addListener(map, 'dragstart', function(){ pressMoved=true; clearTimeout(pressTimer); });
+    }
+    function endPress(){ clearTimeout(pressTimer); }
+
+    mapEl.addEventListener('touchstart', e=>{
+      if(e.touches.length!==1){ clearTimeout(pressTimer); return; }
+      startPress(e.touches[0].clientX, e.touches[0].clientY);
+    }, {passive:true});
+    mapEl.addEventListener('touchmove', e=>{
+      if(e.touches.length!==1) return;
+      movePress(e.touches[0].clientX, e.touches[0].clientY);
+    }, {passive:true});
+    mapEl.addEventListener('touchend', endPress);
+    mapEl.addEventListener('touchcancel', endPress);
+
+    mapEl.addEventListener('mousedown', e=> startPress(e.clientX, e.clientY));
+    mapEl.addEventListener('mousemove', e=> movePress(e.clientX, e.clientY));
+    mapEl.addEventListener('mouseup', endPress);
+    mapEl.addEventListener('mouseleave', endPress);
+  })();
 
   getLocation();
 });
