@@ -30,7 +30,8 @@ body{font-family:-apple-system,'Noto Sans KR',sans-serif;color:var(--text);font-
 .mbtn.on{background:var(--blue);border-color:var(--blue);color:#fff;}
 .mbtn:active{opacity:.85;}
 
-#map{position:fixed;top:calc(var(--top-h) + var(--mode-h));left:0;right:0;bottom:calc(var(--panel-h) + var(--nav-h) + env(safe-area-inset-bottom,0px));z-index:1;background:#e5e5e5;}
+#map{position:fixed;top:calc(var(--top-h) + var(--mode-h));left:0;right:0;bottom:calc(var(--panel-h) + var(--nav-h) + env(safe-area-inset-bottom,0px));z-index:1;background:#e5e5e5;-webkit-touch-callout:none;}
+#map img{-webkit-touch-callout:none;-webkit-user-drag:none;user-drag:none;}
 
 .tap-hint{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);background:rgba(0,0,0,0.55);color:#fff;font-size:12px;font-weight:600;padding:8px 16px;border-radius:20px;white-space:nowrap;pointer-events:none;text-align:center;line-height:1.5;}
 
@@ -77,7 +78,15 @@ body{font-family:-apple-system,'Noto Sans KR',sans-serif;color:var(--text);font-
   <div class="tap-hint" id="tapHint">🌾 지도를 탭하면 그 지점의 필지 전체를 가져와요</div>
 </div>
 
-<button class="myloc-btn" onclick="locateMe()">📍</button>
+<button class="myloc-btn" onclick="locateMe()">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#185FA5" stroke-width="2" stroke-linecap="round">
+    <circle cx="12" cy="12" r="6"/>
+    <line x1="12" y1="1" x2="12" y2="4"/>
+    <line x1="12" y1="20" x2="12" y2="23"/>
+    <line x1="1" y1="12" x2="4" y2="12"/>
+    <line x1="20" y1="12" x2="23" y2="12"/>
+  </svg>
+</button>
 
 <div class="panel">
   <div class="result-row">
