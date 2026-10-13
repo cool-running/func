@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>국토정보플랫폼 항공사진 테스트</title>
+<link rel="stylesheet" href="https://map.ngii.go.kr/static/emap/css/map/OpenLayers-6.4.3.css" type="text/css">
+<script src="https://map.ngii.go.kr/static/js_renew/jquery/jquery-3.7.1/jquery-3.7.1.min.js"></script>
+<script src="https://map.ngii.go.kr/static/emap/js/map/OpenLayers-6.4.3.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.4.4/proj4.js"></script>
+<script>
+  window.__err=[];
+  window.onerror=function(m,s,l){ window.__err.push(m+' ('+(s||'').split('/').pop()+':'+l+')'); };
+</script>
+<script src="https://map.ngii.go.kr/openapi/wmts_ngiiMap_v6.4.3.js?apikey=AF62141E885E3D7EEE1F12451E3D6F9E50FA295532"></script>
+<style>
+  body{margin:0;font-family:-apple-system,'Noto Sans KR',sans-serif;background:#f4f6f9;}
+  h1{font-size:16px;margin:0;padding:12px 14px;background:#1a5fa8;color:#fff;}
+  #map1{width:100%;height:55vh;background:#ddd;}
+  .bar{padding:10px 12px;display:flex;flex-wrap:wrap;gap:6px;}
+  .bar button{border:none;border-radius:16px;padding:8px 13px;font-size:14px;font-weight:700;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.2);}
+  .bar button.on{background:#E8730C;color:#fff;}
+  #log{width:calc(100% - 24px);margin:0 12px 12px;height:30vh;font-size:11px;font-family:monospace;box-sizing:border-box;}
+  .tip{font-size:12px;color:#555;padding:0 12px 6px;}
+</style>
+</head>
+<body>
+<h1>🛩 국토정보플랫폼 연도별 항공사진 테스트</h1>
+<div id="map1"></div>
+<div class="bar" id="ctl">
+  <button onclick="goMe()">📍 내 위치</button>
+  <button onclick="loadList()">📅 연도 목록 불러오기</button>
+  <button onclick="copyLog()">📋 결과 복사</button>
+</div>
+<div class="bar" id="years"></div>
+<div class="tip">연도 버튼을 눌러 사진이 바뀌는지 보세요. 끝나면 [📋 결과 복사] → 대화창에 붙여넣기</div>
+<textarea id="log" readonly></textarea>
+<script>
+var map1, logs=[];
+function log(t){ logs.push(t); document.getElementById('log').value=logs.join('\n'); }
+function j(v){ try{ return JSON.stringify(v).slice(0,1500); }catch(e){ return String(v); } }
+function src(fn){ try{ return String(fn).replace(/\s+/g,' ').slice(0,900); }catch(e){ return '?'; } }
+
+window.onload=function(){
+  if(window.__err.length) log('스크립트 오류: '+window.__err.join(' / '));
+  if(typeof ngii_wmts==='undefined'){ log('❌ ngii_wmts 없음 — 키 승인 전이거나 주소가 막혔어요'); return; }
+  try{
+    map1=new ngii_wmts.map('map1',{zoom:10});
+    log('✅ 지도 생성됨');
+    log('_getAirMapList 코드: '+src(map1._getAirMapList));
+    log('_setAirMapYear 코드: '+src(map1._setAirMapYear));
+    log('_setMapMode 코드: '+src(map1._setMapMode));
+    var v=map1._getMap().getView();
+    log('좌표계: '+v.getProjection().getCode());
+    goMe();
+  }catch(e){ log('❌ 지도 생성 실패: '+e.message); }
+};
+
+function goMe(){
+  if(!map1) return;
+  navigator.geolocation.getCurrentPosition(function(p){
+    var v=map1._getMap().getView();
+    var c=ol.proj.transform([p.coords.longitude,p.coords.latitude],'EPSG:4326',v.getProjection());
+    v.setCenter(c); v.setZoom(12);
+    log('내 위치로 이동: '+p.coords.latitude.toFixed(5)+', '+p.coords.longitude.toFixed(5));
+  },function(e){ log('위치 실패: '+e.message); },{enableHighAccuracy:true,timeout:10000});
+}
+
+function showYears(list){
+  var box=document.getElementById('years'); box.innerHTML='';
+  var arr=Array.isArray(list)?list:(list&&(list.list||list.data||list.result))||[];
+  if(!Array.isArray(arr)||!arr.length){ log('연도 목록 모양을 몰라 버튼을 못 만들었어요 (위 결과를 보내 주세요)'); return; }
+  arr.forEach(function(it){
+    var y=(typeof it==='object')?(it.year||it.YEAR||it.yyyy||it.name||it.id||j(it)):it;
+    var b=document.createElement('button'); b.textContent=y;
+    b.onclick=function(){ setYear(it,y,b); };
+    box.appendChild(b);
+  });
+  var b0=document.createElement('button'); b0.textContent='최신 영상';
+  b0.onclick=function(){ try{ map1._setMapMode(9); log('최신 항공영상(9)으로'); }catch(e){ log('setMapMode 실패: '+e.message); } };
+  box.appendChild(b0);
+}
+
+function loadList(){
+  if(!map1) return;
+  var done=false;
+  function got(r,how){ if(done) return; done=true; log('연도 목록('+how+'): '+j(r)); showYears(r); }
+  try{
+    var r=map1._getAirMapList(function(x){ got(x,'콜백'); });
+    if(r && typeof r.then==='function') r.then(function(x){ got(x,'promise'); });
+    else if(r!==undefined) got(r,'반환값');
+    setTimeout(function(){ if(!done) log('5초 지나도 연도 목록이 안 왔어요'); },5000);
+  }catch(e){ log('❌ _getAirMapList 실패: '+e.message); }
+}
+
+function setYear(it,y,btn){
+  try{
+    var arg=(typeof it==='object')?y:it;
+    map1._setAirMapYear(arg);
+    document.querySelectorAll('#years button').forEach(function(b){ b.classList.remove('on'); });
+    btn.classList.add('on');
+    log('연도 전환: '+y);
+    setTimeout(function(){ dumpLayers(); },1500);
+  }catch(e){ log('❌ _setAirMapYear('+y+') 실패: '+e.message); }
+}
+
+function dumpLayers(){
+  try{
+    map1._getMap().getLayers().forEach(function(l,i){
+      var s=l.getSource&&l.getSource(); if(!s) return;
+      var u=(s.getUrls&&s.getUrls())||(s.getUrl&&s.getUrl())||'';
+      var extra=(s.getLayer&&s.getLayer())?(' layer='+s.getLayer()):'';
+      var mx=(s.getMatrixSet&&s.getMatrixSet())?(' matrix='+s.getMatrixSet()):'';
+      log('  레이어'+i+' '+(l.getVisible()?'보임':'숨김')+' '+j(u)+extra+mx);
+    });
+  }catch(e){ log('레이어 확인 실패: '+e.message); }
+}
+
+function copyLog(){
+  var t=document.getElementById('log'); t.select();
+  try{ navigator.clipboard.writeText(t.value).then(function(){ alert('복사됐어요. 대화창에 붙여넣어 주세요'); }); }
+  catch(e){ document.execCommand('copy'); alert('복사됐어요'); }
+}
+</script>
+</body>
+</html>
