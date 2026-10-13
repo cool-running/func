@@ -30,6 +30,7 @@
 <div class="bar" id="ctl">
   <button onclick="goMe()">📍 내 위치</button>
   <button onclick="loadList()">📅 연도 목록 불러오기</button>
+  <button onclick="dumpCfg()">🔧 설정 보기</button>
   <button onclick="copyLog()">📋 결과 복사</button>
 </div>
 <div class="bar" id="years"></div>
@@ -114,6 +115,43 @@ function dumpLayers(){
       log('  레이어'+i+' '+(l.getVisible()?'보임':'숨김')+' '+j(u)+extra+mx);
     });
   }catch(e){ log('레이어 확인 실패: '+e.message); }
+}
+
+
+function dumpCfg(){
+  if(!map1) return;
+  try{
+    var o=ngii_wmts.properties.airWMTSLayerOptions||{};
+    var tg=o.tileGrid;
+    log('airWMTS 옵션: '+j(Object.assign({},o,{tileGrid:undefined})));
+    if(tg){
+      log('  origin='+j(tg.getOrigin?tg.getOrigin(0):tg.origin));
+      log('  extent='+j(tg.getExtent&&tg.getExtent()));
+      log('  resolutions='+j(tg.getResolutions&&tg.getResolutions()));
+      log('  matrixIds='+j(tg.getMatrixIds&&tg.getMatrixIds()));
+      log('  tileSize='+j(tg.getTileSize&&tg.getTileSize(0)));
+    }
+    log('proj4 5179='+(window.proj4&&proj4.defs('EPSG:5179')?j(proj4.defs('EPSG:5179')):'없음'));
+    // 지금 보이는 레이어의 실제 사진 주소 하나
+    var m=map1._getMap(), v=m.getView(), sample=null;
+    m.getLayers().forEach(function(l){
+      if(!l.getVisible()||!l.getSource) return;
+      var s=l.getSource(); if(!s.getTileUrlFunction) return;
+      var g=s.getTileGrid(); var z=g.getZForResolution(v.getResolution());
+      var tc=g.getTileCoordForCoordAndZ(v.getCenter(),z);
+      var u=s.getTileUrlFunction()(tc,1,v.getProjection());
+      log('보이는 레이어='+(s.getLayer&&s.getLayer())+' 사진주소='+u);
+      sample=u;
+    });
+    if(sample){
+      [['기본',''],['referrer 없이','no-referrer']].forEach(function(t){
+        var im=new Image(); if(t[1]) im.referrerPolicy=t[1];
+        im.onload=function(){ log('  사진 받기('+t[0]+'): ✅ 됨 '+im.naturalWidth+'px'); };
+        im.onerror=function(){ log('  사진 받기('+t[0]+'): ❌ 안 됨'); };
+        im.src=sample+'&_t='+Date.now()+t[1];
+      });
+    }
+  }catch(e){ log('설정 보기 실패: '+e.message); }
 }
 
 function copyLog(){
